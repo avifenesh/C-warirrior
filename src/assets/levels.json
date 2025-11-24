@@ -1,0 +1,58 @@
+[
+  {
+    "id": "L01",
+    "title": "The First Spell",
+    "concept": "printf",
+    "description": "The door is voice-activated. You must speak the ancient password to enter.",
+    "code_template": "#include <stdio.h>\n\nint main() {\n    // Print 'Hello World'\n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Hello World\n"
+    }
+  },
+  {
+    "id": "L02",
+    "title": "The Empty Backpack",
+    "concept": "variables",
+    "description": "You found a sword, but you cannot carry it. Declare a space in your inventory for it.",
+    "code_template": "#include <stdio.h>\n\nint main() {\n    // Declare 'sword_weight' as an integer and assign it 10\n    \n    printf(\"Sword weight: %d\\n\", sword_weight);\n    return 0;\n}",
+    "success_criteria": {
+      "type": "regex_match",
+      "regex": "Sword weight: 10"
+    }
+  },
+  {
+    "id": "L03",
+    "title": "The Gatekeeper",
+    "concept": "if/else",
+    "description": "The guard blocks the path. He only respects warriors of level 5 or higher.",
+    "code_template": "#include <stdio.h>\n\nint main() {\n    int player_level = 6;\n    \n    // Write an if statement to check if player_level >= 5\n    \n    return 0;\n}",
+    "success_criteria": {
+      "type": "regex_match",
+      "regex": "Access granted"
+    }
+  },
+  {
+    "id": "L04",
+    "title": "The Repeating Strike",
+    "concept": "loops",
+    "description": "The training dummy requires 5 hits to break. Don't tire yourself out swinging manually.",
+    "code_template": "#include <stdio.h>\n\nint main() {\n    // Use a for loop to print 'Strike!' 5 times\n    \n    return 0;\n}",
+    "success_criteria": {
+      "type": "output_count",
+      "token": "Strike!",
+      "count": 5
+    }
+  },
+  {
+    "id": "L05",
+    "title": "The Array Corridor",
+    "concept": "arrays",
+    "description": "Three doors block your path. You hold the keys in a sequence.",
+    "code_template": "#include <stdio.h>\n\nint main() {\n    int keys[3] = {101, 203, 305};\n    \n    // Loop through the array to unlock doors\n    \n    return 0;\n}",
+    "success_criteria": {
+      "type": "regex_match",
+      "regex": "101.*203.*305"
+    }
+  }
+]
