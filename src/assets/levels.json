@@ -4,11 +4,26 @@
     "title": "The First Spell",
     "concept": "printf",
     "description": "The door is voice-activated. You must speak the ancient password to enter.",
-    "code_template": "#include <stdio.h>\n\nint main() {\n    // Print 'Hello World'\n    return 0;\n}",
+    "code_template": "#include <stdio.h>\n\nint main() {\n    // Print 'Hello, World!'\n    return 0;\n}",
     "success_criteria": {
       "type": "exact_match",
-      "expected_stdout": "Hello World\n"
-    }
+      "expected_stdout": "Hello, World!\n"
+    },
+    "hints": [
+      "Use printf() to print text to the screen",
+      "Don't forget the \\n at the end for a newline",
+      "The syntax is: printf(\"text here\\n\");"
+    ],
+    "xp_reward": 50,
+    "map_file": "maps/L01_first_spell.json",
+    "challenges": [
+      {
+        "id": "printf_hello",
+        "prompt": "Cast your first spell by printing 'Hello, World!'",
+        "expected_output": "Hello, World!",
+        "starter_code": "#include <stdio.h>\n\nint main() {\n    // Your spell here\n    return 0;\n}"
+      }
+    ]
   },
   {
     "id": "L02",
@@ -19,7 +34,22 @@
     "success_criteria": {
       "type": "regex_match",
       "regex": "Sword weight: 10"
-    }
+    },
+    "hints": [
+      "Use 'int' to declare an integer variable",
+      "Assign the value 10 using '='",
+      "Example: int x = 5;"
+    ],
+    "xp_reward": 75,
+    "map_file": "maps/L02_empty_backpack.json",
+    "challenges": [
+      {
+        "id": "declare_sword",
+        "prompt": "Declare an integer variable 'sword_weight' and set it to 10.",
+        "expected_output": "Sword weight: 10",
+        "starter_code": "#include <stdio.h>\n\nint main() {\n    // Declare 'sword_weight' as an integer and assign it 10\n    \n    printf(\"Sword weight: %d\\n\", sword_weight);\n    return 0;\n}"
+      }
+    ]
   },
   {
     "id": "L03",
@@ -30,7 +60,22 @@
     "success_criteria": {
       "type": "regex_match",
       "regex": "Access granted"
-    }
+    },
+    "hints": [
+      "Use 'if (condition) { ... }'",
+      "The condition is 'player_level >= 5'",
+      "Print 'Access granted' inside the if block"
+    ],
+    "xp_reward": 100,
+    "map_file": "maps/L03_gatekeeper.json",
+    "challenges": [
+      {
+        "id": "check_level",
+        "prompt": "Write an if statement to check if player_level is greater than or equal to 5.",
+        "expected_output": "Access granted",
+        "starter_code": "#include <stdio.h>\n\nint main() {\n    int player_level = 6;\n    \n    // Write an if statement to check if player_level >= 5\n    // Print 'Access granted' if true\n    \n    return 0;\n}"
+      }
+    ]
   },
   {
     "id": "L04",
@@ -42,17 +87,21 @@
       "type": "output_count",
       "token": "Strike!",
       "count": 5
-    }
-  },
-  {
-    "id": "L05",
-    "title": "The Array Corridor",
-    "concept": "arrays",
-    "description": "Three doors block your path. You hold the keys in a sequence.",
-    "code_template": "#include <stdio.h>\n\nint main() {\n    int keys[3] = {101, 203, 305};\n    \n    // Loop through the array to unlock doors\n    \n    return 0;\n}",
-    "success_criteria": {
-      "type": "regex_match",
-      "regex": "101.*203.*305"
-    }
+    },
+    "hints": [
+      "Use a for loop: for(int i=0; i<5; i++)",
+      "Put the printf inside the loop curly braces",
+      "Make sure to include \\n"
+    ],
+    "xp_reward": 125,
+    "map_file": "maps/L04_repeating_strike.json",
+    "challenges": [
+      {
+        "id": "loop_strike",
+        "prompt": "Use a loop to print 'Strike!' 5 times.",
+        "expected_output": "Strike!\nStrike!\nStrike!\nStrike!\nStrike!\n",
+        "starter_code": "#include <stdio.h>\n\nint main() {\n    // Use a for loop to print 'Strike!' 5 times\n    \n    return 0;\n}"
+      }
+    ]
   }
 ]

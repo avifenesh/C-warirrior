@@ -1,0 +1,93 @@
+<script lang="ts">
+    import { onMount, onDestroy } from 'svelte';
+    import {
+        gameStore,
+        type Direction,
+        type CodeResult,
+    } from '$lib/stores/game.svelte';
+    import GameWorld from '$lib/components/GameWorld.svelte';
+    import CodeTerminal from '$lib/components/CodeTerminal.svelte';
+    import GameHUD from '$lib/components/GameHUD.svelte';
+    import Toast, { type ToastMessage } from '$lib/components/Toast.svelte';
+
+    const game = gameStore;
+
+    let codeDraft = $state('// Write your C spell here...\n#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}');
+    let toastMessages = $state<ToastMessage[]>([]);
+
+    // Subscribe to stores
+    const { renderState, currentLevelId, codeSubmitting, lastCodeResult } = game;
+
+    // Computed: should show terminal?
+    let showTerminal = $derived($renderState?.show_terminal ?? false);
+
+    onMount(() => {
+        game.boot();
+    });
+
+    onDestroy(() => {
+        game.cleanup();
+    });
+
+    function handleMove(event: CustomEvent<{ direction: Direction }>) {
+        game.sendAction({ type: 'move', direction: event.detail.direction });
+    }
+
+    function handleInteract() {
+        game.sendAction({ type: 'interact' });
+    }
+
+    async function handleCodeSubmit(event: CustomEvent<{ code: string }>) {
+        codeDraft = event.detail.code;
+        await game.submitCode(codeDraft);
+    }
+
+    // Watch for code result changes and show toast
+    $effect(() => {
+        if ($lastCodeResult) {
+            addToast($lastCodeResult);
+        }
+    });
+
+    function handleTerminalClose() {
+        // Exit coding mode when terminal is closed
+        game.sendAction({ type: 'resume' });
+    }
+
+    function addToast(result: CodeResult) {
+        const toast: ToastMessage = {
+            id: `toast-${Date.now()}`,
+            type: result.success ? 'success' : 'error',
+            message: result.success ? 'Spell cast successfully!' : 'Spell failed',
+            details: result.compile_error || result.feedback || result.stdout || undefined,
+        };
+
+        toastMessages = [...toastMessages, toast];
+    }
+
+    function dismissToast(id: string) {
+        toastMessages = toastMessages.filter((t) => t.id !== id);
+    }
+</script>
+
+<svelte:head>
+    <title>Code Warrior: C Mastery</title>
+</svelte:head>
+
+<GameWorld renderState={$renderState} on:move={handleMove} on:interact={handleInteract}>
+    <!-- HUD Overlay -->
+    <GameHUD player={$renderState?.player ?? null} currentLevelId={$currentLevelId} />
+
+    <!-- Code Terminal Modal -->
+    {#if showTerminal}
+        <CodeTerminal
+            initialCode={codeDraft}
+            submitting={$codeSubmitting}
+            onClose={handleTerminalClose}
+            on:submit={handleCodeSubmit}
+        />
+    {/if}
+
+    <!-- Toast Notifications -->
+    <Toast messages={toastMessages} onDismiss={dismissToast} />
+</GameWorld>

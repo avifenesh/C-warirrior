@@ -1,0 +1,35 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Code Warrior",
+  "version": "0.1.0",
+  "identifier": "com.codewarrior.app",
+  "build": {
+    "beforeDevCommand": "cd ../src-ui && npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "cd ../src-ui && npm run build",
+    "frontendDist": "../src-ui/build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Code Warrior",
+        "width": 1280,
+        "height": 720,
+        "resizable": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [],
+    "resources": {
+      "../src-ui/static/sprites/*": "sprites/",
+      "../src-ui/static/tiles/*": "tiles/",
+      "../src-ui/static/ui/*": "ui/"
+    }
+  }
+}
