@@ -14,6 +14,7 @@
 
     let codeDraft = $state('// Write your C spell here...\n#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}');
     let toastMessages = $state<ToastMessage[]>([]);
+    let toastCounter = 0; // Unique counter for toast IDs
 
     // Subscribe to stores
     const { renderState, currentLevelId, codeSubmitting, lastCodeResult } = game;
@@ -55,8 +56,9 @@
     }
 
     function addToast(result: CodeResult) {
+        toastCounter++;
         const toast: ToastMessage = {
-            id: `toast-${Date.now()}`,
+            id: `toast-${toastCounter}`,
             type: result.success ? 'success' : 'error',
             message: result.success ? 'Spell cast successfully!' : 'Spell failed',
             details: result.compile_error || result.feedback || result.stdout || undefined,
@@ -83,6 +85,13 @@
         <CodeTerminal
             initialCode={codeDraft}
             submitting={$codeSubmitting}
+            output={$lastCodeResult ? {
+                success: $lastCodeResult.success,
+                stdout: $lastCodeResult.stdout,
+                stderr: $lastCodeResult.stderr,
+                compile_error: $lastCodeResult.compile_error ?? undefined,
+                message: $lastCodeResult.feedback
+            } : null}
             onClose={handleTerminalClose}
             on:submit={handleCodeSubmit}
         />

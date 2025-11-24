@@ -17,19 +17,41 @@
         code = initialCode;
     });
 
-    // very lightweight syntax highlight: keywords and numbers
-    const keywordPattern = /\b(int|float|double|char|void|return|if|else|for|while|do|switch|case|break|continue|struct|typedef|const)\b/g;
-    const numberPattern = /\b(0x[\da-fA-F]+|\d+(?:\.\d+)?)\b/g;
-
+    // Lightweight syntax highlighting using token-based approach
     function escapeHtml(str: string) {
         return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
-    function highlight(text: string) {
-        let out = escapeHtml(text);
-        out = out.replace(keywordPattern, '<span class="text-sky-300">$1</span>');
-        out = out.replace(numberPattern, '<span class="text-amber-200">$1</span>');
-        return out;
+    function highlight(text: string): string {
+        const tokenRules: Array<{ pattern: RegExp; className: string }> = [
+            { pattern: /\b(int|float|double|char|void|return|if|else|for|while|do|switch|case|break|continue|struct|typedef|const)\b/g, className: 'hl-keyword' },
+            { pattern: /\b(0x[\da-fA-F]+|\d+(?:\.\d+)?)\b/g, className: 'hl-number' },
+        ];
+
+        const tokens: Array<{ start: number; end: number; className: string }> = [];
+        for (const rule of tokenRules) {
+            rule.pattern.lastIndex = 0;
+            let match;
+            while ((match = rule.pattern.exec(text)) !== null) {
+                const start = match.index;
+                const end = start + match[0].length;
+                const overlaps = tokens.some(t => !(end <= t.start || start >= t.end));
+                if (!overlaps) {
+                    tokens.push({ start, end, className: rule.className });
+                }
+            }
+        }
+        tokens.sort((a, b) => a.start - b.start);
+
+        let result = '';
+        let lastEnd = 0;
+        for (const token of tokens) {
+            result += escapeHtml(text.slice(lastEnd, token.start));
+            result += `<span class="${token.className}">${escapeHtml(text.slice(token.start, token.end))}</span>`;
+            lastEnd = token.end;
+        }
+        result += escapeHtml(text.slice(lastEnd));
+        return result;
     }
 
     const highlighted = $derived(highlight(code));

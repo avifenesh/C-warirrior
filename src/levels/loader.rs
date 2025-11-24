@@ -41,6 +41,14 @@ fn default_xp() -> u32 {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Challenge {
+    pub id: String,
+    pub prompt: String,
+    pub expected_output: String,
+    pub starter_code: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LevelData {
     pub id: String,
     pub title: String,
@@ -57,6 +65,8 @@ pub struct LevelData {
     pub world_config: WorldConfig,
     #[serde(default)]
     pub map_file: Option<String>,
+    #[serde(default)]
+    pub challenges: Vec<Challenge>,
 }
 
 impl LevelData {

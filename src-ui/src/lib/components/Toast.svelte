@@ -64,6 +64,17 @@
                 return 'text-cyan-300';
         }
     }
+
+    function getIcon(type: string): string {
+        switch (type) {
+            case 'success':
+                return '*';
+            case 'error':
+                return '!';
+            default:
+                return 'i';
+        }
+    }
 </script>
 
 <div class="pointer-events-none fixed bottom-4 right-4 z-50 flex flex-col gap-3">
@@ -75,7 +86,10 @@
         >
             <div class="flex items-start justify-between gap-3">
                 <div class="flex-1">
-                    <p class="font-semibold {getTextColor(toast.type)}">{toast.message}</p>
+                    <p class="font-semibold flex items-center gap-2 {getTextColor(toast.type)}">
+                        <span>{getIcon(toast.type)}</span>
+                        <span>{toast.message}</span>
+                    </p>
                     {#if toast.details}
                         <p class="mt-1 text-xs font-mono text-slate-400 whitespace-pre-wrap">
                             {toast.details}

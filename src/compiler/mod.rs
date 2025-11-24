@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::process::Command;
-use std::time::{Duration, Instant};
-use tokio::time::timeout;
+use std::time::Instant;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ExecutionOutput {
@@ -28,32 +27,37 @@ impl ExecutionOutput {
 }
 
 pub struct CCompiler {
-    timeout_secs: u64,
     temp_dir: String,
 }
 
 impl CCompiler {
     pub fn new() -> Self {
         Self {
-            timeout_secs: 5,
             temp_dir: std::env::temp_dir().to_string_lossy().to_string(),
         }
     }
 
+    /// Compile and run C code synchronously (Tauri handles async wrapping)
     pub async fn compile_and_run(&self, source: &str) -> Result<ExecutionOutput, String> {
         let start = Instant::now();
-        let source_file = format!("{}/user_code.c", self.temp_dir);
-        let binary_file = format!("{}/user_prog", self.temp_dir);
+        let timestamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_millis();
+        let source_file = format!("{}/user_code_{}.c", self.temp_dir, timestamp);
+        let binary_file = format!("{}/user_prog_{}", self.temp_dir, timestamp);
 
         std::fs::write(&source_file, source)
             .map_err(|e| format!("Failed to write source: {}", e))?;
 
+        // Compile with GCC
         let compile_output = Command::new("gcc")
             .args([&source_file, "-o", &binary_file, "-Wall"])
             .output()
             .map_err(|e| format!("Failed to run gcc: {}", e))?;
 
         if !compile_output.status.success() {
+            let _ = std::fs::remove_file(&source_file);
             return Ok(ExecutionOutput {
                 compile_error: Some(String::from_utf8_lossy(&compile_output.stderr).to_string()),
                 execution_time_ms: start.elapsed().as_millis() as u64,
@@ -61,40 +65,20 @@ impl CCompiler {
             });
         }
 
-        let timeout_duration = Duration::from_secs(self.timeout_secs);
-        let binary = binary_file.clone();
+        // Run the compiled binary synchronously
+        let run_output = Command::new(&binary_file)
+            .output()
+            .map_err(|e| format!("Failed to run binary: {}", e))?;
 
-        let run_result = timeout(
-            timeout_duration,
-            tokio::task::spawn_blocking(move || Command::new(&binary).output()),
-        )
-        .await;
-
-        let output = match run_result {
-            Ok(Ok(Ok(out))) => ExecutionOutput {
-                stdout: String::from_utf8_lossy(&out.stdout).to_string(),
-                stderr: String::from_utf8_lossy(&out.stderr).to_string(),
-                exit_code: out.status.code(),
-                execution_time_ms: start.elapsed().as_millis() as u64,
-                ..Default::default()
-            },
-            Ok(Ok(Err(e))) => ExecutionOutput {
-                runtime_error: Some(format!("Execution failed: {}", e)),
-                execution_time_ms: start.elapsed().as_millis() as u64,
-                ..Default::default()
-            },
-            Ok(Err(e)) => ExecutionOutput {
-                runtime_error: Some(format!("Task failed: {}", e)),
-                execution_time_ms: start.elapsed().as_millis() as u64,
-                ..Default::default()
-            },
-            Err(_) => ExecutionOutput {
-                timed_out: true,
-                execution_time_ms: self.timeout_secs * 1000,
-                ..Default::default()
-            },
+        let output = ExecutionOutput {
+            stdout: String::from_utf8_lossy(&run_output.stdout).to_string(),
+            stderr: String::from_utf8_lossy(&run_output.stderr).to_string(),
+            exit_code: run_output.status.code(),
+            execution_time_ms: start.elapsed().as_millis() as u64,
+            ..Default::default()
         };
 
+        // Cleanup
         let _ = std::fs::remove_file(&source_file);
         let _ = std::fs::remove_file(&binary_file);
 

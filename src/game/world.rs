@@ -45,6 +45,22 @@ impl Tile {
             interactable: true,
         }
     }
+
+    pub fn door() -> Self {
+        Self {
+            tile_type: TileType::Door,
+            walkable: false,
+            interactable: true,
+        }
+    }
+
+    pub fn water() -> Self {
+        Self {
+            tile_type: TileType::Water,
+            walkable: false,
+            interactable: false,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -57,12 +73,48 @@ pub struct World {
 
 impl World {
     pub fn new(width: usize, height: usize) -> Self {
-        let tiles = vec![vec![Tile::floor(); width]; height];
+        let mut tiles = vec![vec![Tile::floor(); width]; height];
+
+        // Add wall border around the map
+        for x in 0..width {
+            tiles[0][x] = Tile::wall(); // Top wall
+            tiles[height - 1][x] = Tile::wall(); // Bottom wall
+        }
+        for y in 0..height {
+            tiles[y][0] = Tile::wall(); // Left wall
+            tiles[y][width - 1] = Tile::wall(); // Right wall
+        }
+
+        // Player spawns at tile (10, 7) = pixel (320, 240)
+        let spawn_tile_x = 10;
+        let spawn_tile_y = 7;
+        let spawn_point = Position::new(
+            (spawn_tile_x as f32 * 32.0) + 16.0, // Center of tile
+            (spawn_tile_y as f32 * 32.0) + 16.0,
+        );
+
+        // Add terminal at tile (15, 7) - 5 tiles to the right of spawn
+        if spawn_tile_y < height && 15 < width {
+            tiles[spawn_tile_y][15] = Tile::terminal();
+        }
+
+        // Add locked door at tile (18, 7) - right edge (before wall at x=19)
+        if spawn_tile_y < height && 18 < width {
+            tiles[spawn_tile_y][18] = Tile::door();
+        }
+
+        // Add some decorative water patches
+        if 5 < height && 5 < width {
+            tiles[3][5] = Tile::water();
+            tiles[3][6] = Tile::water();
+            tiles[4][5] = Tile::water();
+        }
+
         Self {
             width,
             height,
             tiles,
-            spawn_point: Position::new(1.0, 1.0),
+            spawn_point,
         }
     }
 
@@ -72,6 +124,26 @@ impl World {
 
     pub fn is_walkable(&self, x: usize, y: usize) -> bool {
         self.get_tile(x, y).map(|t| t.walkable).unwrap_or(false)
+    }
+
+    /// Unlock a door at the specified tile coordinates
+    pub fn unlock_door(&mut self, x: usize, y: usize) {
+        if let Some(tile) = self.tiles.get_mut(y).and_then(|row| row.get_mut(x)) {
+            if tile.tile_type == TileType::Door {
+                tile.walkable = true;
+            }
+        }
+    }
+
+    /// Unlock all doors in the world
+    pub fn unlock_all_doors(&mut self) {
+        for row in &mut self.tiles {
+            for tile in row {
+                if tile.tile_type == TileType::Door {
+                    tile.walkable = true;
+                }
+            }
+        }
     }
 
     pub fn from_config(config: &WorldConfig) -> Self {

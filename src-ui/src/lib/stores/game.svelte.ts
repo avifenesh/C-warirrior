@@ -122,17 +122,47 @@ function createGameStore() {
     let levelCompleteUnsub: UnlistenFn | null = null;
 
     async function boot() {
+        console.log('[boot] Starting...');
         ui.update(u => ({ ...u, loading: true, status: 'Resetting backend state...', error: null }));
 
         try {
+            console.log('[boot] Calling init_game...');
             const initialState = await invoke<RenderState>('init_game');
+            console.log('[boot] init_game returned:', initialState);
             renderState.set(initialState);
-            ui.update(u => ({ ...u, status: 'Live' }));
+            // Force UI update immediately so user sees the game
+            ui.update(u => ({ ...u, loading: false }));
+
+            console.log('[boot] Loading levels...');
+            ui.update(u => ({ ...u, status: 'Loading levels...' }));
             await hydrateLevels();
+            console.log('[boot] Levels loaded');
+
+            console.log('[boot] Binding events...');
             await bindEvents();
+            console.log('[boot] Events bound');
+
+            // Auto-load Level 1 so code submission works
+            ui.update(u => ({ ...u, status: 'Loading Level 1...' }));
+            console.log('[boot] Loading L01...');
+            try {
+                await invoke('load_level', { levelId: 'L01' });
+                console.log('[boot] L01 loaded, getting render state...');
+                // Get updated render state via a no-op action
+                const stateAfterLoad = await invoke<RenderState>('process_action', { action: { type: 'resume' } });
+                console.log('[boot] Render state after load:', stateAfterLoad);
+                renderState.set(stateAfterLoad);
+            } catch (loadErr) {
+                console.warn('[boot] Failed to auto-load L01:', loadErr);
+                // Continue anyway - game will work without level loaded for movement
+            }
+            console.log('[boot] Setting Live status');
+            ui.update(u => ({ ...u, status: 'Live' }));
         } catch (err) {
+            console.error('[boot] Error:', err);
             ui.update(u => ({ ...u, error: normalizeError(err) }));
         } finally {
+            console.log('[boot] Finally block, setting loading false');
             ui.update(u => ({ ...u, loading: false }));
         }
     }
@@ -197,14 +227,19 @@ function createGameStore() {
     }
 
     async function submitCode(code: string) {
+        console.log('[submitCode] Starting submission...');
         ui.update(u => ({ ...u, error: null }));
         codeSubmitting.set(true);
         try {
+            console.log('[submitCode] Calling invoke submit_code...');
             const result = await invoke<CodeResult>('submit_code', { code });
+            console.log('[submitCode] Result received:', result);
             lastCodeResult.set(result);
         } catch (err) {
+            console.error('[submitCode] Error:', err);
             ui.update(u => ({ ...u, error: normalizeError(err) }));
         } finally {
+            console.log('[submitCode] Finally block');
             codeSubmitting.set(false);
         }
     }

@@ -23,6 +23,8 @@ pub async fn submit_code(
     levels: State<'_, LevelRegistry>,
     compiler: State<'_, CCompiler>,
 ) -> Result<CodeResult, String> {
+    println!("[submit_code] Command received");
+
     // Get level data before await to avoid holding MutexGuard across await
     let level_data = {
         let game_state = state.0.lock().map_err(|e| e.to_string())?;
@@ -32,21 +34,31 @@ pub async fn submit_code(
             .ok_or("No level currently loaded")?
             .clone();
 
+        println!("[submit_code] Level ID: {}", level_id);
+
         levels
             .get_level(&level_id)
             .cloned()
             .ok_or_else(|| format!("Level {} not found", level_id))?
     };
 
+    println!("[submit_code] Calling compiler...");
     let execution_result = compiler.compile_and_run(&code).await?;
+    println!("[submit_code] Compiler returned: success={}", execution_result.run_success());
     let success = level_data.validate_output(&execution_result);
+
+    // If code is successful, unlock all doors in the world
+    if success {
+        let mut game_state = state.0.lock().map_err(|e| e.to_string())?;
+        game_state.world.unlock_all_doors();
+    }
 
     let feedback = if execution_result.compile_error.is_some() {
         "Code failed to compile. Check for syntax errors.".to_string()
     } else if execution_result.timed_out {
         "Code execution timed out. Check for infinite loops.".to_string()
     } else if success {
-        "Success! Your code produced the correct output.".to_string()
+        "Success! Your code produced the correct output. Doors have been unlocked!".to_string()
     } else {
         "Output doesn't match expected result. Try again!".to_string()
     };
