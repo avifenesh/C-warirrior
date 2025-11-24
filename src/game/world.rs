@@ -4,6 +4,7 @@ use super::state::Position;
 use crate::levels::WorldConfig;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "snake_case")]
 pub enum TileType {
     Floor,
     Wall,

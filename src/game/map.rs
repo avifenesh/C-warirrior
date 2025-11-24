@@ -71,10 +71,11 @@ impl MapObject {
 
 /// Types of objects that can exist on the map
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "snake_case")]
 pub enum ObjectType {
     Terminal,
     Door,
-    NPC,
+    Npc,
     Collectible,
 }
 
