@@ -1,0 +1,10 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "src-api/Dockerfile"
+
+[deploy]
+startCommand = "code-warrior-api"
+healthcheckPath = "/health"
+healthcheckTimeout = 100
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3

@@ -1,9 +1,0 @@
-{
-  "mcpServers": {
-    "c_compiler": {
-      "command": "./.venv/bin/python",
-      "args": ["tools/c_compiler_mcp.py"],
-      "description": "Compile and run C code for puzzle validation (MANDATORY for C puzzles). Returns a single result string (FastMCP wraps this as {\"result\": \"...\"} at the protocol level)."
-    }
-  }
-}

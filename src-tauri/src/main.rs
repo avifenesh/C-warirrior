@@ -4,6 +4,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::sync::Mutex;
+use tauri::Manager;
 
 use code_warrior::compiler::CCompiler;
 use code_warrior::game::GameState;
@@ -13,7 +14,7 @@ use code_warrior::persistence::SaveManager;
 mod commands;
 
 use commands::code::{get_hint, submit_code};
-use commands::game::{get_game_state, init_game, process_action};
+use commands::game::{get_game_state, get_render_state, init_game, process_action};
 use commands::levels::{get_available_levels, get_level_data, load_level};
 use commands::progress::complete_level;
 use commands::save::{autosave, delete_save, list_saves, load_game, save_game};
@@ -29,10 +30,19 @@ fn main() {
         .manage(LevelRegistry::load_from_json())
         .manage(CCompiler::new())
         .manage(save_manager)
+        .setup(|app| {
+            #[cfg(debug_assertions)]
+            {
+                let window = app.get_webview_window("main").unwrap();
+                window.open_devtools();
+            }
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             // Game commands
             init_game,
             get_game_state,
+            get_render_state,
             process_action,
             // Level commands
             get_available_levels,

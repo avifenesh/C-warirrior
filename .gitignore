@@ -1,0 +1,52 @@
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Editor/IDE cruft
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+.vercel
+
+# AI / local tooling
+.claude/
+.cursor/
+.cursorrules
+.factory/
+.mcp.json
+
+# Python virtualenv
+.venv/
+
+# Rust / Cargo
+target/
+**/*.rs.bk
+
+# Tauri (native) build output
+src-tauri/target/
+src-tauri/.cargo/
+
+# Node/Svelte/Vite
+node_modules/
+dist/
+build/
+coverage/
+.esbuild/
+.svelte-kit/
+src-ui/.svelte-kit/
+src-ui/.svelte-kit-output/
+src-ui/.svelte-kit/generated/
+src-ui/.svelte-kit/output/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log

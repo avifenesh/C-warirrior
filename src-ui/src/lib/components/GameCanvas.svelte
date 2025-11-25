@@ -11,22 +11,32 @@
     let { renderState = null, tileSize = 32 }: Props = $props();
 
     let canvasRef = $state<HTMLCanvasElement | null>(null);
-    let ctx = $state<CanvasRenderingContext2D | null>(null);
+    let ctx: CanvasRenderingContext2D | null = null; // NOT reactive
     const dispatcher = createEventDispatcher();
     let focused = $state(false);
 
     onMount(() => {
         canvasRef?.focus();
-    });
+        if (canvasRef) {
+            ctx = canvasRef.getContext('2d');
+            if (ctx) {
+                ctx.imageSmoothingEnabled = false;
+            }
+        }
 
-    $effect(() => {
-        if (!canvasRef) return;
-        const context = canvasRef.getContext('2d');
-        if (!context) return;
+        // Rendering loop
+        let animFrameId = 0;
+        const render = () => {
+            if (ctx) {
+                drawScene(ctx, renderState);
+            }
+            animFrameId = requestAnimationFrame(render);
+        };
+        animFrameId = requestAnimationFrame(render);
 
-        ctx = context;
-        context.imageSmoothingEnabled = false;
-        drawScene(context, renderState);
+        return () => {
+            cancelAnimationFrame(animFrameId);
+        };
     });
 
     function drawScene(context: CanvasRenderingContext2D, state: RenderState | null) {
@@ -121,10 +131,9 @@
     height={tileSize * 15}
     class="w-full rounded-xl border border-slate-800 bg-slate-950 shadow-inner shadow-slate-900 outline-none"
     aria-label="Game viewport"
-    role="application"
     tabindex="0"
-    on:keydown={handleKeydown}
-    on:focus={() => (focused = true)}
-    on:blur={() => (focused = false)}
-    on:click={handleClick}
+    onkeydown={handleKeydown}
+    onfocus={() => (focused = true)}
+    onblur={() => (focused = false)}
+    onclick={handleClick}
 ></canvas>

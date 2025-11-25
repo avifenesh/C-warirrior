@@ -10,6 +10,10 @@ export default defineConfig({
 		strictPort: true
 	},
 	envPrefix: ['VITE_', 'TAURI_'],
+	define: {
+		'__API_URL__': JSON.stringify(process.env.API_URL || 'http://localhost:3000'),
+		'__TAURI_BUILD__': JSON.stringify(!!process.env.TAURI_PLATFORM)
+	},
 	resolve: {
 		alias: {
 			'$sprites': resolve('./static/sprites'),

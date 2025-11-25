@@ -41,12 +41,23 @@ pub async fn submit_code(
     let execution_result = compiler.compile_and_run(&code).await?;
     let success = level_data.validate_output(&execution_result);
 
+    // If successful, complete the level (this unlocks doors and awards XP)
+    if success {
+        let mut game_state = state.0.lock().map_err(|e| e.to_string())?;
+
+        println!("[submit_code] Success! Completing level...");
+
+        // Complete the level - this awards XP, unlocks doors, and sets phase to LevelComplete
+        let xp_earned = game_state.complete_level(level_data.xp_reward);
+        println!("[submit_code] Level completed! XP earned: {}", xp_earned);
+    }
+
     let feedback = if execution_result.compile_error.is_some() {
         "Code failed to compile. Check for syntax errors.".to_string()
     } else if execution_result.timed_out {
         "Code execution timed out. Check for infinite loops.".to_string()
     } else if success {
-        "Success! Your code produced the correct output.".to_string()
+        "Success! Your code produced the correct output. Doors have been unlocked!".to_string()
     } else {
         "Output doesn't match expected result. Try again!".to_string()
     };

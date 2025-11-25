@@ -1,103 +1,25 @@
-import { invoke } from '@tauri-apps/api/core';
-import { listen, type UnlistenFn } from '@tauri-apps/api/event';
 import { writable, derived, get } from 'svelte/store';
-
-// --- Shared Types ---
-export type Direction = 'up' | 'down' | 'left' | 'right';
-export type GamePhase = 'main_menu' | 'playing' | 'coding' | 'paused' | 'level_complete';
-
-export interface Position {
-    x: number;
-    y: number;
-}
-
-export type TileType = 'floor' | 'wall' | 'water' | 'void' | 'door' | 'terminal';
-
-export interface Tile {
-    tile_type: TileType;
-    walkable: boolean;
-    interactable: boolean;
-}
-
-export interface Player {
-    position: Position;
-    health: number;
-    max_health: number;
-    xp: number;
-    level: number;
-    facing: Direction;
-}
-
-export interface RenderState {
-    player: Player;
-    visible_tiles: Tile[][];
-    viewport_offset: Position;
-    game_phase: GamePhase;
-    current_level_id: string | null;
-    map?: TileMapRender | null;
-    objects: ObjectRender[];
-    show_terminal: boolean;
-    active_dialogue: string | null;
-}
-
-export interface TileMapRender {
-    width: number;
-    height: number;
-    tiles: TileType[][];
-}
-
-export interface ObjectRender {
-    object_type: ObjectType;
-    position: Position;
-    sprite_id?: string | null;
-}
-
-export type ObjectType = 'terminal' | 'door' | 'npc' | 'collectible';
-
-export type PlayerAction =
-    | { type: 'move'; direction: Direction }
-    | { type: 'interact' }
-    | { type: 'submit_code'; code: string }
-    | { type: 'open_inventory' }
-    | { type: 'use_item'; item_id: string }
-    | { type: 'pause' }
-    | { type: 'resume' };
-
-export interface LevelInfo {
-    id: string;
-    title: string;
-    concept: string;
-    completed: boolean;
-    locked: boolean;
-}
-
-export interface CodeOutput {
-    stream: 'stdout' | 'stderr';
-    content: string;
-    is_final: boolean;
-}
-
-export interface CodeResult {
-    success: boolean;
-    stdout: string;
-    stderr: string;
-    compile_error: string | null;
-    execution_time_ms: number;
-    feedback?: string;
-    hint?: string | null;
-}
-
-export interface LevelCompleteEvent {
-    level_id: string;
-    xp_earned: number;
-    next_level_id: string | null;
-}
-
-export interface GameError {
-    code: string;
-    message: string;
-    recoverable: boolean;
-}
+import { getBackend, type Backend, type UnsubscribeFn } from '$lib/backend';
+import type {
+    Direction,
+    GamePhase,
+    Position,
+    TileType,
+    Tile,
+    Player,
+    RenderState,
+    TileMapRender,
+    ObjectRender,
+    ObjectType,
+    PlayerAction,
+    LevelInfo,
+    CodeOutput,
+    CodeResult,
+    LevelCompleteEvent,
+    GameError,
+    Challenge,
+    LevelData
+} from '$lib/types';
 
 interface UIState {
     loading: boolean;
@@ -115,43 +37,51 @@ function createGameStore() {
     const lastLevelComplete = writable<LevelCompleteEvent | null>(null);
     const codeSubmitting = writable(false);
     const lastCodeResult = writable<CodeResult | null>(null);
+    const currentLevelData = writable<LevelData | null>(null);
+    const currentHintIndex = writable(0);
 
     // Ensure submission flag clears whenever a result arrives
     lastCodeResult.subscribe(() => codeSubmitting.set(false));
 
-    let tickUnsub: UnlistenFn | null = null;
-    let errorUnsub: UnlistenFn | null = null;
-    let codeUnsub: UnlistenFn | null = null;
-    let levelCompleteUnsub: UnlistenFn | null = null;
+    let backend: Backend | null = null;
+    let tickUnsub: UnsubscribeFn | null = null;
+    let errorUnsub: UnsubscribeFn | null = null;
+    let codeUnsub: UnsubscribeFn | null = null;
+    let levelCompleteUnsub: UnsubscribeFn | null = null;
 
     async function boot() {
-        ui.update(u => ({ ...u, loading: true, status: 'Resetting backend state...', error: null }));
+        console.log('[BOOT] Starting boot sequence...');
+        ui.update(u => ({ ...u, loading: true, status: 'Initializing backend...', error: null }));
 
         try {
-            const initialState = await invoke<RenderState>('init_game');
+            // Get backend instance first
+            console.log('[BOOT] Getting backend...');
+            backend = await getBackend();
+            console.log('[BOOT] Backend acquired');
+
+            console.log('[BOOT] Calling initGame...');
+            const initialState = await backend.initGame();
+            console.log('[BOOT] initGame returned:', initialState);
             renderState.set(initialState);
+            console.log('[BOOT] renderState set, current value:', initialState);
             // Force UI update immediately so user sees the game
             ui.update(u => ({ ...u, loading: false }));
 
+            console.log('[BOOT] Loading levels...');
             ui.update(u => ({ ...u, status: 'Loading levels...' }));
             await hydrateLevels();
+            console.log('[BOOT] Levels loaded');
 
+            console.log('[BOOT] Binding events...');
             await bindEvents();
+            console.log('[BOOT] Events bound');
 
-            // Auto-load Level 1 so code submission works
-            ui.update(u => ({ ...u, status: 'Loading Level 1...' }));
-            try {
-                await invoke('load_level', { levelId: 'L01' });
-                // Get updated render state via a no-op action
-                const stateAfterLoad = await invoke<RenderState>('process_action', { action: { type: 'resume' } });
-                renderState.set(stateAfterLoad);
-            } catch (loadErr) {
-                console.warn('Failed to auto-load L01:', loadErr);
-                // Continue anyway - game will work without level loaded for movement
-            }
-            ui.update(u => ({ ...u, status: 'Live' }));
+            // Don't auto-load a level - show main menu instead
+            // Level will be loaded when user clicks "NEW QUEST" or "CONTINUE"
+            ui.update(u => ({ ...u, status: 'Main Menu' }));
+            console.log('[BOOT] Boot complete!');
         } catch (err) {
-            console.error('Boot error:', err);
+            console.error('[BOOT] Boot error:', err);
             ui.update(u => ({ ...u, error: normalizeError(err) }));
         } finally {
             ui.update(u => ({ ...u, loading: false }));
@@ -159,8 +89,9 @@ function createGameStore() {
     }
 
     async function hydrateLevels() {
+        if (!backend) return;
         try {
-            const data = await invoke<LevelInfo[]>('get_available_levels');
+            const data = await backend.getAvailableLevels();
             levels.set(data);
         } catch (err) {
             ui.update(u => ({ ...u, error: u.error ?? normalizeError(err) }));
@@ -168,40 +99,55 @@ function createGameStore() {
     }
 
     async function bindEvents() {
+        if (!backend) return;
+
         if (!tickUnsub) {
-            tickUnsub = await listen<RenderState>('game_tick', (event) => {
-                renderState.set(event.payload);
+            tickUnsub = await backend.onGameTick((state) => {
+                renderState.set(state);
                 ui.update(u => ({ ...u, status: 'Live' }));
             });
         }
 
         if (!errorUnsub) {
-            errorUnsub = await listen<GameError>('game_error', (event) => {
-                ui.update(u => ({ ...u, error: event.payload.message }));
+            errorUnsub = await backend.onGameError((error) => {
+                ui.update(u => ({ ...u, error: error.message }));
             });
         }
 
         if (!codeUnsub) {
-            codeUnsub = await listen<CodeOutput>('code_output', (event) => {
-                lastCodeOutput.set(event.payload);
-                if (event.payload.is_final) {
+            codeUnsub = await backend.onCodeOutput((output) => {
+                lastCodeOutput.set(output);
+                if (output.is_final) {
                     codeSubmitting.set(false);
                 }
             });
         }
 
         if (!levelCompleteUnsub) {
-            levelCompleteUnsub = await listen<LevelCompleteEvent>('level_complete', (event) => {
-                lastLevelComplete.set(event.payload);
+            levelCompleteUnsub = await backend.onLevelComplete((event) => {
+                lastLevelComplete.set(event);
             });
         }
     }
 
     async function startLevel(levelId: string) {
+        if (!backend) return;
         ui.update(u => ({ ...u, loading: true, status: `Loading ${levelId}...`, error: null }));
 
         try {
-            await invoke('load_level', { levelId });
+            // Load the level
+            await backend.loadLevel(levelId);
+
+            // Get level data and render state in parallel
+            const [levelData, updatedState] = await Promise.all([
+                backend.getLevelData(),
+                backend.getRenderState(),
+            ]);
+
+            renderState.set(updatedState);
+            currentLevelData.set(levelData);
+            currentHintIndex.set(0); // Reset hints for new level
+            lastCodeResult.set(null); // Clear previous results
             ui.update(u => ({ ...u, status: `Level ${levelId} loaded` }));
         } catch (err) {
             ui.update(u => ({ ...u, error: normalizeError(err) }));
@@ -210,10 +156,23 @@ function createGameStore() {
         }
     }
 
+    async function getNextHint(): Promise<string | null> {
+        if (!backend) return null;
+        const idx = get(currentHintIndex);
+        try {
+            const hint = await backend.getHint(idx);
+            currentHintIndex.set(idx + 1);
+            return hint;
+        } catch {
+            return null; // No more hints
+        }
+    }
+
     async function sendAction(action: PlayerAction) {
+        if (!backend) return;
         ui.update(u => ({ ...u, error: null }));
         try {
-            const next = await invoke<RenderState>('process_action', { action });
+            const next = await backend.processAction(action);
             renderState.set(next);
         } catch (err) {
             ui.update(u => ({ ...u, error: normalizeError(err) }));
@@ -221,11 +180,21 @@ function createGameStore() {
     }
 
     async function submitCode(code: string) {
+        if (!backend) return;
         ui.update(u => ({ ...u, error: null }));
         codeSubmitting.set(true);
         try {
-            const result = await invoke<CodeResult>('submit_code', { code });
+            const result = await backend.submitCode(code);
             lastCodeResult.set(result);
+
+            // If successful, fetch updated render state (level complete, doors unlocked)
+            if (result.success) {
+                console.log('[submitCode] Success! Fetching updated state...');
+                const updatedState = await backend.getRenderState();
+                renderState.set(updatedState);
+                console.log('[submitCode] State updated, game_phase:', updatedState.game_phase);
+            }
+
             codeSubmitting.set(false);
         } catch (err) {
             console.error('Code submission error:', err);
@@ -243,6 +212,7 @@ function createGameStore() {
         errorUnsub?.();
         codeUnsub?.();
         levelCompleteUnsub?.();
+        backend?.cleanup();
     }
 
     return {
@@ -255,10 +225,12 @@ function createGameStore() {
         currentLevelId,
         codeSubmitting,
         lastCodeResult,
+        currentLevelData,
         boot,
         startLevel,
         sendAction,
         submitCode,
+        getNextHint,
         refreshLevels: hydrateLevels,
         cleanup,
     };

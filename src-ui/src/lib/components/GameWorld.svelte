@@ -1,17 +1,21 @@
 <script lang="ts">
     import { onMount, type Snippet } from 'svelte';
     import { createEventDispatcher } from 'svelte';
-    import type { RenderState, Direction } from '$lib/stores/game.svelte';
+    import type { RenderState, Direction } from '$lib/types';
     import { loadAssets, DEFAULT_MANIFEST, type LoadedAssets } from '$lib/engine/assets';
     import { ANIMATIONS, startAnimation, getCurrentFrame, type AnimationState } from '$lib/engine/animation';
+    import { Camera, applyCameraTransform, resetCameraTransform } from '$lib/engine/camera';
+    import { ParticleSystem, emitXpSparkles, emitCodeSuccessBurst } from '$lib/engine/particles';
 
     interface Props {
         renderState: RenderState | null;
         tileSize?: number;
         children?: Snippet;
+        codeSuccess?: boolean;
+        xpGained?: number;
     }
 
-    let { renderState = null, tileSize = 32, children }: Props = $props();
+    let { renderState = null, tileSize = 64, children, codeSuccess = false, xpGained = 0 }: Props = $props();
 
     const dispatcher = createEventDispatcher();
     let canvasRef = $state<HTMLCanvasElement | null>(null);
@@ -19,15 +23,21 @@
     let assets = $state<LoadedAssets | null>(null);
     let assetsLoaded = $state(false);
 
+    // Camera and particle systems
+    let camera = $state<Camera>(new Camera({ smoothing: 0.15 }));
+    let particles = $state<ParticleSystem>(new ParticleSystem(500));
+    let lastFrameTime = $state(0);
+
     // Animation state
     let playerAnimState = $state<AnimationState | null>(null);
     let terminalAnimState = $state<AnimationState | null>(null);
-    let lastPlayerPos = $state({ x: 0, y: 0 });
+    let lastPlayerPos = { x: 0, y: 0 }; // NOT reactive - just for comparison
+    let lastCodeSuccess = false; // NOT reactive - track code success state
     let animationTime = $state(0);
 
     // Compute nearTerminal as derived state to avoid infinite loop
     const nearTerminal = $derived.by(() => {
-        if (!renderState) return false;
+        if (!renderState?.visible_tiles || !renderState?.player) return false;
         const playerTile = {
             x: Math.floor(renderState.player.position.x / tileSize),
             y: Math.floor(renderState.player.position.y / tileSize),
@@ -49,6 +59,12 @@
 
     // Keyboard handling
     function handleKeydown(event: KeyboardEvent) {
+        // Don't capture events when typing in form elements (textarea, input)
+        const target = event.target as HTMLElement;
+        if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT' || target.isContentEditable) {
+            return;
+        }
+
         const key = event.key.toLowerCase();
 
         // Movement keys (WASD + Arrows)
@@ -80,73 +96,117 @@
         containerRef?.focus();
 
         // Load assets
-        loadAssets(DEFAULT_MANIFEST).then((loadedAssets) => {
-            assets = loadedAssets;
-            assetsLoaded = true;
-            // Initialize animations
-            playerAnimState = startAnimation(ANIMATIONS.playerIdle);
-            terminalAnimState = startAnimation(ANIMATIONS.terminalGlow);
-            console.log('[GameWorld] Assets loaded:', loadedAssets);
-        });
+        console.log('[GameWorld] Starting asset load...');
+        loadAssets(DEFAULT_MANIFEST)
+            .then((loadedAssets) => {
+                console.log('[GameWorld] Assets loaded successfully:', {
+                    sprites: loadedAssets.sprites.size,
+                    tiles: loadedAssets.tiles.size,
+                });
+                console.log('[GameWorld] Tile keys:', Array.from(loadedAssets.tiles.keys()));
+                console.log('[GameWorld] Sprite keys:', Array.from(loadedAssets.sprites.keys()));
+                console.log('[GameWorld] Floor tile:', loadedAssets.tiles.get('floor'));
+                assets = loadedAssets;
+                assetsLoaded = true;
+                // Initialize animations
+                playerAnimState = startAnimation(ANIMATIONS.playerIdle);
+                terminalAnimState = startAnimation(ANIMATIONS.terminalGlow);
+            })
+            .catch((err) => {
+                console.error('[GameWorld] Asset loading failed:', err);
+                // Mark as loaded anyway so we use fallback
+                assetsLoaded = true;
+            });
 
-        // Animation loop
-        const animLoop = () => {
-            animationTime = performance.now();
-            requestAnimationFrame(animLoop);
+        // Animation and rendering loop
+        let animationFrameId = 0;
+        const animLoop = (currentTime: number) => {
+            // Snapshot renderState at the beginning of the frame to prevent mid-frame changes
+            const currentState = renderState;
+
+            const deltaTime = lastFrameTime > 0 ? currentTime - lastFrameTime : 16.67;
+            lastFrameTime = currentTime;
+            animationTime = currentTime;
+
+            // Track player movement and update animations (non-reactive)
+            if (currentState) {
+                const currentPos = currentState.player.position;
+                const moved = currentPos.x !== lastPlayerPos.x || currentPos.y !== lastPlayerPos.y;
+
+                if (moved && playerAnimState) {
+                    playerAnimState = startAnimation(ANIMATIONS.playerWalk);
+                } else if (!moved && playerAnimState && !playerAnimState.finished) {
+                    playerAnimState = startAnimation(ANIMATIONS.playerIdle);
+                }
+
+                lastPlayerPos = { x: currentPos.x, y: currentPos.y };
+
+                // Update camera to follow player
+                camera.setTarget(currentPos.x, currentPos.y);
+                camera.update(deltaTime, canvasRef?.width ?? 640, canvasRef?.height ?? 480);
+
+                // Emit particles on code success
+                if (codeSuccess && !lastCodeSuccess) {
+                    emitCodeSuccessBurst(particles, currentPos.x, currentPos.y);
+                    if (xpGained > 0) {
+                        emitXpSparkles(particles, currentPos.x, currentPos.y, xpGained);
+                    }
+                    camera.shake(8, 0.92);
+                }
+                lastCodeSuccess = codeSuccess;
+            }
+
+            // Update particles
+            particles.update(deltaTime);
+
+            // Render scene with snapshot
+            if (canvasRef) {
+                const context = canvasRef.getContext('2d');
+                if (context) {
+                    try {
+                        context.imageSmoothingEnabled = false;
+                        drawScene(context, currentState);
+                    } catch (err) {
+                        console.error('[GameWorld] Rendering error:', err);
+                    }
+                }
+            }
+
+            animationFrameId = requestAnimationFrame(animLoop);
         };
-        requestAnimationFrame(animLoop);
+        animationFrameId = requestAnimationFrame(animLoop);
 
         return () => {
             window.removeEventListener('keydown', handleKeydown);
+            cancelAnimationFrame(animationFrameId);
         };
-    });
-
-    // Track player movement for animations
-    $effect(() => {
-        if (!renderState) return;
-        const currentPos = renderState.player.position;
-        const moved = currentPos.x !== lastPlayerPos.x || currentPos.y !== lastPlayerPos.y;
-
-        if (moved && playerAnimState) {
-            playerAnimState = startAnimation(ANIMATIONS.playerWalk);
-        } else if (!moved && playerAnimState && !playerAnimState.finished) {
-            // Switch back to idle after a short delay
-            playerAnimState = startAnimation(ANIMATIONS.playerIdle);
-        }
-
-        lastPlayerPos = { x: currentPos.x, y: currentPos.y };
-    });
-
-    // Canvas rendering
-    $effect(() => {
-        if (!canvasRef) return;
-        const context = canvasRef.getContext('2d');
-        if (!context) return;
-
-        context.imageSmoothingEnabled = false;
-        drawScene(context, renderState);
     });
 
     function drawScene(context: CanvasRenderingContext2D, state: RenderState | null) {
         const width = canvasRef?.width ?? 0;
         const height = canvasRef?.height ?? 0;
 
-        // Clear background with dark void
-        context.fillStyle = '#020617';
+        // Clear background with natural dark
+        context.fillStyle = '#0a0a14';
         context.fillRect(0, 0, width, height);
 
         if (!state) {
-            // Loading state
-            context.fillStyle = '#64748b';
-            context.font = '16px "IBM Plex Mono", monospace';
+            // Loading state with pixel art style
+            context.fillStyle = '#fbbf24';
+            context.font = '12px "Press Start 2P", "Courier New", monospace';
             context.textAlign = 'center';
-            context.fillText(assetsLoaded ? 'Initializing world...' : 'Loading assets...', width / 2, height / 2);
+            context.fillText(assetsLoaded ? 'Entering world...' : 'Loading...', width / 2, height / 2);
             return;
         }
 
         if (!assetsLoaded || !assets) {
             // Assets still loading, show colored rectangles as fallback
             drawFallbackScene(context, state);
+            return;
+        }
+
+        // Extra null safety check - state may be partially populated during init
+        if (!state.visible_tiles || !state.player) {
             return;
         }
 
@@ -162,39 +222,32 @@
                 const tileX = x * tileSize;
                 const tileY = y * tileSize;
 
-                // Get tile sprite
+                // ALWAYS draw solid background color first (handles transparent sprites)
+                context.fillStyle = getTileColor(tile.tile_type);
+                context.fillRect(tileX, tileY, tileSize, tileSize);
+
+                // Then draw tile sprite on top (if available)
                 const tileSprite = getTileSprite(tile.tile_type, tile.walkable);
                 if (tileSprite) {
                     context.drawImage(tileSprite, tileX, tileY, tileSize, tileSize);
-                } else {
-                    // Fallback to colored rectangle if sprite not found
-                    context.fillStyle = getTileColor(tile.tile_type);
-                    context.fillRect(tileX, tileY, tileSize, tileSize);
                 }
 
                 const manhattan = Math.abs(playerTile.x - x) + Math.abs(playerTile.y - y);
                 const isNear = manhattan <= 1;
 
-                // Special effects for terminals
-                if (tile.tile_type === 'terminal') {
-                    if (isNear) {
-                        context.shadowBlur = 14;
-                        context.shadowColor = '#22c55e';
-                        context.strokeStyle = '#22c55e';
-                        context.lineWidth = 2;
-                        context.strokeRect(tileX + 2, tileY + 2, tileSize - 4, tileSize - 4);
-                        context.shadowBlur = 0;
-                    }
+                // Highlight for interactable tiles when player is near
+                if (tile.tile_type === 'terminal' && isNear) {
+                    // Simple pixel-style highlight border
+                    context.strokeStyle = '#fbbf24'; // gold highlight
+                    context.lineWidth = 2;
+                    context.strokeRect(tileX + 1, tileY + 1, tileSize - 2, tileSize - 2);
                 }
 
-                // Special effects for doors
-                if (tile.tile_type === 'door') {
-                    const locked = !tile.walkable;
-                    if (locked) {
-                        context.shadowBlur = 5;
-                        context.shadowColor = '#ef4444';
-                        context.shadowBlur = 0;
-                    }
+                // Locked door indicator
+                if (tile.tile_type === 'door' && !tile.walkable) {
+                    // Red lock indicator
+                    context.fillStyle = '#dc2626';
+                    context.fillRect(tileX + tileSize - 8, tileY + 4, 4, 4);
                 }
             }
         }
@@ -208,48 +261,53 @@
         const playerSprite = assets.sprites.get(playerSpriteName);
 
         if (playerSprite) {
-            // Player glow
-            context.shadowBlur = 15;
-            context.shadowColor = '#22d3ee';
-
-            // Draw animated player sprite
+            // Draw animated player sprite (no glow for pixel art style)
             const frameIndex = playerAnimState ? getCurrentFrame(playerAnimState, animationTime) : 0;
             const spriteOffsetX = px - tileSize / 2;
             const spriteOffsetY = py - tileSize / 2;
 
             context.drawImage(playerSprite, spriteOffsetX, spriteOffsetY, tileSize, tileSize);
-            context.shadowBlur = 0;
         } else {
-            // Fallback to circle if sprite not loaded
-            context.shadowBlur = 15;
-            context.shadowColor = '#22d3ee';
-            context.fillStyle = '#22d3ee';
-            context.beginPath();
-            context.arc(px, py, tileSize * 0.35, 0, Math.PI * 2);
-            context.fill();
-            context.shadowBlur = 0;
+            // Fallback to colored knight shape if sprite not loaded
+            context.fillStyle = '#708090'; // armor gray
+            context.fillRect(px - tileSize * 0.35, py - tileSize * 0.4, tileSize * 0.7, tileSize * 0.8);
+            // Gold trim
+            context.fillStyle = '#fbbf24';
+            context.fillRect(px - tileSize * 0.2, py - tileSize * 0.35, tileSize * 0.4, tileSize * 0.1);
         }
+
+        // Render particles (on top of everything)
+        particles.render(context, state.viewport_offset, tileSize);
     }
 
     function getTileSprite(tileType: string, walkable: boolean): HTMLImageElement | null | undefined {
         if (!assets) return null;
 
+        let spriteName: string;
         switch (tileType) {
             case 'floor':
-                return assets.tiles.get('floor');
+                spriteName = 'grass';  // Changed from 'floor' to 'grass'
+                break;
             case 'wall':
-                return assets.tiles.get('wall');
+                spriteName = 'wall';
+                break;
             case 'water':
-                return assets.tiles.get('water');
+                spriteName = 'water';
+                break;
             case 'void':
-                return assets.tiles.get('void');
+                spriteName = 'void';
+                break;
             case 'terminal':
-                return assets.tiles.get('terminal');
+                spriteName = 'terminal';
+                break;
             case 'door':
-                return assets.tiles.get(walkable ? 'door_open' : 'door_locked');
+                spriteName = walkable ? 'door_open' : 'door_locked';
+                break;
             default:
-                return assets.tiles.get('floor');
+                spriteName = 'grass';  // Default to grass tile
         }
+
+        return assets.tiles.get(spriteName);
     }
 
     function drawFallbackScene(context: CanvasRenderingContext2D, state: RenderState) {
@@ -271,43 +329,37 @@
                 const isNear = manhattan <= 1;
 
                 if (tile.tile_type === 'terminal' && isNear) {
-                    context.shadowBlur = 14;
-                    context.shadowColor = '#22c55e';
-                    context.strokeStyle = '#22c55e';
+                    context.strokeStyle = '#fbbf24';
                     context.lineWidth = 2;
-                    context.strokeRect(tileX + 2, tileY + 2, tileSize - 4, tileSize - 4);
-                    context.shadowBlur = 0;
+                    context.strokeRect(tileX + 1, tileY + 1, tileSize - 2, tileSize - 2);
                 }
             }
         }
 
-        // Draw player fallback
+        // Draw player fallback (knight shape)
         const px = state.player.position.x - state.viewport_offset.x * tileSize;
         const py = state.player.position.y - state.viewport_offset.y * tileSize;
-        context.shadowBlur = 15;
-        context.shadowColor = '#22d3ee';
-        context.fillStyle = '#22d3ee';
-        context.beginPath();
-        context.arc(px, py, tileSize * 0.35, 0, Math.PI * 2);
-        context.fill();
-        context.shadowBlur = 0;
+        context.fillStyle = '#708090'; // armor gray
+        context.fillRect(px - tileSize * 0.35, py - tileSize * 0.4, tileSize * 0.7, tileSize * 0.8);
+        context.fillStyle = '#fbbf24'; // gold trim
+        context.fillRect(px - tileSize * 0.2, py - tileSize * 0.35, tileSize * 0.4, tileSize * 0.1);
     }
 
     function getTileColor(type: string): string {
         switch (type) {
             case 'wall':
-                return '#1e293b';
+                return '#4a4a4a'; // stone gray
             case 'water':
-                return '#0c4a6e';
+                return '#1e6091'; // natural blue
             case 'void':
-                return '#020617';
+                return '#0a0a14'; // dark void
             case 'door':
-                return '#78350f';
+                return '#5a3a1a'; // wood brown
             case 'terminal':
-                return '#14532d';
+                return '#0f3460'; // ancient terminal blue
             case 'floor':
             default:
-                return '#0f172a';
+                return '#3d7a37'; // grass green
         }
     }
 
@@ -323,9 +375,11 @@
     }
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div
     bind:this={containerRef}
-    class="relative min-h-screen w-full bg-slate-950 outline-none"
+    class="relative min-h-screen w-full bg-[#0a0a14] outline-none"
     tabindex="0"
     role="application"
     aria-label="Game world - use WASD or arrow keys to move, E to interact"
@@ -333,25 +387,20 @@
     onkeydown={handleContainerKeydown}
 >
     <!-- Canvas container -->
-    <div class="flex items-center justify-center min-h-screen p-8">
-        <div class="relative">
+    <div class="flex items-center justify-center min-h-screen p-2">
+        <div class="game-frame">
             <canvas
                 bind:this={canvasRef}
                 width={tileSize * 20}
                 height={tileSize * 15}
-                class="rounded-2xl border-2 border-slate-800 shadow-2xl shadow-slate-950/50"
+                class="game-canvas"
                 aria-label="Game viewport"
             ></canvas>
 
-            <!-- Vignette effect -->
-            <div
-                class="pointer-events-none absolute inset-0 rounded-2xl"
-                style="box-shadow: inset 0 0 100px 40px rgba(2, 6, 23, 0.5);"
-            ></div>
-
             {#if nearTerminal}
-                <div class="pointer-events-none absolute inset-0 flex items-end justify-center pb-6">
-                    <div class="rounded-full bg-emerald-500/20 px-4 py-2 text-xs font-semibold text-emerald-100 shadow shadow-emerald-500/30">
+                <div class="pointer-events-none absolute inset-0 flex items-end justify-center pb-4">
+                    <div class="interact-prompt">
+                        <span class="prompt-icon">&#9733;</span>
                         Press E to interact
                     </div>
                 </div>
@@ -369,5 +418,51 @@
     /* Focus outline for accessibility */
     div:focus {
         outline: none;
+    }
+
+    /* Pixel art game frame */
+    .game-frame {
+        position: relative;
+        background: #0a0a14;
+        border: 6px solid #3a506b;
+        border-top-color: #5a7090;
+        border-left-color: #5a7090;
+        box-shadow:
+            inset 0 0 0 3px #1a1a2e,
+            8px 8px 0 #050510;
+        padding: 4px;
+    }
+
+    .game-canvas {
+        display: block;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+    }
+
+    /* Pixel art interaction prompt */
+    .interact-prompt {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: linear-gradient(180deg, #166534 0%, #14532d 100%);
+        border: 3px solid #22c55e;
+        border-bottom-color: #166534;
+        border-right-color: #166534;
+        box-shadow: 3px 3px 0 #050510;
+        padding: 6px 12px;
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 9px;
+        color: #dcfce7;
+        text-shadow: 1px 1px 0 #14532d;
+    }
+
+    .prompt-icon {
+        color: #fbbf24;
+        animation: twinkle 1s ease-in-out infinite;
+    }
+
+    @keyframes twinkle {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
     }
 </style>

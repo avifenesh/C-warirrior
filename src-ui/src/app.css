@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-    font-family: 'Space Grotesk', 'IBM Plex Mono', system-ui, -apple-system, sans-serif;
+    font-family: 'Press Start 2P', 'Space Grotesk', 'IBM Plex Mono', system-ui, -apple-system, sans-serif;
     color-scheme: dark;
     background-color: #020617;
     color: #e2e8f0;

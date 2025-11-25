@@ -20,6 +20,12 @@ pub async fn get_game_state(state: State<'_, GameStateWrapper>) -> Result<GameSt
 }
 
 #[tauri::command]
+pub async fn get_render_state(state: State<'_, GameStateWrapper>) -> Result<RenderState, String> {
+    let game_state = state.0.lock().map_err(|e| e.to_string())?;
+    Ok(game_state.to_render_state())
+}
+
+#[tauri::command]
 pub async fn process_action(
     action: PlayerAction,
     state: State<'_, GameStateWrapper>,
@@ -40,7 +46,10 @@ pub async fn process_action(
             game_state.game_phase = GamePhase::Paused;
         }
         PlayerAction::Resume => {
-            game_state.game_phase = GamePhase::Playing;
+            // Only resume to Playing from Paused or Coding - don't override LevelComplete
+            if matches!(game_state.game_phase, GamePhase::Paused | GamePhase::Coding) {
+                game_state.game_phase = GamePhase::Playing;
+            }
         }
         PlayerAction::OpenInventory => {}
         PlayerAction::UseItem { .. } => {}

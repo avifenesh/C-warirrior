@@ -1,17 +1,18 @@
-[package]
-name = "code-warrior"
+[workspace]
+members = [
+    "src",
+    "src-tauri",
+    "src-api",
+]
+resolver = "2"
+
+[workspace.package]
 version = "0.1.0"
 edition = "2021"
 
-[lib]
-name = "code_warrior"
-path = "src/lib.rs"
-
-[dependencies]
+[workspace.dependencies]
+code-warrior = { path = "src" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tokio = { version = "1.0", features = ["full"] }
 regex = "1.10"
-
-[dev-dependencies]
-tempfile = "3"

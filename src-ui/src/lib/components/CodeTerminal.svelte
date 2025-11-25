@@ -5,7 +5,10 @@
         initialCode?: string;
         placeholder?: string;
         submitting?: boolean;
-        hint?: string;
+        challenge?: string;
+        expectedOutput?: string;
+        hints?: string[];
+        loadingHint?: boolean;
         output?: {
             success?: boolean;
             stdout?: string;
@@ -14,34 +17,35 @@
             message?: string;
         } | null;
         onClose?: () => void;
+        onRequestHint?: () => void;
     }
 
     let {
         initialCode = '',
         placeholder = '// Cast your spell...',
         submitting = false,
-        hint = '',
+        challenge = '',
+        expectedOutput = '',
+        hints = [],
+        loadingHint = false,
         output = null,
         onClose,
+        onRequestHint,
     }: Props = $props();
 
     const dispatcher = createEventDispatcher();
     let code = $state(initialCode);
     let textareaRef: HTMLTextAreaElement | null = null;
 
-    // Focus textarea on mount
     onMount(() => {
         textareaRef?.focus();
     });
 
-    // Lightweight syntax highlighting using token-based approach
-    // to avoid number pattern matching inside CSS class names
     function escapeHtml(str: string) {
         return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
     function highlight(text: string): string {
-        // Token types with their patterns and CSS classes
         const tokenRules: Array<{ pattern: RegExp; className: string }> = [
             { pattern: /\/\/.*$/gm, className: 'hl-comment' },
             { pattern: /"(?:[^"\\]|\\.)*"/g, className: 'hl-string' },
@@ -49,7 +53,6 @@
             { pattern: /\b(0x[\da-fA-F]+|\d+(?:\.\d+)?)\b/g, className: 'hl-number' },
         ];
 
-        // Collect all tokens with their positions
         const tokens: Array<{ start: number; end: number; className: string }> = [];
 
         for (const rule of tokenRules) {
@@ -58,7 +61,6 @@
             while ((match = rule.pattern.exec(text)) !== null) {
                 const start = match.index;
                 const end = start + match[0].length;
-                // Only add if not overlapping with existing tokens
                 const overlaps = tokens.some(t => !(end <= t.start || start >= t.end));
                 if (!overlaps) {
                     tokens.push({ start, end, className: rule.className });
@@ -66,10 +68,8 @@
             }
         }
 
-        // Sort tokens by position
         tokens.sort((a, b) => a.start - b.start);
 
-        // Build output with spans
         let result = '';
         let lastEnd = 0;
         for (const token of tokens) {
@@ -85,9 +85,13 @@
     const highlighted = $derived(highlight(code));
     const isSuccess = $derived.by(() => output?.success === true);
     const isFailure = $derived.by(() => output?.success === false);
-
-    // Simple derived value without logging
     const busy = $derived.by(() => submitting && !output);
+    const statusLabel = $derived.by(() => {
+        if (busy) return 'Casting...';
+        if (isSuccess) return 'Success!';
+        if (isFailure) return 'Failed';
+        return 'Ready';
+    });
 
     function submit() {
         dispatcher('submit', { code });
@@ -100,12 +104,10 @@
     }
 
     function handleKeydown(event: KeyboardEvent) {
-        // Escape to close
         if (event.key === 'Escape' && onClose) {
             event.preventDefault();
             handleClose();
         }
-        // Ctrl/Cmd + Enter to submit
         if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
             event.preventDefault();
             submit();
@@ -116,227 +118,548 @@
 <svelte:window on:keydown={handleKeydown} />
 
 <!-- Modal Overlay -->
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
-    <!-- Terminal Window -->
-    <div
-        class={`relative w-full max-w-4xl rounded-2xl border-2 bg-slate-900/95 shadow-2xl backdrop-blur-md transition-all duration-300 ${
-            isSuccess
-                ? 'border-emerald-400/70 shadow-emerald-400/40 ring-2 ring-emerald-300/30'
-                : isFailure
-                ? 'border-rose-500/60 shadow-rose-500/30 failure-flash'
-                : 'border-cyan-500/50 shadow-cyan-500/20'
-        } ${submitting && !output ? 'animate-pulse' : ''}`}
-    >
-        <!-- Terminal Header -->
-        <div
-            class="flex items-center justify-between border-b border-cyan-500/30 bg-slate-950/50 px-6 py-4"
-        >
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90">
+    <!-- Grimoire/Spellbook Terminal -->
+    <div class="grimoire-container {isSuccess ? 'success' : ''} {isFailure ? 'failure' : ''}">
+        <!-- Header - Grimoire Title Bar -->
+        <div class="grimoire-header">
             <div class="flex items-center gap-3">
-                <div class="flex gap-2">
-                    <div class="h-3 w-3 rounded-full bg-rose-500/50"></div>
-                    <div class="h-3 w-3 rounded-full bg-amber-500/50"></div>
-                    <div class="h-3 w-3 rounded-full bg-emerald-500/50"></div>
-                </div>
-                <h2 class="font-mono text-sm uppercase tracking-widest text-cyan-400">
-                    // Code Terminal
-                </h2>
+                <span class="text-amber-400 text-lg">&#9733;</span>
+                <h2 class="grimoire-title">SPELL CODEX</h2>
             </div>
-            <button
-                onclick={handleClose}
-                class="text-slate-400 hover:text-slate-200 transition-colors"
-                aria-label="Close terminal"
-            >
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 18L18 6M6 6l12 12"
-                    />
-                </svg>
-            </button>
+            <div class="flex items-center gap-3">
+                <span class="status-badge {busy ? 'casting' : isSuccess ? 'success' : isFailure ? 'failure' : ''}">
+                    {statusLabel}
+                </span>
+                <button
+                    onclick={handleClose}
+                    class="close-btn"
+                    aria-label="Close terminal"
+                >
+                    &#10005;
+                </button>
+            </div>
         </div>
 
-        <!-- Terminal Body -->
-        <div class="p-6">
-            {#if hint}
-                <div class="mb-3 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-100 shadow-inner shadow-amber-500/20">
-                    Hint: {hint}
+        <!-- Body -->
+        <div class="grimoire-body">
+            <!-- Challenge Scroll -->
+            {#if challenge}
+                <div class="quest-scroll">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex-1">
+                            <h3 class="quest-title">&#9876; QUEST</h3>
+                            <p class="quest-text">{challenge}</p>
+                            {#if expectedOutput}
+                                <div class="expected-output">
+                                    <span class="label">Expected: </span>
+                                    <code class="value">{expectedOutput}</code>
+                                </div>
+                            {/if}
+                        </div>
+                        {#if onRequestHint}
+                            <button
+                                onclick={onRequestHint}
+                                disabled={loadingHint}
+                                class="hint-btn"
+                            >
+                                {loadingHint ? '...' : '? Hint'}
+                            </button>
+                        {/if}
+                    </div>
                 </div>
             {/if}
 
-            <div class="relative rounded-xl border-2 border-slate-800 bg-slate-950 p-4 shadow-inner overflow-hidden">
-                <!-- Syntax highlighted overlay -->
+            <!-- Revealed Hints -->
+            {#if hints.length > 0}
+                <div class="hints-container">
+                    {#each hints as hintText, i}
+                        <div class="hint-box">
+                            <span class="hint-label">Hint {i + 1}:</span> {hintText}
+                        </div>
+                    {/each}
+                </div>
+            {/if}
+
+            <!-- Code Editor Area -->
+            <div class="code-parchment">
                 <pre
-                    class="pointer-events-none absolute inset-4 m-0 overflow-auto whitespace-pre-wrap font-mono text-sm leading-relaxed text-slate-200"
+                    class="code-highlight"
                     aria-hidden="true"
                 ><code>{@html highlighted}</code></pre>
 
-                <!-- Actual editable textarea -->
                 <textarea
                     bind:this={textareaRef}
-                    class="relative h-96 w-full resize-none bg-transparent font-mono text-sm text-transparent caret-cyan-300 outline-none"
+                    class="code-input"
                     spellcheck="false"
                     bind:value={code}
                     {placeholder}
                 ></textarea>
 
                 {#if submitting && !output}
-                    <div class="absolute inset-0 flex items-center justify-center bg-slate-950/70">
-                        <div class="h-10 w-10 animate-spin rounded-full border-4 border-cyan-400/30 border-t-cyan-300"></div>
+                    <div class="casting-overlay">
+                        <div class="casting-spinner">&#9733;</div>
+                        <span class="casting-text">Casting spell...</span>
                     </div>
                 {/if}
-
-                <!-- Scan lines effect -->
-                <div class="absolute inset-0 pointer-events-none overflow-hidden rounded-xl">
-                    <div class="terminal-scan-line"></div>
-                </div>
             </div>
 
-            <!-- Terminal Footer -->
-            <div class="mt-4 flex items-center justify-between">
-                <p class="text-xs font-mono text-slate-500">
-                    <kbd class="px-2 py-1 rounded bg-slate-800 text-cyan-400">ESC</kbd>
-                    to close |
-                    <kbd class="px-2 py-1 rounded bg-slate-800 text-cyan-400">Ctrl+Enter</kbd>
-                    to cast spell
+            <!-- Footer Controls -->
+            <div class="grimoire-footer">
+                <p class="controls-hint">
+                    <kbd class="key">ESC</kbd> close |
+                    <kbd class="key">Ctrl+Enter</kbd> cast
                 </p>
                 <button
                     onclick={submit}
                     disabled={submitting && !output}
-                    class="relative rounded-lg border-2 border-cyan-500/70 bg-gradient-to-r from-cyan-600/30 to-cyan-400/30 px-6 py-2 font-semibold text-cyan-50 transition-all hover:-translate-y-0.5 hover:from-cyan-500/40 hover:to-cyan-300/30 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-cyan-500/30"
+                    class="cast-btn {isSuccess ? 'success' : ''}"
                 >
-                    {submitting && !output ? 'Casting Spell...' : 'Compile & Run'}
-                    {#if submitting && !output}
-                        <span class="ml-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-cyan-200/60 border-t-transparent align-middle"></span>
-                    {/if}
+                    {submitting && !output ? 'CASTING...' : 'CAST SPELL'}
                 </button>
             </div>
 
             <!-- Output Panel -->
-            <div class="mt-4 rounded-xl border border-slate-800 bg-slate-950/70 p-4 shadow-inner shadow-slate-900/60">
-                <div class="flex items-center justify-between text-xs uppercase tracking-[0.14em] text-slate-400">
-                    <span>Output</span>
+            <div class="output-panel">
+                <div class="output-header">
+                    <span>&#9998; OUTPUT</span>
                     {#if isSuccess}
-                        <span class="text-emerald-300">Spell Cast Successfully!</span>
+                        <span class="output-status success">Spell worked!</span>
                     {:else if isFailure}
-                        <span class="text-rose-300">Spell fizzled</span>
+                        <span class="output-status failure">Spell fizzled...</span>
                     {/if}
                 </div>
 
                 {#if output}
                     {#if output.compile_error}
-                        <div class="mt-2 rounded-lg border border-rose-500/40 bg-rose-500/10 p-3 text-xs font-mono text-rose-100 whitespace-pre-wrap">
+                        <div class="output-box error">
                             {output.compile_error}
                         </div>
                     {/if}
                     {#if output.stdout}
-                        <div class="mt-2 rounded-lg border border-slate-700 bg-slate-800/60 p-3 text-xs font-mono text-slate-100 whitespace-pre-wrap">
+                        <div class="output-box stdout">
                             {output.stdout}
                         </div>
                     {/if}
                     {#if output.stderr}
-                        <div class="mt-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs font-mono text-amber-100 whitespace-pre-wrap">
+                        <div class="output-box warning">
                             {output.stderr}
                         </div>
                     {/if}
                     {#if output.message}
-                        <p class="mt-2 text-xs text-slate-400">{output.message}</p>
-                    {/if}
-                    {#if isFailure && hint}
-                        <p class="mt-2 text-xs text-amber-200">Hint: {hint}</p>
+                        <p class="output-message">{output.message}</p>
                     {/if}
                 {:else}
-                    <p class="mt-2 text-xs text-slate-500">No output yet.</p>
+                    <p class="output-empty">Awaiting incantation...</p>
                 {/if}
             </div>
-        </div>
-
-        <!-- Glowing border effect -->
-        <div class="absolute inset-0 pointer-events-none rounded-2xl">
-            <div class="glow-pulse"></div>
         </div>
     </div>
 </div>
 
 <style>
-    @keyframes terminal-scan {
-        from {
-            transform: translateY(-100%);
-        }
-        to {
-            transform: translateY(200%);
-        }
-    }
-
-    @keyframes glow {
-        0%,
-        100% {
-            opacity: 0.5;
-        }
-        50% {
-            opacity: 1;
-        }
-    }
-
-    @keyframes flash-fail {
-        0% {
-            box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.45);
-        }
-        50% {
-            box-shadow: 0 0 32px 8px rgba(244, 63, 94, 0.35);
-        }
-        100% {
-            box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.45);
-        }
-    }
-
-    .terminal-scan-line {
-        position: absolute;
+    /* Grimoire Container - Pixel Art Style */
+    .grimoire-container {
+        background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
+        border: 4px solid #3a506b;
+        border-top-color: #5a7090;
+        border-left-color: #5a7090;
+        box-shadow:
+            inset 0 0 0 2px #0a0a1e,
+            8px 8px 0 #050510;
         width: 100%;
-        height: 100px;
-        background: linear-gradient(
-            to bottom,
-            transparent,
-            rgba(34, 211, 238, 0.05),
-            transparent
-        );
-        animation: terminal-scan 3s linear infinite;
+        max-width: 900px;
+        max-height: 90vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
     }
 
-    .glow-pulse {
-        position: absolute;
-        inset: -2px;
-        border-radius: inherit;
-        background: linear-gradient(
-            135deg,
-            rgba(34, 211, 238, 0.2),
-            rgba(34, 211, 238, 0),
-            rgba(34, 211, 238, 0.2)
-        );
-        animation: glow 2s ease-in-out infinite;
-        pointer-events: none;
+    .grimoire-container.success {
+        border-color: #22c55e;
+        border-top-color: #4ade80;
+        border-left-color: #4ade80;
     }
 
-    textarea::placeholder {
+    .grimoire-container.failure {
+        border-color: #ef4444;
+        border-top-color: #f87171;
+        border-left-color: #f87171;
+        animation: shake 0.3s ease-out;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-4px); }
+        75% { transform: translateX(4px); }
+    }
+
+    /* Header */
+    .grimoire-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: linear-gradient(180deg, #16213e 0%, #0f3460 100%);
+        border-bottom: 3px solid #0a0a1e;
+    }
+
+    .grimoire-title {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 12px;
+        color: #fbbf24;
+        text-shadow: 2px 2px 0 #92400e;
+        letter-spacing: 2px;
+    }
+
+    .status-badge {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 8px;
+        padding: 4px 8px;
+        background: #1a1a2e;
+        border: 2px solid #3a506b;
+        color: #94a3b8;
+    }
+
+    .status-badge.casting {
+        color: #fbbf24;
+        border-color: #fbbf24;
+        animation: pulse 1s infinite;
+    }
+
+    .status-badge.success {
+        color: #4ade80;
+        border-color: #22c55e;
+    }
+
+    .status-badge.failure {
+        color: #f87171;
+        border-color: #ef4444;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+
+    .close-btn {
+        font-size: 16px;
+        color: #64748b;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px 8px;
+    }
+
+    .close-btn:hover {
+        color: #f87171;
+    }
+
+    /* Body */
+    .grimoire-body {
+        padding: 16px;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    /* Quest Scroll */
+    .quest-scroll {
+        background: linear-gradient(180deg, #1e3a5f 0%, #0f3460 100%);
+        border: 3px solid #3a506b;
+        border-top-color: #5a7090;
+        border-left-color: #5a7090;
+        padding: 12px 16px;
+        margin-bottom: 12px;
+    }
+
+    .quest-title {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 10px;
+        color: #67e8f9;
+        margin-bottom: 8px;
+    }
+
+    .quest-text {
+        font-size: 13px;
+        color: #e2e8f0;
+        line-height: 1.5;
+    }
+
+    .expected-output {
+        margin-top: 8px;
+        padding: 6px 10px;
+        background: #0a0a1e;
+        border: 2px solid #1e293b;
+    }
+
+    .expected-output .label {
+        font-size: 11px;
         color: #64748b;
     }
 
-    .failure-flash {
-        animation: flash-fail 0.8s ease-out;
+    .expected-output .value {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 12px;
+        color: #4ade80;
     }
 
-    /* Syntax highlighting classes */
+    .hint-btn {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 8px;
+        padding: 6px 10px;
+        background: linear-gradient(180deg, #92400e 0%, #78350f 100%);
+        border: 2px solid #fbbf24;
+        border-bottom-color: #92400e;
+        border-right-color: #92400e;
+        color: #fef3c7;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .hint-btn:hover {
+        background: linear-gradient(180deg, #a3540f 0%, #854d0e 100%);
+    }
+
+    .hint-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Hints */
+    .hints-container {
+        margin-bottom: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .hint-box {
+        background: linear-gradient(180deg, #78350f 0%, #92400e 100%);
+        border: 2px solid #fbbf24;
+        padding: 8px 12px;
+        font-size: 11px;
+        color: #fef3c7;
+    }
+
+    .hint-label {
+        font-weight: bold;
+        color: #fcd34d;
+    }
+
+    /* Code Editor Parchment */
+    .code-parchment {
+        position: relative;
+        background: #0a0a14;
+        border: 3px solid #1e293b;
+        border-top-color: #0a0a0e;
+        border-left-color: #0a0a0e;
+        padding: 12px;
+        min-height: 280px;
+        overflow: hidden;
+    }
+
+    .code-highlight {
+        position: absolute;
+        inset: 12px;
+        margin: 0;
+        overflow: auto;
+        white-space: pre-wrap;
+        font-family: 'IBM Plex Mono', 'Courier New', monospace;
+        font-size: 13px;
+        line-height: 1.6;
+        color: #e2e8f0;
+        pointer-events: none;
+    }
+
+    .code-input {
+        position: relative;
+        width: 100%;
+        height: 280px;
+        resize: none;
+        background: transparent;
+        font-family: 'IBM Plex Mono', 'Courier New', monospace;
+        font-size: 13px;
+        line-height: 1.6;
+        color: transparent;
+        caret-color: #fbbf24;
+        outline: none;
+        border: none;
+    }
+
+    .code-input::placeholder {
+        color: #475569;
+    }
+
+    .casting-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(10, 10, 20, 0.85);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .casting-spinner {
+        font-size: 32px;
+        color: #fbbf24;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .casting-text {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 10px;
+        color: #fbbf24;
+    }
+
+    /* Footer */
+    .grimoire-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 2px solid #1e293b;
+    }
+
+    .controls-hint {
+        font-size: 11px;
+        color: #64748b;
+    }
+
+    .key {
+        display: inline-block;
+        background: #1a1a2e;
+        border: 2px solid #3a506b;
+        border-bottom-color: #1e293b;
+        border-right-color: #1e293b;
+        padding: 2px 6px;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 10px;
+        color: #94a3b8;
+        margin: 0 2px;
+    }
+
+    .cast-btn {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 10px;
+        padding: 10px 20px;
+        background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+        border: 3px solid #3b82f6;
+        border-bottom-color: #1e40af;
+        border-right-color: #1e40af;
+        box-shadow: 4px 4px 0 #0a0a1e;
+        color: #dbeafe;
+        cursor: pointer;
+        transition: transform 0.1s;
+    }
+
+    .cast-btn:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 #0a0a1e;
+    }
+
+    .cast-btn:active {
+        transform: translate(4px, 4px);
+        box-shadow: none;
+    }
+
+    .cast-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .cast-btn.success {
+        background: linear-gradient(180deg, #166534 0%, #14532d 100%);
+        border-color: #22c55e;
+        border-bottom-color: #166534;
+        border-right-color: #166534;
+    }
+
+    /* Output Panel */
+    .output-panel {
+        margin-top: 12px;
+        background: #0a0a14;
+        border: 3px solid #1e293b;
+        border-top-color: #0a0a0e;
+        border-left-color: #0a0a0e;
+        padding: 12px;
+    }
+
+    .output-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 9px;
+        color: #64748b;
+        margin-bottom: 8px;
+    }
+
+    .output-status.success {
+        color: #4ade80;
+    }
+
+    .output-status.failure {
+        color: #f87171;
+    }
+
+    .output-box {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 12px;
+        padding: 8px 10px;
+        margin-top: 6px;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .output-box.stdout {
+        background: #0f172a;
+        border: 2px solid #1e293b;
+        color: #e2e8f0;
+    }
+
+    .output-box.error {
+        background: #450a0a;
+        border: 2px solid #7f1d1d;
+        color: #fecaca;
+    }
+
+    .output-box.warning {
+        background: #451a03;
+        border: 2px solid #78350f;
+        color: #fed7aa;
+    }
+
+    .output-message {
+        font-size: 11px;
+        color: #64748b;
+        margin-top: 8px;
+    }
+
+    .output-empty {
+        font-size: 11px;
+        color: #475569;
+        font-style: italic;
+    }
+
+    /* Syntax highlighting */
     :global(.hl-keyword) {
-        color: #67e8f9; /* cyan-300 */
+        color: #67e8f9;
     }
     :global(.hl-number) {
-        color: #fcd34d; /* amber-300 */
+        color: #fcd34d;
     }
     :global(.hl-string) {
-        color: #6ee7b7; /* emerald-300 */
+        color: #6ee7b7;
     }
     :global(.hl-comment) {
-        color: #64748b; /* slate-500 */
+        color: #64748b;
     }
 </style>

@@ -1,0 +1,29 @@
+# Rust build artifacts
+target/
+src-tauri/target/
+
+# Node modules (will be installed during build)
+node_modules/
+src-ui/node_modules/
+
+# Git
+.git/
+
+# Development files
+*.log
+.env
+.env.local
+
+# Tauri specific
+src-tauri/
+
+# API server (deployed separately)
+src-api/
+
+# IDE
+.vscode/
+.idea/
+
+# Other
+*.sqlite
+*.db

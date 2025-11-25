@@ -60,12 +60,30 @@ export interface GameState {
     levels_completed: string[];
 }
 
+export type ObjectType = 'terminal' | 'door' | 'npc' | 'collectible';
+
+export interface TileMapRender {
+    width: number;
+    height: number;
+    tiles: TileType[][];
+}
+
+export interface ObjectRender {
+    object_type: ObjectType;
+    position: Position;
+    sprite_id?: string | null;
+}
+
 export interface RenderState {
     player: Player;
     visible_tiles: Tile[][];
     viewport_offset: Position;
     game_phase: GamePhase;
     current_level_id: string | null;
+    map?: TileMapRender | null;
+    objects: ObjectRender[];
+    show_terminal: boolean;
+    active_dialogue: string | null;
 }
 
 export type PlayerAction =
@@ -101,6 +119,13 @@ export type SuccessCriteria =
     | { type: 'all'; criteria: SuccessCriteria[] }
     | { type: 'any'; criteria: SuccessCriteria[] };
 
+export interface Challenge {
+    id: string;
+    prompt: string;
+    expected_output: string;
+    starter_code: string;
+}
+
 export interface LevelData {
     id: string;
     title: string;
@@ -111,6 +136,7 @@ export interface LevelData {
     hints: string[];
     xp_reward: number;
     world_config: WorldConfig;
+    challenges: Challenge[];
 }
 
 export interface LevelInfo {
@@ -137,8 +163,8 @@ export interface CodeResult {
     stderr: string;
     compile_error: string | null;
     execution_time_ms: number;
-    feedback: string;
-    hint: string | null;
+    feedback?: string;
+    hint?: string | null;
 }
 
 // ============================================================================

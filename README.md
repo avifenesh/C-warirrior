@@ -63,17 +63,17 @@ This separation ensures security, performance, and clear responsibilities for bo
 git clone <repository-url>
 cd C-warrior
 
-# Install Rust dependencies
-cd src-tauri
-cargo build
-
 # Install frontend dependencies
-cd ..
+cd src-ui
 npm install
+cd ..
 
-# Run in development mode
-npm run tauri dev
+# Run in development mode (from src-tauri directory)
+cd src-tauri
+cargo tauri dev
 ```
+
+**Note**: The `cargo tauri dev` command will automatically start the frontend dev server based on the configuration in `src-tauri/tauri.conf.json`.
 
 ### For AI-Assisted Development
 

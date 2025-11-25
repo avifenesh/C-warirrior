@@ -12,10 +12,8 @@
     const dispatcher = createEventDispatcher();
     let code = $state(initialCode);
 
-    $effect(() => {
-        // keep local state in sync if parent updates initialCode
-        code = initialCode;
-    });
+    // Effect removed - initialCode is only set once on mount
+    // If parent updates initialCode, component will be recreated
 
     // Lightweight syntax highlighting using token-based approach
     function escapeHtml(str: string) {
@@ -62,7 +60,7 @@
 </script>
 
 <div class="flex flex-col gap-3">
-    <label class="text-xs uppercase tracking-[0.15em] text-slate-400">Code Editor</label>
+    <span class="text-xs uppercase tracking-[0.15em] text-slate-400">Code Editor</span>
     <div class="relative rounded-2xl border border-slate-800 bg-slate-950 p-3 shadow-inner shadow-slate-900">
         <pre
             class="pointer-events-none absolute inset-3 m-0 overflow-auto whitespace-pre-wrap font-mono text-sm leading-relaxed text-slate-200"
@@ -79,7 +77,7 @@
         <p>Client-only placeholder. Backend submission happens via parent.</p>
         <button
             class="control-btn"
-            on:click={submit}
+            onclick={submit}
             disabled={submitting}
         >
             {submitting ? 'Submitting...' : 'Submit Code'}

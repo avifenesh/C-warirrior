@@ -22,15 +22,17 @@ export const DEFAULT_MANIFEST: AssetManifest = {
         npc_mentor: '/sprites/npc_mentor.png',
     },
     tiles: {
-        floor: '/tiles/floor_stone.png',
+        floor: '/tiles/terrain/stone.png',
         floor_tech: '/tiles/floor_tech.png',
         wall: '/tiles/wall.png',
         wall_top: '/tiles/wall_top.png',
-        terminal: '/tiles/terminal.png',
-        door_locked: '/tiles/door_locked.png',
-        door_open: '/tiles/door_open.png',
-        void: '/tiles/void.png',
-        water: '/tiles/floor_tech.png', // Reuse tech floor for water
+        terminal: '/tiles/interactive/terminal.png',
+        door_locked: '/tiles/interactive/door_locked.png',
+        door_open: '/tiles/interactive/door_open.png',
+        void: '/tiles/interactive/void.png',
+        water: '/tiles/terrain/water.png',
+        // Additional terrain tiles available
+        grass: '/tiles/terrain/grass.png',
     },
     audio: {},
 };
