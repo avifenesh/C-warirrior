@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
+    import { get } from 'svelte/store';
     import {
         gameStore,
         type Direction,
@@ -41,14 +42,13 @@
     async function handleCodeSubmit(event: CustomEvent<{ code: string }>) {
         codeDraft = event.detail.code;
         await game.submitCode(codeDraft);
-    }
 
-    // Watch for code result changes and show toast
-    $effect(() => {
-        if ($lastCodeResult) {
-            addToast($lastCodeResult);
+        // Show toast after submission completes
+        const result = get(lastCodeResult);
+        if (result) {
+            addToast(result);
         }
-    });
+    }
 
     function handleTerminalClose() {
         // Exit coding mode when terminal is closed

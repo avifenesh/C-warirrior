@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
 
     interface Props {
         initialCode?: string;
@@ -27,17 +27,11 @@
 
     const dispatcher = createEventDispatcher();
     let code = $state(initialCode);
+    let textareaRef: HTMLTextAreaElement | null = null;
 
-    // Local reactive copies of props for proper Svelte 5 reactivity
-    let isSubmitting = $state(submitting);
-    let currentOutput = $state(output);
-
-    $effect(() => {
-        // Keep local state in sync with props
-        code = initialCode;
-        isSubmitting = submitting;
-        currentOutput = output;
-        console.log('[CodeTerminal] isSubmitting:', isSubmitting, 'currentOutput:', currentOutput);
+    // Focus textarea on mount
+    onMount(() => {
+        textareaRef?.focus();
     });
 
     // Lightweight syntax highlighting using token-based approach
@@ -89,14 +83,11 @@
     }
 
     const highlighted = $derived(highlight(code));
-    const isSuccess = $derived(currentOutput?.success === true);
-    const isFailure = $derived(currentOutput?.success === false);
+    const isSuccess = $derived.by(() => output?.success === true);
+    const isFailure = $derived.by(() => output?.success === false);
 
-    $effect(() => {
-        if (isSuccess) {
-            dispatcher('sound', { name: 'door_open' });
-        }
-    });
+    // Simple derived value without logging
+    const busy = $derived.by(() => submitting && !output);
 
     function submit() {
         dispatcher('submit', { code });
@@ -134,7 +125,7 @@
                 : isFailure
                 ? 'border-rose-500/60 shadow-rose-500/30 failure-flash'
                 : 'border-cyan-500/50 shadow-cyan-500/20'
-        } ${isSubmitting ? 'animate-pulse' : ''}`}
+        } ${submitting && !output ? 'animate-pulse' : ''}`}
     >
         <!-- Terminal Header -->
         <div
@@ -183,14 +174,14 @@
 
                 <!-- Actual editable textarea -->
                 <textarea
+                    bind:this={textareaRef}
                     class="relative h-96 w-full resize-none bg-transparent font-mono text-sm text-transparent caret-cyan-300 outline-none"
                     spellcheck="false"
                     bind:value={code}
                     {placeholder}
-                    autofocus
                 ></textarea>
 
-                {#if isSubmitting}
+                {#if submitting && !output}
                     <div class="absolute inset-0 flex items-center justify-center bg-slate-950/70">
                         <div class="h-10 w-10 animate-spin rounded-full border-4 border-cyan-400/30 border-t-cyan-300"></div>
                     </div>
@@ -212,11 +203,11 @@
                 </p>
                 <button
                     onclick={submit}
-                    disabled={isSubmitting}
+                    disabled={submitting && !output}
                     class="relative rounded-lg border-2 border-cyan-500/70 bg-gradient-to-r from-cyan-600/30 to-cyan-400/30 px-6 py-2 font-semibold text-cyan-50 transition-all hover:-translate-y-0.5 hover:from-cyan-500/40 hover:to-cyan-300/30 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-cyan-500/30"
                 >
-                    {isSubmitting ? 'Casting Spell...' : 'Compile & Run'}
-                    {#if isSubmitting}
+                    {submitting && !output ? 'Casting Spell...' : 'Compile & Run'}
+                    {#if submitting && !output}
                         <span class="ml-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-cyan-200/60 border-t-transparent align-middle"></span>
                     {/if}
                 </button>

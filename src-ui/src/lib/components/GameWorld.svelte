@@ -1,14 +1,15 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { onMount, type Snippet } from 'svelte';
     import { createEventDispatcher } from 'svelte';
     import type { RenderState, Direction } from '$lib/stores/game.svelte';
 
     interface Props {
         renderState: RenderState | null;
         tileSize?: number;
+        children?: Snippet;
     }
 
-    let { renderState = null, tileSize = 32 }: Props = $props();
+    let { renderState = null, tileSize = 32, children }: Props = $props();
 
     const dispatcher = createEventDispatcher();
     let canvasRef = $state<HTMLCanvasElement | null>(null);
@@ -213,15 +214,23 @@
     function handleContainerClick() {
         containerRef?.focus();
     }
+
+    function handleContainerKeydown(event: KeyboardEvent) {
+        // Focus is handled by the container, actual key handling is in handleKeydown
+        if (event.key === 'Enter' || event.key === ' ') {
+            containerRef?.focus();
+        }
+    }
 </script>
 
 <div
     bind:this={containerRef}
     class="relative min-h-screen w-full bg-slate-950 outline-none"
-    tabindex="-1"
+    tabindex="0"
     role="application"
-    aria-label="Game world"
+    aria-label="Game world - use WASD or arrow keys to move, E to interact"
     onclick={handleContainerClick}
+    onkeydown={handleContainerKeydown}
 >
     <!-- Canvas container -->
     <div class="flex items-center justify-center min-h-screen p-8">
@@ -251,7 +260,9 @@
     </div>
 
     <!-- Slot for HUD and other overlays -->
-    <slot />
+    {#if children}
+        {@render children()}
+    {/if}
 </div>
 
 <style>
