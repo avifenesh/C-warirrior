@@ -103,5 +103,31 @@
         "starter_code": "#include <stdio.h>\n\nint main() {\n    // Use a for loop to print 'Strike!' 5 times\n    \n    return 0;\n}"
       }
     ]
+  },
+  {
+    "id": "L05",
+    "title": "Array Fortress",
+    "concept": "arrays",
+    "description": "A fortress of many rooms. Access each room by its index.",
+    "code_template": "#include <stdio.h>\n\nint main() {\n    int fortress_rooms[5] = {10, 20, 30, 40, 50};\n    \n    // Access the room at index 2\n    \n    return 0;\n}",
+    "success_criteria": {
+      "type": "regex_match",
+      "regex": "Room 2 contains 30"
+    },
+    "hints": [
+      "Arrays start at index 0",
+      "The third element is at index 2",
+      "Use fortress_rooms[2]"
+    ],
+    "xp_reward": 200,
+    "map_file": "maps/L05_array_fortress.json",
+    "challenges": [
+      {
+        "id": "access_index",
+        "prompt": "Print the value in the 3rd room (index 2). Format: 'Room 2 contains X'",
+        "expected_output": "Room 2 contains 30",
+        "starter_code": "#include <stdio.h>\n\nint main() {\n    int fortress_rooms[5] = {10, 20, 30, 40, 50};\n    \n    // Access the room at index 2 and print 'Room 2 contains %d'\n    \n    return 0;\n}"
+      }
+    ]
   }
 ]

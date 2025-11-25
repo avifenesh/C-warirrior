@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::time::Duration;
 
 use super::constants::TILE_SIZE;
@@ -6,6 +7,7 @@ use super::inventory::Inventory;
 use super::map::{ObjectRender, TileMapRender};
 use super::physics;
 use super::player::{Direction, Player};
+use super::progression::{LevelPrerequisites, ProgressionState};
 use super::world::{Tile, TileType, World};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
@@ -41,7 +43,11 @@ pub struct GameState {
     pub inventory: Inventory,
     pub current_level_id: Option<String>,
     pub game_phase: GamePhase,
+    pub progression: ProgressionState,
+    // Keep these for backwards compatibility with existing code
+    #[serde(skip)]
     pub total_xp: u32,
+    #[serde(skip)]
     pub levels_completed: Vec<String>,
 }
 
@@ -53,6 +59,7 @@ impl Default for GameState {
             inventory: Inventory::new(10),
             current_level_id: None,
             game_phase: GamePhase::MainMenu,
+            progression: ProgressionState::new(),
             total_xp: 0,
             levels_completed: Vec::new(),
         }
@@ -71,15 +78,42 @@ impl GameState {
         self.game_phase = GamePhase::Playing;
     }
 
-    pub fn complete_level(&mut self, xp_reward: u32) {
-        if let Some(ref level_id) = self.current_level_id {
-            if !self.levels_completed.contains(level_id) {
-                self.levels_completed.push(level_id.clone());
-            }
-        }
-        self.total_xp += xp_reward;
-        self.player.xp += xp_reward;
+    /// Complete the current level, award XP, and unlock doors
+    /// Returns the XP earned (0 if already completed)
+    pub fn complete_level(&mut self, xp_reward: u32) -> u32 {
+        let xp_earned = if let Some(ref level_id) = self.current_level_id {
+            self.progression.complete_level(level_id, xp_reward)
+        } else {
+            0
+        };
+
+        // Update player XP
+        self.player.xp += xp_earned;
+
+        // Sync legacy fields for backwards compatibility
+        self.total_xp = self.progression.total_xp;
+        self.levels_completed = self.progression.completed_levels.iter().cloned().collect();
+
+        // Unlock all doors in the current level
+        self.world.unlock_all_doors();
+
         self.game_phase = GamePhase::LevelComplete;
+        xp_earned
+    }
+
+    /// Update which levels are unlocked based on prerequisites
+    pub fn update_unlocked_levels(&mut self, prerequisites: &HashMap<String, LevelPrerequisites>) {
+        self.progression.update_unlocks(prerequisites);
+    }
+
+    /// Check if a level is unlocked
+    pub fn is_level_unlocked(&self, level_id: &str) -> bool {
+        self.progression.is_unlocked(level_id)
+    }
+
+    /// Check if a level is completed
+    pub fn is_level_completed(&self, level_id: &str) -> bool {
+        self.progression.is_completed(level_id)
     }
 
     pub fn enter_coding_mode(&mut self) {

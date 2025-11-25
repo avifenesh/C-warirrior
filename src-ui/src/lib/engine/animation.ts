@@ -1,5 +1,5 @@
 export interface Animation {
-    frames: number[];
+    frames: readonly number[];
     frameDuration: number; // ms per frame
     loop: boolean;
 }

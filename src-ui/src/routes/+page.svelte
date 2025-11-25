@@ -50,6 +50,7 @@
         }
     }
 
+
     function handleTerminalClose() {
         // Exit coding mode when terminal is closed
         game.sendAction({ type: 'resume' });

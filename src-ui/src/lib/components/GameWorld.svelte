@@ -2,6 +2,8 @@
     import { onMount, type Snippet } from 'svelte';
     import { createEventDispatcher } from 'svelte';
     import type { RenderState, Direction } from '$lib/stores/game.svelte';
+    import { loadAssets, DEFAULT_MANIFEST, type LoadedAssets } from '$lib/engine/assets';
+    import { ANIMATIONS, startAnimation, getCurrentFrame, type AnimationState } from '$lib/engine/animation';
 
     interface Props {
         renderState: RenderState | null;
@@ -14,6 +16,14 @@
     const dispatcher = createEventDispatcher();
     let canvasRef = $state<HTMLCanvasElement | null>(null);
     let containerRef = $state<HTMLDivElement | null>(null);
+    let assets = $state<LoadedAssets | null>(null);
+    let assetsLoaded = $state(false);
+
+    // Animation state
+    let playerAnimState = $state<AnimationState | null>(null);
+    let terminalAnimState = $state<AnimationState | null>(null);
+    let lastPlayerPos = $state({ x: 0, y: 0 });
+    let animationTime = $state(0);
 
     // Compute nearTerminal as derived state to avoid infinite loop
     const nearTerminal = $derived.by(() => {
@@ -69,9 +79,42 @@
         window.addEventListener('keydown', handleKeydown);
         containerRef?.focus();
 
+        // Load assets
+        loadAssets(DEFAULT_MANIFEST).then((loadedAssets) => {
+            assets = loadedAssets;
+            assetsLoaded = true;
+            // Initialize animations
+            playerAnimState = startAnimation(ANIMATIONS.playerIdle);
+            terminalAnimState = startAnimation(ANIMATIONS.terminalGlow);
+            console.log('[GameWorld] Assets loaded:', loadedAssets);
+        });
+
+        // Animation loop
+        const animLoop = () => {
+            animationTime = performance.now();
+            requestAnimationFrame(animLoop);
+        };
+        requestAnimationFrame(animLoop);
+
         return () => {
             window.removeEventListener('keydown', handleKeydown);
         };
+    });
+
+    // Track player movement for animations
+    $effect(() => {
+        if (!renderState) return;
+        const currentPos = renderState.player.position;
+        const moved = currentPos.x !== lastPlayerPos.x || currentPos.y !== lastPlayerPos.y;
+
+        if (moved && playerAnimState) {
+            playerAnimState = startAnimation(ANIMATIONS.playerWalk);
+        } else if (!moved && playerAnimState && !playerAnimState.finished) {
+            // Switch back to idle after a short delay
+            playerAnimState = startAnimation(ANIMATIONS.playerIdle);
+        }
+
+        lastPlayerPos = { x: currentPos.x, y: currentPos.y };
     });
 
     // Canvas rendering
@@ -97,10 +140,119 @@
             context.fillStyle = '#64748b';
             context.font = '16px "IBM Plex Mono", monospace';
             context.textAlign = 'center';
-            context.fillText('Initializing world...', width / 2, height / 2);
+            context.fillText(assetsLoaded ? 'Initializing world...' : 'Loading assets...', width / 2, height / 2);
             return;
         }
 
+        if (!assetsLoaded || !assets) {
+            // Assets still loading, show colored rectangles as fallback
+            drawFallbackScene(context, state);
+            return;
+        }
+
+        const playerTile = {
+            x: Math.floor(state.player.position.x / tileSize) - state.viewport_offset.x,
+            y: Math.floor(state.player.position.y / tileSize) - state.viewport_offset.y,
+        };
+
+        // Draw tiles with sprites
+        for (let y = 0; y < state.visible_tiles.length; y++) {
+            for (let x = 0; x < state.visible_tiles[y].length; x++) {
+                const tile = state.visible_tiles[y][x];
+                const tileX = x * tileSize;
+                const tileY = y * tileSize;
+
+                // Get tile sprite
+                const tileSprite = getTileSprite(tile.tile_type, tile.walkable);
+                if (tileSprite) {
+                    context.drawImage(tileSprite, tileX, tileY, tileSize, tileSize);
+                } else {
+                    // Fallback to colored rectangle if sprite not found
+                    context.fillStyle = getTileColor(tile.tile_type);
+                    context.fillRect(tileX, tileY, tileSize, tileSize);
+                }
+
+                const manhattan = Math.abs(playerTile.x - x) + Math.abs(playerTile.y - y);
+                const isNear = manhattan <= 1;
+
+                // Special effects for terminals
+                if (tile.tile_type === 'terminal') {
+                    if (isNear) {
+                        context.shadowBlur = 14;
+                        context.shadowColor = '#22c55e';
+                        context.strokeStyle = '#22c55e';
+                        context.lineWidth = 2;
+                        context.strokeRect(tileX + 2, tileY + 2, tileSize - 4, tileSize - 4);
+                        context.shadowBlur = 0;
+                    }
+                }
+
+                // Special effects for doors
+                if (tile.tile_type === 'door') {
+                    const locked = !tile.walkable;
+                    if (locked) {
+                        context.shadowBlur = 5;
+                        context.shadowColor = '#ef4444';
+                        context.shadowBlur = 0;
+                    }
+                }
+            }
+        }
+
+        // Draw player with sprite
+        const px = state.player.position.x - state.viewport_offset.x * tileSize;
+        const py = state.player.position.y - state.viewport_offset.y * tileSize;
+
+        // Get player sprite based on facing direction
+        const playerSpriteName = `player_${state.player.facing}`;
+        const playerSprite = assets.sprites.get(playerSpriteName);
+
+        if (playerSprite) {
+            // Player glow
+            context.shadowBlur = 15;
+            context.shadowColor = '#22d3ee';
+
+            // Draw animated player sprite
+            const frameIndex = playerAnimState ? getCurrentFrame(playerAnimState, animationTime) : 0;
+            const spriteOffsetX = px - tileSize / 2;
+            const spriteOffsetY = py - tileSize / 2;
+
+            context.drawImage(playerSprite, spriteOffsetX, spriteOffsetY, tileSize, tileSize);
+            context.shadowBlur = 0;
+        } else {
+            // Fallback to circle if sprite not loaded
+            context.shadowBlur = 15;
+            context.shadowColor = '#22d3ee';
+            context.fillStyle = '#22d3ee';
+            context.beginPath();
+            context.arc(px, py, tileSize * 0.35, 0, Math.PI * 2);
+            context.fill();
+            context.shadowBlur = 0;
+        }
+    }
+
+    function getTileSprite(tileType: string, walkable: boolean): HTMLImageElement | null | undefined {
+        if (!assets) return null;
+
+        switch (tileType) {
+            case 'floor':
+                return assets.tiles.get('floor');
+            case 'wall':
+                return assets.tiles.get('wall');
+            case 'water':
+                return assets.tiles.get('water');
+            case 'void':
+                return assets.tiles.get('void');
+            case 'terminal':
+                return assets.tiles.get('terminal');
+            case 'door':
+                return assets.tiles.get(walkable ? 'door_open' : 'door_locked');
+            default:
+                return assets.tiles.get('floor');
+        }
+    }
+
+    function drawFallbackScene(context: CanvasRenderingContext2D, state: RenderState) {
         const playerTile = {
             x: Math.floor(state.player.position.x / tileSize) - state.viewport_offset.x,
             y: Math.floor(state.player.position.y / tileSize) - state.viewport_offset.y,
@@ -115,82 +267,30 @@
                 context.fillStyle = getTileColor(tile.tile_type);
                 context.fillRect(tileX, tileY, tileSize, tileSize);
 
-                // Tile border (subtle grid)
-                context.strokeStyle = 'rgba(148, 163, 184, 0.05)';
-                context.lineWidth = 1;
-                context.strokeRect(tileX, tileY, tileSize, tileSize);
-
                 const manhattan = Math.abs(playerTile.x - x) + Math.abs(playerTile.y - y);
                 const isNear = manhattan <= 1;
 
-                if (tile.tile_type === 'terminal') {
-                    // Glow effect when nearby
-                    if (isNear) {
-                        context.shadowBlur = 14;
-                        context.shadowColor = '#22c55e';
-                        context.strokeStyle = '#22c55e';
-                        context.lineWidth = 2;
-                        context.strokeRect(tileX + 2, tileY + 2, tileSize - 4, tileSize - 4);
-                        context.shadowBlur = 0;
-                    } else {
-                        context.strokeStyle = 'rgba(34, 197, 94, 0.5)';
-                        context.lineWidth = 1;
-                        context.strokeRect(tileX + 4, tileY + 4, tileSize - 8, tileSize - 8);
-                    }
-                }
-
-                if (tile.tile_type === 'door') {
-                    const locked = !tile.walkable;
-                    context.fillStyle = locked ? 'rgba(248, 113, 113, 0.3)' : 'rgba(52, 211, 153, 0.25)';
-                    context.fillRect(tileX, tileY, tileSize, tileSize);
-
-                    if (locked) {
-                        // Simple padlock icon
-                        context.fillStyle = '#ef4444';
-                        const lockX = tileX + tileSize * 0.35;
-                        const lockY = tileY + tileSize * 0.35;
-                        const lockW = tileSize * 0.3;
-                        const lockH = tileSize * 0.3;
-                        context.fillRect(lockX, lockY, lockW, lockH);
-                        context.beginPath();
-                        context.arc(lockX + lockW / 2, lockY, lockW / 2, Math.PI, 0);
-                        context.fill();
-                    } else {
-                        context.strokeStyle = '#22c55e';
-                        context.lineWidth = 2;
-                        context.strokeRect(tileX + 6, tileY + 6, tileSize - 12, tileSize - 12);
-                    }
+                if (tile.tile_type === 'terminal' && isNear) {
+                    context.shadowBlur = 14;
+                    context.shadowColor = '#22c55e';
+                    context.strokeStyle = '#22c55e';
+                    context.lineWidth = 2;
+                    context.strokeRect(tileX + 2, tileY + 2, tileSize - 4, tileSize - 4);
+                    context.shadowBlur = 0;
                 }
             }
         }
 
-        // Draw player
+        // Draw player fallback
         const px = state.player.position.x - state.viewport_offset.x * tileSize;
         const py = state.player.position.y - state.viewport_offset.y * tileSize;
-
-        // Player glow
         context.shadowBlur = 15;
         context.shadowColor = '#22d3ee';
-
-        // Player body (circle)
         context.fillStyle = '#22d3ee';
         context.beginPath();
         context.arc(px, py, tileSize * 0.35, 0, Math.PI * 2);
         context.fill();
-
         context.shadowBlur = 0;
-
-        // Player direction indicator
-        context.strokeStyle = '#0ea5e9';
-        context.lineWidth = 3;
-        const dir = state.player.facing;
-        const offset = tileSize * 0.5;
-        const dx = dir === 'left' ? -offset : dir === 'right' ? offset : 0;
-        const dy = dir === 'up' ? -offset : dir === 'down' ? offset : 0;
-        context.beginPath();
-        context.moveTo(px, py);
-        context.lineTo(px + dx, py + dy);
-        context.stroke();
     }
 
     function getTileColor(type: string): string {

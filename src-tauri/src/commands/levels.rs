@@ -6,9 +6,26 @@ use crate::GameStateWrapper;
 
 #[tauri::command]
 pub async fn get_available_levels(
+    state: State<'_, GameStateWrapper>,
     levels: State<'_, LevelRegistry>,
 ) -> Result<Vec<LevelInfo>, String> {
-    Ok(levels.get_all_info())
+    let game_state = state.0.lock().map_err(|e| e.to_string())?;
+
+    // Get level info with actual locked/completed status from progression
+    let all_levels: Vec<LevelInfo> = levels
+        .get_level_order()
+        .iter()
+        .filter_map(|id| levels.get_level(id))
+        .map(|level| LevelInfo {
+            id: level.id.clone(),
+            title: level.title.clone(),
+            concept: level.concept.clone(),
+            completed: game_state.is_level_completed(&level.id),
+            locked: !game_state.is_level_unlocked(&level.id),
+        })
+        .collect();
+
+    Ok(all_levels)
 }
 
 #[tauri::command]
@@ -22,6 +39,11 @@ pub async fn load_level(
         .ok_or_else(|| format!("Level {} not found", level_id))?;
 
     let mut game_state = state.0.lock().map_err(|e| e.to_string())?;
+
+    // Check if level is unlocked
+    if !game_state.is_level_unlocked(&level_id) {
+        return Err(format!("Level {} is locked", level_id));
+    }
 
     // Try to load from map file, fallback to world_config
     let world = if let Some(ref map_path) = level.map_file {

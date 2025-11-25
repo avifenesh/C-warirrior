@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use super::validator::SuccessCriteria;
+use crate::game::progression::LevelPrerequisites;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -67,6 +68,8 @@ pub struct LevelData {
     pub map_file: Option<String>,
     #[serde(default)]
     pub challenges: Vec<Challenge>,
+    #[serde(default)]
+    pub prerequisites: LevelPrerequisites,
 }
 
 impl LevelData {
@@ -86,6 +89,7 @@ impl LevelData {
 pub struct LevelRegistry {
     levels: HashMap<String, LevelData>,
     order: Vec<String>,
+    prerequisites: HashMap<String, LevelPrerequisites>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -106,19 +110,26 @@ impl LevelRegistry {
 
         let mut levels = HashMap::new();
         let mut order = Vec::new();
+        let mut prerequisites = HashMap::new();
 
         for level_json in levels_json {
             let level = LevelData::from_json(&level_json)
                 .expect("Failed to parse level");
             order.push(level.id.clone());
+            prerequisites.insert(level.id.clone(), level.prerequisites.clone());
             levels.insert(level.id.clone(), level);
         }
 
-        Self { levels, order }
+        Self { levels, order, prerequisites }
     }
 
     pub fn get_level(&self, id: &str) -> Option<&LevelData> {
         self.levels.get(id)
+    }
+
+    /// Get the prerequisites map for all levels
+    pub fn get_prerequisites(&self) -> &HashMap<String, LevelPrerequisites> {
+        &self.prerequisites
     }
 
     pub fn get_all_info(&self) -> Vec<LevelInfo> {
@@ -137,5 +148,10 @@ impl LevelRegistry {
     pub fn get_next_level(&self, current_id: &str) -> Option<String> {
         let current_idx = self.order.iter().position(|id| id == current_id)?;
         self.order.get(current_idx + 1).cloned()
+    }
+
+    /// Get all level IDs in order
+    pub fn get_level_order(&self) -> &[String] {
+        &self.order
     }
 }

@@ -50,6 +50,7 @@ declare module '$env/static/private' {
 	export const COLOR: string;
 	export const PERL_MB_OPT: string;
 	export const TAURI_ENV_DEBUG: string;
+	export const VIPSHOME: string;
 	export const npm_config_noproxy: string;
 	export const SDKMAN_PLATFORM: string;
 	export const npm_config_local_prefix: string;
@@ -188,6 +189,7 @@ declare module '$env/dynamic/private' {
 		COLOR: string;
 		PERL_MB_OPT: string;
 		TAURI_ENV_DEBUG: string;
+		VIPSHOME: string;
 		npm_config_noproxy: string;
 		SDKMAN_PLATFORM: string;
 		npm_config_local_prefix: string;

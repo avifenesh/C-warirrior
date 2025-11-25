@@ -10,6 +10,7 @@ pub struct LevelCompleteResult {
     pub total_xp: u32,
     pub next_level_id: Option<String>,
     pub levels_completed: usize,
+    pub newly_unlocked: Vec<String>,
 }
 
 #[tauri::command]
@@ -27,15 +28,32 @@ pub async fn complete_level(
         .get_level(&level_id)
         .ok_or_else(|| format!("Level {} not found", level_id))?;
 
-    let xp_reward = level.xp_reward;
-    game_state.complete_level(xp_reward);
+    // Get unlocked levels before completion
+    let previously_unlocked: std::collections::HashSet<_> =
+        game_state.progression.unlocked_levels.clone();
+
+    // Complete the level (this also unlocks doors)
+    let xp_earned = game_state.complete_level(level.xp_reward);
+
+    // Update which levels are now unlocked
+    game_state.update_unlocked_levels(levels.get_prerequisites());
+
+    // Find newly unlocked levels
+    let newly_unlocked: Vec<String> = game_state
+        .progression
+        .unlocked_levels
+        .iter()
+        .filter(|id| !previously_unlocked.contains(*id))
+        .cloned()
+        .collect();
 
     let next_level_id = levels.get_next_level(&level_id);
 
     Ok(LevelCompleteResult {
-        xp_earned: xp_reward,
-        total_xp: game_state.total_xp,
+        xp_earned,
+        total_xp: game_state.progression.total_xp,
         next_level_id,
-        levels_completed: game_state.levels_completed.len(),
+        levels_completed: game_state.progression.completed_levels.len(),
+        newly_unlocked,
     })
 }

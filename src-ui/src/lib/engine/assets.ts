@@ -19,12 +19,18 @@ export const DEFAULT_MANIFEST: AssetManifest = {
         player_up: '/sprites/player_up.png',
         player_left: '/sprites/player_left.png',
         player_right: '/sprites/player_right.png',
+        npc_mentor: '/sprites/npc_mentor.png',
     },
     tiles: {
         floor: '/tiles/floor_stone.png',
+        floor_tech: '/tiles/floor_tech.png',
         wall: '/tiles/wall.png',
+        wall_top: '/tiles/wall_top.png',
         terminal: '/tiles/terminal.png',
-        door: '/tiles/door_locked.png',
+        door_locked: '/tiles/door_locked.png',
+        door_open: '/tiles/door_open.png',
+        void: '/tiles/void.png',
+        water: '/tiles/floor_tech.png', // Reuse tech floor for water
     },
     audio: {},
 };

@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use tauri::State;
+use tauri::{AppHandle, Emitter, State};
 
 use code_warrior::compiler::CCompiler;
 use code_warrior::levels::LevelRegistry;
@@ -14,6 +14,16 @@ pub struct CodeResult {
     pub execution_time_ms: u64,
     pub feedback: String,
     pub hint: Option<String>,
+    pub xp_earned: u32,
+    pub doors_unlocked: bool,
+}
+
+/// Event emitted when a level is completed
+#[derive(Debug, Clone, Serialize)]
+pub struct LevelCompleteEvent {
+    pub level_id: String,
+    pub xp_earned: u32,
+    pub newly_unlocked: Vec<String>,
 }
 
 #[tauri::command]
@@ -22,11 +32,12 @@ pub async fn submit_code(
     state: State<'_, GameStateWrapper>,
     levels: State<'_, LevelRegistry>,
     compiler: State<'_, CCompiler>,
+    app: AppHandle,
 ) -> Result<CodeResult, String> {
     println!("[submit_code] Command received");
 
     // Get level data before await to avoid holding MutexGuard across await
-    let level_data = {
+    let (level_data, level_id) = {
         let game_state = state.0.lock().map_err(|e| e.to_string())?;
         let level_id = game_state
             .current_level_id
@@ -36,10 +47,12 @@ pub async fn submit_code(
 
         println!("[submit_code] Level ID: {}", level_id);
 
-        levels
+        let level = levels
             .get_level(&level_id)
             .cloned()
-            .ok_or_else(|| format!("Level {} not found", level_id))?
+            .ok_or_else(|| format!("Level {} not found", level_id))?;
+
+        (level, level_id)
     };
 
     println!("[submit_code] Calling compiler...");
@@ -47,10 +60,36 @@ pub async fn submit_code(
     println!("[submit_code] Compiler returned: success={}", execution_result.run_success());
     let success = level_data.validate_output(&execution_result);
 
-    // If code is successful, unlock all doors in the world
+    let mut xp_earned = 0;
+    let mut doors_unlocked = false;
+    let mut newly_unlocked = Vec::new();
+
+    // If code is successful, complete the level
     if success {
         let mut game_state = state.0.lock().map_err(|e| e.to_string())?;
-        game_state.world.unlock_all_doors();
+
+        // Get previously unlocked levels
+        let previously_unlocked: std::collections::HashSet<_> =
+            game_state.progression.unlocked_levels.clone();
+
+        // Complete the level (this unlocks doors and awards XP)
+        xp_earned = game_state.complete_level(level_data.xp_reward);
+        doors_unlocked = true;
+
+        // Update which levels are now unlocked
+        game_state.update_unlocked_levels(levels.get_prerequisites());
+
+        // Find newly unlocked levels
+        newly_unlocked = game_state
+            .progression
+            .unlocked_levels
+            .iter()
+            .filter(|id| !previously_unlocked.contains(*id))
+            .cloned()
+            .collect();
+
+        println!("[submit_code] Level completed! XP earned: {}, newly unlocked: {:?}",
+                 xp_earned, newly_unlocked);
     }
 
     let feedback = if execution_result.compile_error.is_some() {
@@ -58,10 +97,24 @@ pub async fn submit_code(
     } else if execution_result.timed_out {
         "Code execution timed out. Check for infinite loops.".to_string()
     } else if success {
-        "Success! Your code produced the correct output. Doors have been unlocked!".to_string()
+        if xp_earned > 0 {
+            format!("Success! +{} XP! Doors have been unlocked!", xp_earned)
+        } else {
+            "Success! Doors have been unlocked! (Level already completed)".to_string()
+        }
     } else {
         "Output doesn't match expected result. Try again!".to_string()
     };
+
+    // Emit level_complete event for frontend to react
+    if success {
+        let event = LevelCompleteEvent {
+            level_id: level_id.clone(),
+            xp_earned,
+            newly_unlocked: newly_unlocked.clone(),
+        };
+        let _ = app.emit("level_complete", event);
+    }
 
     Ok(CodeResult {
         success,
@@ -71,6 +124,8 @@ pub async fn submit_code(
         execution_time_ms: execution_result.execution_time_ms,
         feedback,
         hint: None,
+        xp_earned,
+        doors_unlocked,
     })
 }
 
