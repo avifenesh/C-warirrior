@@ -38,6 +38,7 @@ export async function getBackend(): Promise<Backend> {
         const { createTauriBackend } = await import('./tauri');
         cachedBackend = createTauriBackend();
     } else {
+        // Use HTTP backend (Real API)
         console.log('[Backend] Using HTTP backend (no Tauri context)');
         const { createHttpBackend } = await import('./http');
         cachedBackend = createHttpBackend();

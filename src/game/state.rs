@@ -208,10 +208,19 @@ impl GameState {
         let viewport_width = 20;
         let viewport_height = 15;
 
-        // Calculate viewport offset (center on player)
+        // Calculate viewport offset (center on player, clamped to world bounds)
         let (px, py) = self.player.position.tile_coords(TILE_SIZE);
-        let offset_x = (px - (viewport_width as i32 / 2)).max(0) as usize;
-        let offset_y = (py - (viewport_height as i32 / 2)).max(0) as usize;
+
+        // Clamp offset so viewport doesn't show areas outside the world
+        let max_offset_x = self.world.width.saturating_sub(viewport_width);
+        let max_offset_y = self.world.height.saturating_sub(viewport_height);
+
+        let offset_x = (px - (viewport_width as i32 / 2))
+            .max(0)
+            .min(max_offset_x as i32) as usize;
+        let offset_y = (py - (viewport_height as i32 / 2))
+            .max(0)
+            .min(max_offset_y as i32) as usize;
 
         // Extract visible tiles
         let mut visible_tiles = Vec::new();

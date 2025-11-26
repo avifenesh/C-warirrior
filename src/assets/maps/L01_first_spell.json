@@ -58,6 +58,25 @@
               "value": true
             }
           ]
+        },
+        {
+          "type": "npc",
+          "x": 160,
+          "y": 160,
+          "width": 32,
+          "height": 32,
+          "properties": [
+            {
+              "name": "name",
+              "type": "string",
+              "value": "Mentor"
+            },
+            {
+              "name": "dialogue",
+              "type": "string",
+              "value": "Welcome, young coder! To pass the door ahead, you must learn the ancient spell of printf. Approach the terminal and cast 'Hello, World!'"
+            }
+          ]
         }
       ]
     }

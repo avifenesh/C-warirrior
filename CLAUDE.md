@@ -97,6 +97,121 @@ C-warrior/
 | **Generate map** | `docs/core/WORKFLOWS.md` | `generate_map.py` |
 | **Fix bug** | `docs/architecture/system.md` | Depends on issue |
 | **Understand architecture** | `code-warrior-architect` skill | None |
+| **Test changes** | See Testing Protocol below | Playwright skill |
+
+---
+
+## Testing Protocol (MANDATORY)
+
+**Every code change MUST be tested on both platforms:**
+
+### Production URLs
+
+| Service | URL |
+|---------|-----|
+| **Frontend (Vercel)** | https://code-warrior-seven.vercel.app |
+| **API (Railway)** | https://code-warrior-api-production.up.railway.app |
+| **Database (Neon)** | PostgreSQL on Neon (connection string in Railway env) |
+
+### Local Development Setup
+
+**Desktop (Tauri IPC):**
+```bash
+# Terminal 1: Start frontend dev server
+cd src-ui && npm run dev
+
+# Terminal 2: Start Tauri app
+cargo tauri dev
+```
+
+**Web (HTTP Backend) - Local:**
+```bash
+# Terminal 1: Start API server
+cd src-api && cargo run
+
+# Terminal 2: Start frontend with local API
+cd src-ui && API_URL=http://localhost:3000 npm run dev
+```
+
+### Dual-Platform Testing
+
+1. **Web (HTTP Backend)** - Primary for automation
+   - Production: https://code-warrior-seven.vercel.app
+   - Local: http://localhost:1420 (with API_URL=http://localhost:3000)
+   - Uses HTTP API calls to backend
+   - **Preferred for automated testing** - same game logic, easier to script
+
+2. **Desktop (Tauri IPC)** - Verify native integration
+   - Run locally via `cargo tauri dev`
+   - Uses direct Rust IPC calls
+   - Test after web passes to catch IPC-specific issues
+
+### Testing Checklist
+
+**Before any PR or deployment:**
+
+- [ ] **No Regressions**: Existing features still work
+- [ ] **No UI Breaks**: All components render correctly
+- [ ] **Full Flow Test**: Start game → Play level → Submit code → Complete level
+- [ ] **Movement**: WASD navigation works smoothly
+- [ ] **Interactions**: E key triggers terminals/NPCs
+- [ ] **Code Submission**: C code compiles and validates correctly
+- [ ] **State Persistence**: Game state syncs between actions
+
+### Automated Testing with Playwright
+
+Use the `playwright-skill` for web testing:
+
+```javascript
+// Example test flow
+await page.goto('https://code-warrior-seven.vercel.app');
+await page.click('text=NEW QUEST');
+await page.keyboard.press('d'); // Move right
+await page.keyboard.press('e'); // Interact
+// Verify state changes via console logs or screenshots
+```
+
+**Key test scenarios:**
+- Boot sequence completes without errors
+- Menu navigation works
+- Level loading succeeds
+- Player movement updates position
+- Terminal interaction opens code editor
+- Code submission returns results
+
+### Backend Communication
+
+**Critical**: When modifying `src-ui/src/lib/backend/`:
+
+1. **Never break Tauri IPC** - Test desktop after changes
+2. **Never break HTTP API** - Test web after changes
+3. **Keep interfaces identical** - Both backends implement same `Backend` interface
+4. **Test both paths** - A fix for one platform might break the other
+
+### UI/UX Testing
+
+- **Visual inspection**: Take screenshots at key states
+- **Responsive check**: Game renders correctly at different sizes
+- **Performance**: No lag during movement or state updates
+- **Error handling**: Graceful failures with user feedback
+- **Console cleanliness**: No unexpected errors (404s, exceptions)
+
+### Automated Deployment & Validation
+
+**One-command deploy to all platforms:**
+
+```bash
+./tools/deploy-and-validate.sh
+```
+
+This script:
+1. Deploys API to Railway
+2. Deploys frontend to Vercel
+3. Waits for propagation
+4. Runs Playwright validation (API health, levels, frontend, game flow, movement)
+5. Reports success/failure with production URLs
+
+**Use this script after any code changes to ensure both platforms work.**
 
 ---
 

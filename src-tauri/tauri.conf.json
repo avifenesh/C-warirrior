@@ -13,10 +13,10 @@
     "windows": [
       {
         "title": "Code Warrior",
-        "width": 1400,
-        "height": 900,
-        "minWidth": 1200,
-        "minHeight": 800,
+        "width": 1500,
+        "height": 1100,
+        "minWidth": 1350,
+        "minHeight": 1000,
         "resizable": true,
         "center": true
       }

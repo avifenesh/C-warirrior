@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createEventDispatcher, onMount } from 'svelte';
+    import { createEventDispatcher, onMount, tick } from 'svelte';
 
     interface Props {
         initialCode?: string;
@@ -113,6 +113,131 @@
             submit();
         }
     }
+
+    function handleTextareaKeydown(event: KeyboardEvent) {
+        const textarea = event.target as HTMLTextAreaElement;
+
+        // Let Escape bubble up to close terminal
+        if (event.key === 'Escape') {
+            return;
+        }
+
+        // Let Ctrl+Enter / Cmd+Enter bubble up to submit code
+        if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+            return;
+        }
+
+        // Stop propagation for ALL other keys to prevent interference with typing
+        // This is critical - without this, keys can trigger game actions or browser shortcuts
+        event.stopPropagation();
+
+        // Handle Tab - insert indent
+        if (event.key === 'Tab' && !event.shiftKey) {
+            event.preventDefault();
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const indent = '    ';
+
+            // If text is selected, indent all selected lines
+            if (start !== end) {
+                const lineStart = code.lastIndexOf('\n', start - 1) + 1;
+                const selectedText = code.substring(lineStart, end);
+                const indentedText = indent + selectedText.replace(/\n/g, '\n' + indent);
+                code = code.substring(0, lineStart) + indentedText + code.substring(end);
+                tick().then(() => {
+                    textarea.selectionStart = start + indent.length;
+                    textarea.selectionEnd = lineStart + indentedText.length;
+                });
+            } else {
+                code = code.substring(0, start) + indent + code.substring(end);
+                tick().then(() => {
+                    textarea.selectionStart = textarea.selectionEnd = start + indent.length;
+                });
+            }
+            return;
+        }
+
+        // Handle Shift+Tab - remove indent from current/selected lines
+        if (event.key === 'Tab' && event.shiftKey) {
+            event.preventDefault();
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const lineStart = code.lastIndexOf('\n', start - 1) + 1;
+
+            // Find leading whitespace (up to 4 spaces or 1 tab)
+            const lineContent = code.substring(lineStart);
+            const indentMatch = lineContent.match(/^( {1,4}|\t)/);
+
+            if (indentMatch) {
+                const indentLen = indentMatch[0].length;
+                code = code.substring(0, lineStart) + code.substring(lineStart + indentLen);
+                tick().then(() => {
+                    const newStart = Math.max(lineStart, start - indentLen);
+                    const newEnd = Math.max(lineStart, end - indentLen);
+                    textarea.selectionStart = newStart;
+                    textarea.selectionEnd = newEnd;
+                });
+            }
+            return;
+        }
+
+        // Enter - let native behavior work (no custom handling to avoid timing issues)
+        // This ensures compatibility with automated testing and paste operations
+        if (event.key === 'Enter') {
+            // Just let the native Enter behavior work - no preventDefault
+            return;
+        }
+
+        // Handle Backspace at start of indented line - remove one indent level
+        if (event.key === 'Backspace' && !event.ctrlKey && !event.metaKey) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+
+            // Only special handling if no selection and cursor is in leading whitespace
+            if (start === end && start > 0) {
+                const lineStart = code.lastIndexOf('\n', start - 1) + 1;
+                const beforeCursor = code.substring(lineStart, start);
+
+                // If cursor is in leading whitespace, delete back to previous indent level
+                if (beforeCursor.length > 0 && /^\s+$/.test(beforeCursor)) {
+                    const deleteCount = beforeCursor.length % 4 || 4;
+                    if (deleteCount > 1 && beforeCursor.length >= deleteCount) {
+                        event.preventDefault();
+                        code = code.substring(0, start - deleteCount) + code.substring(start);
+                        tick().then(() => {
+                            textarea.selectionStart = textarea.selectionEnd = start - deleteCount;
+                        });
+                        return;
+                    }
+                }
+            }
+            // Let default backspace behavior handle other cases
+            return;
+        }
+
+        // Handle Home - go to start of text on line (after indentation), or start of line
+        if (event.key === 'Home' && !event.ctrlKey && !event.metaKey) {
+            event.preventDefault();
+            const start = textarea.selectionStart;
+            const lineStart = code.lastIndexOf('\n', start - 1) + 1;
+            const lineContent = code.substring(lineStart);
+            const indentMatch = lineContent.match(/^(\s*)/);
+            const textStart = lineStart + (indentMatch ? indentMatch[1].length : 0);
+
+            // Toggle between text start and line start
+            const newPos = start === textStart ? lineStart : textStart;
+
+            tick().then(() => {
+                if (event.shiftKey) {
+                    textarea.selectionEnd = textarea.selectionStart;
+                    textarea.selectionStart = newPos;
+                } else {
+                    textarea.selectionStart = textarea.selectionEnd = newPos;
+                }
+            });
+            return;
+        }
+    }
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -182,7 +307,16 @@
             {/if}
 
             <!-- Code Editor Area -->
-            <div class="code-parchment">
+            <!-- svelte-ignore a11y_click_events_have_key_events -->
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div
+                class="code-parchment"
+                onclick={(e) => {
+                    // Only focus if clicking the parchment itself, not child elements
+                    e.stopPropagation();
+                    textareaRef?.focus();
+                }}
+            >
                 <pre
                     class="code-highlight"
                     aria-hidden="true"
@@ -194,6 +328,17 @@
                     spellcheck="false"
                     bind:value={code}
                     {placeholder}
+                    onkeydown={handleTextareaKeydown}
+                    onfocus={() => console.log('[CodeTerminal] textarea focused')}
+                    onblur={(e) => {
+                        const related = e.relatedTarget as HTMLElement | null;
+                        console.log('[CodeTerminal] textarea blurred, focus went to:', related?.tagName, related?.className);
+                        // If focus went to something inside the modal that's not a button/input, refocus textarea
+                        if (related && !['BUTTON', 'INPUT', 'A'].includes(related.tagName)) {
+                            setTimeout(() => textareaRef?.focus(), 0);
+                        }
+                    }}
+                    tabindex={0}
                 ></textarea>
 
                 {#if submitting && !output}
@@ -469,14 +614,17 @@
         line-height: 1.6;
         color: #e2e8f0;
         pointer-events: none;
+        z-index: 1;
     }
 
     .code-input {
-        position: relative;
-        width: 100%;
-        height: 280px;
+        position: absolute;
+        inset: 12px;
+        width: calc(100% - 24px);
+        height: calc(100% - 24px);
         resize: none;
-        background: transparent;
+        /* Use rgba with tiny alpha to ensure clickability while appearing transparent */
+        background: rgba(0, 0, 0, 0.001);
         font-family: 'IBM Plex Mono', 'Courier New', monospace;
         font-size: 13px;
         line-height: 1.6;
@@ -484,6 +632,10 @@
         caret-color: #fbbf24;
         outline: none;
         border: none;
+        z-index: 2;
+        cursor: text;
+        /* Ensure it receives all pointer events */
+        pointer-events: auto;
     }
 
     .code-input::placeholder {

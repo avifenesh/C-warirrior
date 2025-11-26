@@ -133,6 +133,92 @@ C-warrior/
 | **Design game mechanic** | `docs/game_design/mechanics.md` | None |
 | **Fix bug** | `docs/architecture/system.md` | Depends on issue |
 | **Add level** | `docs/curriculum/progression.md` | `compile_and_run_c`, `generate_map.py` |
+| **Test changes** | See Testing Protocol below | Playwright (web) |
+
+---
+
+## Testing Protocol (MANDATORY)
+
+**Every code change MUST be tested on both platforms:**
+
+### Production URLs
+
+| Service | URL |
+|---------|-----|
+| **Frontend (Vercel)** | https://code-warrior-seven.vercel.app |
+| **API (Railway)** | https://code-warrior-api-production.up.railway.app |
+
+### Local Development Setup
+
+**Desktop (Tauri IPC):**
+```bash
+cd src-ui && npm run dev  # Terminal 1: Frontend dev server
+cargo tauri dev           # Terminal 2: Tauri app
+```
+
+**Web (HTTP Backend) - Local:**
+```bash
+cd src-api && cargo run                              # Terminal 1: API server
+cd src-ui && API_URL=http://localhost:3000 npm run dev  # Terminal 2: Frontend
+```
+
+### Dual-Platform Testing
+
+1. **Web (HTTP Backend)** - Primary for automation
+   - Production: https://code-warrior-seven.vercel.app
+   - Local: http://localhost:1420
+   - Uses HTTP API to backend
+   - **Preferred for automated testing** - same game logic, scriptable
+
+2. **Desktop (Tauri IPC)** - Verify native integration
+   - Run via `cargo tauri dev`
+   - Uses direct Rust IPC
+   - Test after web passes to catch IPC-specific issues
+
+### Testing Checklist
+
+**Before any PR or deployment:**
+
+- [ ] **No Regressions**: Existing features still work
+- [ ] **No UI Breaks**: All components render correctly
+- [ ] **Full Flow**: Start → Play → Submit code → Complete level
+- [ ] **Movement**: WASD navigation works
+- [ ] **Interactions**: E key triggers terminals/NPCs
+- [ ] **Code Submission**: C code compiles and validates
+- [ ] **State Sync**: Game state persists between actions
+
+### Backend Communication
+
+**When modifying `src-ui/src/lib/backend/`:**
+
+1. **Never break Tauri IPC** - Test desktop after changes
+2. **Never break HTTP API** - Test web after changes
+3. **Keep interfaces identical** - Both implement `Backend` interface
+4. **Test both paths** - Fix for one might break the other
+
+### UI/UX Testing
+
+- **Visual inspection**: Screenshots at key states
+- **Console cleanliness**: No unexpected errors (404s, exceptions)
+- **Performance**: No lag during movement/state updates
+- **Error handling**: Graceful failures with user feedback
+
+### Automated Deployment & Validation
+
+**One-command deploy to all platforms:**
+
+```bash
+./tools/deploy-and-validate.sh
+```
+
+This script:
+1. Deploys API to Railway
+2. Deploys frontend to Vercel
+3. Waits for propagation
+4. Runs Playwright validation (API health, levels, frontend, game flow, movement)
+5. Reports success/failure with production URLs
+
+**Use this script after any code changes to ensure both platforms work.**
 
 ---
 
@@ -225,3 +311,9 @@ See [`GEMINI.md`](GEMINI.md) for:
 - `CLAUDE.md` - Claude Code
 - `AGENTS.md` - This file (all agents)
 - `GEMINI.md` - Gemini
+
+## Anti-Mock Policy (Added per user request)
+- **NEVER** rely on mock backends for final implementation or testing.
+- **ALWAYS** test against the real backend (`src-api` or Tauri IPC).
+- Mocks are strictly for transient UI prototyping only and must be removed before completion.
+- If the real backend is broken, **FIX THE BACKEND** instead of bypassing it.

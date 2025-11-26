@@ -1,4 +1,5 @@
 export interface Animation {
+    id?: string;
     frames: readonly number[];
     frameDuration: number; // ms per frame
     loop: boolean;
@@ -12,9 +13,9 @@ export interface AnimationState {
 
 /** Common animation presets. */
 export const ANIMATIONS = {
-    playerIdle: { frames: [0], frameDuration: 1000, loop: true },
-    playerWalk: { frames: [0, 1, 0, 2], frameDuration: 150, loop: true },
-    terminalGlow: { frames: [0, 1, 2, 1], frameDuration: 200, loop: true },
+    playerIdle: { id: 'playerIdle', frames: [0], frameDuration: 1000, loop: true },
+    playerWalk: { id: 'playerWalk', frames: [0, 1, 0, 2], frameDuration: 150, loop: true },
+    terminalGlow: { id: 'terminalGlow', frames: [0, 1, 2, 1], frameDuration: 200, loop: true },
 } as const;
 
 /** Start a new animation state. */

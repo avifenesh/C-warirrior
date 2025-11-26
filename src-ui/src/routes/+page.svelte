@@ -31,11 +31,11 @@
     let toastCounter = 0; // Unique counter for toast IDs
 
     // Derived values
-    let showMainMenu = $derived(($renderState?.game_phase ?? 'main_menu') === 'main_menu' || !$renderState?.current_level_id);
-    let showTerminal = $derived($renderState?.show_terminal ?? false);
-    let codeTemplate = $derived($currentLevelData?.code_template ?? codeDraft);
-    let isLevelComplete = $derived($renderState?.game_phase === 'level_complete');
-    let currentLevelId = $derived($renderState?.current_level_id ?? null);
+    let showMainMenu = $derived((renderState?.game_phase ?? 'main_menu') === 'main_menu' || !renderState?.current_level_id);
+    let showTerminal = $derived(renderState?.show_terminal ?? false);
+    let codeTemplate = $derived(currentLevelData?.code_template ?? codeDraft);
+    let isLevelComplete = $derived(renderState?.game_phase === 'level_complete');
+    let currentLevelId = $derived(renderState?.current_level_id ?? null);
 
     // Hint state
     let hints = $state<string[]>([]);
@@ -58,7 +58,7 @@
 
     // Get the next level ID
     function getNextLevelId(): string | null {
-        const currentId = $renderState?.current_level_id ?? null;
+        const currentId = renderState?.current_level_id ?? null;
         if (!currentId) return null;
         const idx = levels.findIndex((l) => l.id === currentId);
         if (idx >= 0 && idx < levels.length - 1) return levels[idx + 1].id;
@@ -259,29 +259,29 @@
     />
 {:else}
     <GameWorld
-        renderState={$renderState}
-        codeSuccess={$lastCodeResult?.success ?? false}
+        renderState={renderState}
+        codeSuccess={lastCodeResult?.success ?? false}
         xpGained={0}
         on:move={handleMove}
         on:interact={handleInteract}
     >
             <!-- HUD Overlay -->
-            <GameHUD player={$renderState?.player ?? null} currentLevelId={currentLevelId} />
+            <GameHUD player={renderState?.player ?? null} currentLevelId={currentLevelId} />
 
             <!-- Code Terminal Modal -->
             {#if showTerminal}
                 <CodeTerminal
                     initialCode={codeTemplate}
-                    submitting={$codeSubmitting}
-                    output={$lastCodeResult ? {
-                        success: $lastCodeResult.success,
-                        stdout: $lastCodeResult.stdout,
-                        stderr: $lastCodeResult.stderr,
-                        compile_error: $lastCodeResult.compile_error ?? undefined,
-                        message: $lastCodeResult.feedback
+                    submitting={codeSubmitting}
+                    output={lastCodeResult ? {
+                        success: lastCodeResult.success,
+                        stdout: lastCodeResult.stdout,
+                        stderr: lastCodeResult.stderr,
+                        compile_error: lastCodeResult.compile_error ?? undefined,
+                        message: lastCodeResult.feedback
                     } : null}
-                    challenge={$currentLevelData?.description ?? 'Complete the challenge'}
-                    expectedOutput={$currentLevelData?.challenges?.[0]?.expected_output}
+                    challenge={currentLevelData?.description ?? 'Complete the challenge'}
+                    expectedOutput={currentLevelData?.challenges?.[0]?.expected_output}
                     {hints}
                     {loadingHint}
                     onClose={handleTerminalClose}
@@ -308,7 +308,7 @@
                         <div class="pixel-reward-box mb-6">
                             <div class="flex items-center justify-center gap-2">
                                 <span class="text-amber-400 text-lg">&#9830;</span>
-                                <span class="text-amber-300 text-lg font-bold">+{$renderState?.player?.xp ?? 0} XP</span>
+                                <span class="text-amber-300 text-lg font-bold">+{renderState?.player?.xp ?? 0} XP</span>
                             </div>
                         </div>
 

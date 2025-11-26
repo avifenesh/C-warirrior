@@ -32,39 +32,6 @@
         }
     }
 
-    function getPixelBorder(type: string): string {
-        switch (type) {
-            case 'success':
-                return 'border-emerald-900 border-2 border-solid';
-            case 'error':
-                return 'border-rose-900 border-2 border-solid';
-            default:
-                return 'border-cyan-900 border-2 border-solid';
-        }
-    }
-
-    function getGradientBg(type: string): string {
-        switch (type) {
-            case 'success':
-                return 'bg-gradient-to-br from-emerald-800 to-emerald-900';
-            case 'error':
-                return 'bg-gradient-to-br from-rose-800 to-rose-900';
-            default:
-                return 'bg-gradient-to-br from-cyan-800 to-cyan-900';
-        }
-    }
-
-    function getTextColor(type: string): string {
-        switch (type) {
-            case 'success':
-                return 'text-emerald-200';
-            case 'error':
-                return 'text-rose-200';
-            default:
-                return 'text-cyan-200';
-        }
-    }
-
     function getIcon(type: string): string {
         switch (type) {
             case 'success':
@@ -80,23 +47,23 @@
 <div class="pointer-events-none fixed bottom-4 right-4 z-50 flex flex-col gap-2">
     {#each messages as toast (toast.id)}
         <div
-            class="pixel-toast pointer-events-auto animate-slide-in {getPixelBorder(toast.type)} {getGradientBg(toast.type)} p-2 shadow-md"
+            class="pixel-toast pointer-events-auto animate-slide-in {toast.type} shadow-md"
         >
             <div class="flex items-start justify-between gap-2">
                 <div class="flex-1">
-                    <p class="flex items-center gap-2 {getTextColor(toast.type)}">
+                    <p class="flex items-center">
                         <span class="pixel-icon">{getIcon(toast.type)}</span>
                         <span class="pixel-text">{toast.message}</span>
                     </p>
                     {#if toast.details}
-                        <p class="mt-1 text-[8px] font-mono text-slate-300 whitespace-pre-wrap">
+                        <p class="mt-1 text-[8px] font-mono text-slate-300 whitespace-pre-wrap opacity-80 pl-4">
                             {toast.details}
                         </p>
                     {/if}
                 </div>
                 <button
                     onclick={() => dismiss(toast.id)}
-                    class="pixel-close-btn text-slate-400 hover:text-slate-200"
+                    class="pixel-close-btn"
                     aria-label="Dismiss"
                 >
                     ✕
@@ -107,27 +74,60 @@
 </div>
 
 <style lang="postcss">
-    /* Import Press Start 2P font */
-    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
+    /* Pixel panel style matching other UI elements */
     .pixel-toast {
         font-family: 'Press Start 2P', cursive;
         font-size: 8px;
-        border-image-slice: 2;
-        border-image-width: 2;
+        padding: 8px 12px;
+        margin-top: 8px;
+        background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+        border: 3px solid #0f3460;
+        border-top-color: #3a506b;
+        border-left-color: #3a506b;
         box-shadow:
-            -2px -2px 0 #000,
-             2px -2px 0 #000,
-            -2px  2px 0 #000,
-             2px  2px 0 #000;
+            inset 0 0 0 1px #0a0a1e,
+            4px 4px 0 #0a0a1e;
+        min-width: 200px;
+    }
+
+    /* Success variant */
+    .pixel-toast.success {
+        border-color: #22c55e;
+        border-top-color: #4ade80;
+        border-left-color: #4ade80;
+        background: linear-gradient(180deg, #14532d 0%, #166534 100%);
+    }
+
+    /* Error variant */
+    .pixel-toast.error {
+        border-color: #ef4444;
+        border-top-color: #f87171;
+        border-left-color: #f87171;
+        background: linear-gradient(180deg, #7f1d1d 0%, #991b1b 100%);
+    }
+
+    /* Info variant (default) */
+    .pixel-toast.info {
+        /* Uses default styles */
     }
 
     .pixel-icon {
-        margin-right: 4px;
+        margin-right: 6px;
+        font-size: 10px;
     }
 
     .pixel-text {
-        line-height: 1.2;
+        line-height: 1.4;
+        color: #e2e8f0;
+        text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+    }
+    
+    .pixel-toast.success .pixel-text {
+        color: #dcfce7;
+    }
+    
+    .pixel-toast.error .pixel-text {
+        color: #fee2e2;
     }
 
     .pixel-close-btn {
@@ -136,7 +136,13 @@
         background: none;
         border: none;
         cursor: pointer;
-        padding: 0;
+        padding: 2px 4px;
+        margin-left: 8px;
+        color: rgba(255,255,255,0.5);
+    }
+    
+    .pixel-close-btn:hover {
+        color: rgba(255,255,255,0.9);
     }
 
     @keyframes slide-in {

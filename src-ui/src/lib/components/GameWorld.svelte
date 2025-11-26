@@ -35,12 +35,15 @@
     let lastCodeSuccess = false; // NOT reactive - track code success state
     let animationTime = $state(0);
 
+    // Backend uses 32px tile size for positions
+    const BACKEND_TILE_SIZE = 32;
+
     // Compute nearTerminal as derived state to avoid infinite loop
     const nearTerminal = $derived.by(() => {
         if (!renderState?.visible_tiles || !renderState?.player) return false;
         const playerTile = {
-            x: Math.floor(renderState.player.position.x / tileSize),
-            y: Math.floor(renderState.player.position.y / tileSize),
+            x: Math.floor(renderState.player.position.x / BACKEND_TILE_SIZE),
+            y: Math.floor(renderState.player.position.y / BACKEND_TILE_SIZE),
         };
         // Check if any visible tile is a terminal within 1 manhattan distance
         for (let y = 0; y < renderState.visible_tiles.length; y++) {
@@ -81,13 +84,22 @@
 
         if (movementMapping[key]) {
             event.preventDefault();
+            event.stopPropagation();
             dispatcher('move', { direction: movementMapping[key] });
+            return; // Exit early to avoid other handlers
         }
 
-        // Interact key (E or Space)
-        if (key === 'e' || key === ' ') {
+        // Interact key (E only - space can cause scroll issues)
+        if (key === 'e') {
             event.preventDefault();
-            dispatcher('interact');
+            event.stopPropagation();
+            if (nearTerminal) {
+                console.log('[GameWorld] Dispatching interact event, nearTerminal:', nearTerminal);
+                dispatcher('interact');
+            } else {
+                console.log('[GameWorld] Interact blocked - nothing nearby');
+            }
+            return;
         }
     }
 
@@ -211,8 +223,8 @@
         }
 
         const playerTile = {
-            x: Math.floor(state.player.position.x / tileSize) - state.viewport_offset.x,
-            y: Math.floor(state.player.position.y / tileSize) - state.viewport_offset.y,
+            x: Math.floor(state.player.position.x / BACKEND_TILE_SIZE) - state.viewport_offset.x,
+            y: Math.floor(state.player.position.y / BACKEND_TILE_SIZE) - state.viewport_offset.y,
         };
 
         // Draw tiles with sprites
@@ -222,23 +234,48 @@
                 const tileX = x * tileSize;
                 const tileY = y * tileSize;
 
-                // ALWAYS draw solid background color first (handles transparent sprites)
+                // Draw solid background color first (handles transparent sprites)
                 context.fillStyle = getTileColor(tile.tile_type);
                 context.fillRect(tileX, tileY, tileSize, tileSize);
+
+                // For interactive tiles (terminal, npc), draw grass texture first as base
+                if (tile.tile_type === 'terminal' || tile.tile_type === 'npc') {
+                    const grassSprite = assets.tiles.get('grass');
+                    if (grassSprite) {
+                        context.drawImage(grassSprite, tileX, tileY, tileSize, tileSize);
+                    }
+                }
 
                 // Then draw tile sprite on top (if available)
                 const tileSprite = getTileSprite(tile.tile_type, tile.walkable);
                 if (tileSprite) {
-                    context.drawImage(tileSprite, tileX, tileY, tileSize, tileSize);
+                    // Check if this is an animated tile (sprite sheet - width > height)
+                    const isAnimatedTile = (tile.tile_type === 'water' || tile.tile_type === 'terminal')
+                        && tileSprite.width > tileSprite.height;
+
+                    if (isAnimatedTile) {
+                        // 4-frame animation (water: 200ms, terminal: 300ms for slower pulse)
+                        const frameCount = 4;
+                        const frameDuration = tile.tile_type === 'terminal' ? 300 : 200;
+                        const frameIndex = Math.floor(animationTime / frameDuration) % frameCount;
+                        const frameWidth = tileSprite.width / frameCount;
+                        context.drawImage(
+                            tileSprite,
+                            frameIndex * frameWidth, 0, frameWidth, tileSprite.height, // source
+                            tileX, tileY, tileSize, tileSize // destination
+                        );
+                    } else {
+                        context.drawImage(tileSprite, tileX, tileY, tileSize, tileSize);
+                    }
                 }
 
                 const manhattan = Math.abs(playerTile.x - x) + Math.abs(playerTile.y - y);
                 const isNear = manhattan <= 1;
 
                 // Highlight for interactable tiles when player is near
-                if (tile.tile_type === 'terminal' && isNear) {
+                if ((tile.tile_type === 'terminal' || tile.tile_type === 'npc') && isNear) {
                     // Simple pixel-style highlight border
-                    context.strokeStyle = '#fbbf24'; // gold highlight
+                    context.strokeStyle = tile.tile_type === 'npc' ? '#60a5fa' : '#fbbf24'; // blue for NPC, gold for terminal
                     context.lineWidth = 2;
                     context.strokeRect(tileX + 1, tileY + 1, tileSize - 2, tileSize - 2);
                 }
@@ -253,20 +290,45 @@
         }
 
         // Draw player with sprite
-        const px = state.player.position.x - state.viewport_offset.x * tileSize;
-        const py = state.player.position.y - state.viewport_offset.y * tileSize;
+        // Scale from backend coords (32px tiles) to frontend coords
+        const scaleFactor = tileSize / BACKEND_TILE_SIZE;
+        const px = state.player.position.x * scaleFactor - state.viewport_offset.x * tileSize;
+        const py = state.player.position.y * scaleFactor - state.viewport_offset.y * tileSize;
 
         // Get player sprite based on facing direction
         const playerSpriteName = `player_${state.player.facing}`;
         const playerSprite = assets.sprites.get(playerSpriteName);
 
         if (playerSprite) {
-            // Draw animated player sprite (no glow for pixel art style)
+            // Draw animated player sprite
             const frameIndex = playerAnimState ? getCurrentFrame(playerAnimState, animationTime) : 0;
-            const spriteOffsetX = px - tileSize / 2;
-            const spriteOffsetY = py - tileSize / 2;
+            let spriteOffsetX = px - tileSize / 2;
+            let spriteOffsetY = py - tileSize / 2;
 
-            context.drawImage(playerSprite, spriteOffsetX, spriteOffsetY, tileSize, tileSize);
+            // Handle sprite sheets vs single frames
+            const isSpriteSheet = playerSprite.width > playerSprite.height || playerSprite.height > playerSprite.width;
+            
+            if (isSpriteSheet) {
+                // Assume horizontal strip for now (common format)
+                // If vertical strip is needed, we'd check dimensions
+                const frameWidth = playerSprite.height; // Assume square frames based on height
+                const frameX = frameIndex * frameWidth;
+                
+                context.drawImage(
+                    playerSprite, 
+                    frameX, 0, frameWidth, playerSprite.height, // Source
+                    spriteOffsetX, spriteOffsetY, tileSize, tileSize // Destination
+                );
+            } else {
+                // Single frame - add "bobbing" animation if walking
+                // Use ID comparison to avoid Svelte 5 proxy equality mismatch
+                if (playerAnimState?.animation?.id === ANIMATIONS.playerWalk.id) {
+                    const bobOffset = Math.sin(animationTime / 50) * 2; // +/- 2px bob
+                    spriteOffsetY += bobOffset;
+                }
+                
+                context.drawImage(playerSprite, spriteOffsetX, spriteOffsetY, tileSize, tileSize);
+            }
         } else {
             // Fallback to colored knight shape if sprite not loaded
             context.fillStyle = '#708090'; // armor gray
@@ -303,6 +365,9 @@
             case 'door':
                 spriteName = walkable ? 'door_open' : 'door_locked';
                 break;
+            case 'npc':
+                // NPC sprites are in sprites map, not tiles
+                return assets.sprites.get('npc_mentor');
             default:
                 spriteName = 'grass';  // Default to grass tile
         }
@@ -312,8 +377,8 @@
 
     function drawFallbackScene(context: CanvasRenderingContext2D, state: RenderState) {
         const playerTile = {
-            x: Math.floor(state.player.position.x / tileSize) - state.viewport_offset.x,
-            y: Math.floor(state.player.position.y / tileSize) - state.viewport_offset.y,
+            x: Math.floor(state.player.position.x / BACKEND_TILE_SIZE) - state.viewport_offset.x,
+            y: Math.floor(state.player.position.y / BACKEND_TILE_SIZE) - state.viewport_offset.y,
         };
 
         // Draw tiles
@@ -337,8 +402,10 @@
         }
 
         // Draw player fallback (knight shape)
-        const px = state.player.position.x - state.viewport_offset.x * tileSize;
-        const py = state.player.position.y - state.viewport_offset.y * tileSize;
+        // Scale from backend coords to frontend coords
+        const scaleFactor = tileSize / BACKEND_TILE_SIZE;
+        const px = state.player.position.x * scaleFactor - state.viewport_offset.x * tileSize;
+        const py = state.player.position.y * scaleFactor - state.viewport_offset.y * tileSize;
         context.fillStyle = '#708090'; // armor gray
         context.fillRect(px - tileSize * 0.35, py - tileSize * 0.4, tileSize * 0.7, tileSize * 0.8);
         context.fillStyle = '#fbbf24'; // gold trim
@@ -354,17 +421,26 @@
             case 'void':
                 return '#0a0a14'; // dark void
             case 'door':
-                return '#5a3a1a'; // wood brown
+                return '#8b5a2b'; // visible wood brown (brighter)
             case 'terminal':
-                return '#0f3460'; // ancient terminal blue
+            case 'npc':
+                return '#3d7a37'; // same as floor (grass) - sprite has transparent bg
             case 'floor':
             default:
                 return '#3d7a37'; // grass green
         }
     }
 
-    function handleContainerClick() {
-        containerRef?.focus();
+    function handleContainerClick(event: MouseEvent) {
+        // Don't steal focus if clicking inside a modal/form element
+        const target = event.target as HTMLElement;
+        const isInModal = target.closest('.grimoire-container') ||
+                          target.closest('textarea') ||
+                          target.closest('input') ||
+                          target.closest('button');
+        if (!isInModal) {
+            containerRef?.focus();
+        }
     }
 
     function handleContainerKeydown(event: KeyboardEvent) {
