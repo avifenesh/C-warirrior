@@ -261,6 +261,22 @@ export interface PlayerState {
 | `code_output` | BE → FE | C execution result | `ExecutionResult` |
 | `quest_complete` | BE → FE | Achievement trigger | `QuestData` |
 
+### HTTP (Axum) Contract Used by Web Frontend
+
+The web build talks to the Axum API (Railway) with these endpoints:
+
+| Endpoint | Method | Purpose | Notes |
+|----------|--------|---------|-------|
+| `/api/game/init` | POST | Create session, seed state | Frontend immediately fetches `/api/game/render-state` after init |
+| `/api/game/state` | GET | Full `GameState` snapshot | Used rarely; render path prefers `/render-state` |
+| `/api/game/render-state` | GET | Render-ready `RenderState` | Polled at ~150ms for web path |
+| `/api/game/action` | POST | Apply `PlayerAction` | Rejects `SubmitCode` (use code endpoint) |
+| `/api/levels` | GET | List `LevelInfo` | Includes lock/completion flags |
+| `/api/levels/{id}/load` | POST | Load level, returns `{ level_data, render_state }` | Frontend caches `level_data` client-side |
+| `/api/code/submit` | POST | Compile/run C, validate | Returns `CodeResult`; frontend refetches render-state on success |
+
+Not implemented on HTTP path: streamed `code_output`, `level_complete` events, or `complete_level` command. Web UI derives hints from cached `level_data.hints`.
+
 ---
 
 ## Game Loop Architecture
