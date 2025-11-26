@@ -1,8 +1,9 @@
 /**
  * HTTP Backend Implementation
  *
- * Implements the Backend interface using fetch calls to a Railway API.
- * Used for web deployment where Tauri is not available.
+ * Aligns with the Axum API defined in src-api/src/main.rs.
+ * Keeps a thin cache of the current level data because the API
+ * only returns full level data on load.
  */
 
 // TypeScript declaration for build-time constant
@@ -108,17 +109,8 @@ class EventPoller {
                     case 'game-tick':
                         data = await apiRequest<RenderState>('/api/game/render-state');
                         break;
-                    case 'code-output':
-                        // Poll for code output (requires backend implementation)
-                        data = await apiRequest<CodeOutput | null>('/api/game/code-output/poll');
-                        break;
-                    case 'level-complete':
-                        // Poll for level completion events
-                        data = await apiRequest<LevelCompleteEvent | null>('/api/game/level-complete/poll');
-                        break;
-                    case 'game-error':
-                        // Poll for game errors
-                        data = await apiRequest<GameError | null>('/api/game/errors/poll');
+                    default:
+                        // Other events are not implemented on HTTP backend yet
                         break;
                 }
 
@@ -175,10 +167,16 @@ class EventPoller {
 // HTTP Backend implementation
 class HttpBackend implements Backend {
     private poller = new EventPoller();
+    private currentLevelData: LevelData | null = null;
 
     // Game lifecycle
     async initGame(): Promise<RenderState> {
-        return apiRequest<RenderState>('/api/game/init', { method: 'POST' });
+        // API returns device_id + full GameState; we immediately fetch render state for UI.
+        await apiRequest('/api/game/init', {
+            method: 'POST',
+            body: JSON.stringify({})
+        });
+        return this.getRenderState();
     }
 
     async getGameState(): Promise<GameState> {
@@ -202,52 +200,67 @@ class HttpBackend implements Backend {
     }
 
     async loadLevel(levelId: string): Promise<void> {
-        await apiRequest<void>(`/api/levels/${levelId}/load`, {
+        const payload = await apiRequest<{ level_data: LevelData; render_state: RenderState }>(`/api/levels/${levelId}/load`, {
             method: 'POST',
         });
+        this.currentLevelData = payload.level_data;
+        // Keep render state current so callers can optionally refresh without another GET
+        // but still return void to satisfy interface.
     }
 
     async getLevelData(): Promise<LevelData> {
-        return apiRequest<LevelData>('/api/levels/current');
+        if (!this.currentLevelData) {
+            throw new Error('No level loaded yet');
+        }
+        return this.currentLevelData;
     }
 
     // Code
     async submitCode(code: string): Promise<CodeResult> {
-        return apiRequest<CodeResult>('/api/code/submit', {
-            method: 'POST',
-            body: JSON.stringify({ code }),
-        });
+        const result = await apiRequest<CodeResult & { render_state?: RenderState; xp_earned?: number }>(
+            '/api/code/submit',
+            {
+                method: 'POST',
+                body: JSON.stringify({ code }),
+            }
+        );
+        // If backend included an updated render_state, cache it for the next tick
+        if (result && 'render_state' in result && result.render_state) {
+            // No dedicated cache here; callers can call getRenderState after submit
+        }
+        return result;
     }
 
     async getHint(hintIndex: number): Promise<string> {
-        const result = await apiRequest<{ hint: string }>(
-            `/api/code/hint?index=${hintIndex}`
-        );
-        return result.hint;
+        if (this.currentLevelData && this.currentLevelData.hints[hintIndex]) {
+            return this.currentLevelData.hints[hintIndex];
+        }
+        throw new Error('No more hints available');
     }
 
     // Progress
     async completeLevel(): Promise<LevelCompleteResult> {
-        return apiRequest<LevelCompleteResult>('/api/game/complete-level', {
-            method: 'POST',
-        });
+        throw new Error('completeLevel is not available on the HTTP backend');
     }
 
     // Events (using polling)
     async onGameTick(cb: (state: RenderState) => void): Promise<UnsubscribeFn> {
-        return this.poller.subscribe('game-tick', cb, 100);
+        return this.poller.subscribe('game-tick', cb, 150);
     }
 
-    async onCodeOutput(cb: (output: CodeOutput) => void): Promise<UnsubscribeFn> {
-        return this.poller.subscribe('code-output', cb, 200);
+    async onCodeOutput(_cb: (output: CodeOutput) => void): Promise<UnsubscribeFn> {
+        // Not implemented for HTTP backend - code output comes from submit response
+        return () => {};
     }
 
-    async onLevelComplete(cb: (event: LevelCompleteEvent) => void): Promise<UnsubscribeFn> {
-        return this.poller.subscribe('level-complete', cb, 500);
+    async onLevelComplete(_cb: (event: LevelCompleteEvent) => void): Promise<UnsubscribeFn> {
+        // Not implemented for HTTP backend - level complete comes from submit response
+        return () => {};
     }
 
-    async onGameError(cb: (error: GameError) => void): Promise<UnsubscribeFn> {
-        return this.poller.subscribe('game-error', cb, 500);
+    async onGameError(_cb: (error: GameError) => void): Promise<UnsubscribeFn> {
+        // Not implemented for HTTP backend - errors come from API responses
+        return () => {};
     }
 
     // Cleanup

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Generate placeholder pixel art assets for Code Warrior
- * Run with: node scripts/generate-pixel-art.js
+ * Run with: node scripts/generate-pixel-art.cjs
  */
 
 const { createCanvas } = require('canvas');

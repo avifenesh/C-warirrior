@@ -24,6 +24,10 @@ Thumbs.db
 # Python virtualenv
 .venv/
 
+# Python bytecode/cache
+__pycache__/
+*.pyc
+
 # Rust / Cargo
 target/
 **/*.rs.bk
