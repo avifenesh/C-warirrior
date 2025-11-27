@@ -238,8 +238,8 @@
                 context.fillStyle = getTileColor(tile.tile_type);
                 context.fillRect(tileX, tileY, tileSize, tileSize);
 
-                // For interactive tiles (terminal, npc), draw grass texture first as base
-                if (tile.tile_type === 'terminal' || tile.tile_type === 'npc') {
+                // For interactive tiles (terminal), draw grass texture first as base
+                if (tile.tile_type === 'terminal') {
                     const grassSprite = assets.tiles.get('grass');
                     if (grassSprite) {
                         context.drawImage(grassSprite, tileX, tileY, tileSize, tileSize);
@@ -273,9 +273,9 @@
                 const isNear = manhattan <= 1;
 
                 // Highlight for interactable tiles when player is near
-                if ((tile.tile_type === 'terminal' || tile.tile_type === 'npc') && isNear) {
+                if (tile.tile_type === 'terminal' && isNear) {
                     // Simple pixel-style highlight border
-                    context.strokeStyle = tile.tile_type === 'npc' ? '#60a5fa' : '#fbbf24'; // blue for NPC, gold for terminal
+                    context.strokeStyle = '#fbbf24'; // gold for terminal
                     context.lineWidth = 2;
                     context.strokeRect(tileX + 1, tileY + 1, tileSize - 2, tileSize - 2);
                 }

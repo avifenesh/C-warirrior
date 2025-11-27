@@ -7,6 +7,10 @@
     import GameHUD from '$lib/components/GameHUD.svelte';
     import Toast, { type ToastMessage } from '$lib/components/Toast.svelte';
     import MainMenu from '$lib/components/MainMenu.svelte';
+    // Agent 2's new components
+    import Settings from '$lib/components/Settings.svelte';
+    import ErrorBoundary from '$lib/components/ErrorBoundary.svelte';
+    import ProgressTracker from '$lib/components/ProgressTracker.svelte';
 
     // Backend + state (Runes, no svelte/store)
     let backend: Backend | null = null;
@@ -29,6 +33,7 @@
     let codeDraft = $state('// Write your C spell here...\n#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}');
     let toastMessages = $state<ToastMessage[]>([]);
     let toastCounter = 0; // Unique counter for toast IDs
+    let showSettings = $state(false); // Settings modal state
 
     // Derived values
     let showMainMenu = $derived((renderState?.game_phase ?? 'main_menu') === 'main_menu' || !renderState?.current_level_id);
@@ -252,10 +257,12 @@
     </div>
 {/if}
 
+<ErrorBoundary>
 {#if showMainMenu}
     <MainMenu
         onNewGame={handleNewGame}
         onContinue={handleContinue}
+        onSettings={() => showSettings = true}
     />
 {:else}
     <GameWorld
@@ -324,8 +331,32 @@
 
         <!-- Toast Notifications -->
         <Toast messages={toastMessages} onDismiss={dismissToast} />
+
+        <!-- Progress Tracker (bottom-left) -->
+        <div class="fixed bottom-4 left-4 z-40">
+            <ProgressTracker
+                currentXP={renderState?.player?.xp ?? 0}
+                totalXP={1000}
+                currentLevel={currentLevelId ?? 'L01'}
+                completedLevels={[]}
+                totalLevels={levels.length || 15}
+            />
+        </div>
+
+        <!-- Settings Button (top-right) -->
+        <button
+            class="fixed top-4 right-4 z-40 settings-btn"
+            onclick={() => showSettings = true}
+            title="Settings"
+        >
+            &#9881;
+        </button>
     </GameWorld>
 {/if}
+</ErrorBoundary>
+
+<!-- Settings Modal -->
+<Settings isOpen={showSettings} onClose={() => showSettings = false} />
 
 <style>
     /* Pixel Art Modal Styles */
@@ -415,5 +446,25 @@
         color: #fee2e2;
         border-color: #7f1d1d;
         text-shadow: 1px 1px 0 #7f1d1d;
+    }
+
+    .settings-btn {
+        background: rgba(26, 26, 46, 0.9);
+        border: 2px solid #888;
+        color: #e0e0e0;
+        width: 44px;
+        height: 44px;
+        font-size: 24px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .settings-btn:hover {
+        border-color: #00fff5;
+        color: #00fff5;
+        box-shadow: 0 0 10px rgba(0, 255, 245, 0.3);
     }
 </style>

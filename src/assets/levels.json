@@ -129,5 +129,264 @@
         "starter_code": "#include <stdio.h>\n\nint main() {\n    int fortress_rooms[5] = {10, 20, 30, 40, 50};\n    \n    // Access the room at index 2 and print 'Room 2 contains %d'\n    \n    return 0;\n}"
       }
     ]
+  },
+  {
+    "id": "L06",
+    "title": "The Spell Scroll",
+    "concept": "void functions",
+    "description": "The ancient scroll contains a spell, but it must be spoken to activate. Create a function that speaks the incantation.",
+    "code_template": "#include <stdio.h>\n\n// Define a void function called 'cast_spell' that prints \"Abracadabra!\"\n\nint main() {\n    cast_spell();\n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Abracadabra!\n"
+    },
+    "hints": [
+      "Void functions are defined as: void functionName() { ... }",
+      "Use printf inside the function to print the spell",
+      "Don't forget the newline \\n"
+    ],
+    "xp_reward": 150,
+    "map_file": "maps/L06_spell_scroll.json",
+    "challenges": [
+      {
+        "id": "cast_spell_void",
+        "prompt": "Define and call a void function 'cast_spell' that prints the incantation.",
+        "expected_output": "Abracadabra!",
+        "starter_code": "#include <stdio.h>\n\n// Define a void function called 'cast_spell' that prints \"Abracadabra!\"\n\nint main() {\n    cast_spell();\n    return 0;\n}"
+      }
+    ]
+  },
+  {
+    "id": "L07",
+    "title": "The Damage Calculator",
+    "concept": "return values",
+    "description": "The enchanting table can calculate weapon damage, but only if you create a formula that returns the result.",
+    "code_template": "#include <stdio.h>\n\n// Define a function 'calculate_damage' that takes (int base, int multiplier)\n// and returns base * multiplier\n\nint main() {\n    int damage = calculate_damage(10, 3);\n    printf(\"Damage: %d\\n\", damage);\n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Damage: 30\n"
+    },
+    "hints": [
+      "Return type goes before function name: int functionName(...)",
+      "Use the return keyword to send back a value",
+      "return base * multiplier;"
+    ],
+    "xp_reward": 175,
+    "map_file": "maps/L07_damage_calc.json",
+    "challenges": [
+      {
+        "id": "calc_damage_return",
+        "prompt": "Implement 'calculate_damage' so the table reports the correct damage.",
+        "expected_output": "Damage: 30",
+        "starter_code": "#include <stdio.h>\n\n// Define a function 'calculate_damage' that takes (int base, int multiplier)\n// and returns base * multiplier\n\nint main() {\n    int damage = calculate_damage(10, 3);\n    printf(\"Damage: %d\\n\", damage);\n    return 0;\n}"
+      }
+    ]
+  },
+  {
+    "id": "L08",
+    "title": "The Stack Spire",
+    "concept": "stack frames",
+    "description": "Each floor of the spire is a function call. Climb up through nested calls, then return back down.",
+    "code_template": "#include <stdio.h>\n\nvoid floor_3() {\n    printf(\"Floor 3 - Top!\\n\");\n}\n\nvoid floor_2() {\n    printf(\"Floor 2\\n\");\n    // Call floor_3 here\n}\n\nvoid floor_1() {\n    printf(\"Floor 1\\n\");\n    floor_2();\n}\n\nint main() {\n    printf(\"Ground Floor\\n\");\n    floor_1();\n    printf(\"Back to Ground\\n\");\n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Ground Floor\nFloor 1\nFloor 2\nFloor 3 - Top!\nBack to Ground\n"
+    },
+    "hints": [
+      "Call floor_3() from inside floor_2().",
+      "Execution climbs up the call stack and then unwinds.",
+      "Match the exact output order, including newlines."
+    ],
+    "xp_reward": 200,
+    "map_file": "maps/L08_stack_spire.json",
+    "challenges": [
+      {
+        "id": "stack_spire_calls",
+        "prompt": "Complete the call chain so the hero climbs to Floor 3 and back.",
+        "expected_output": "Ground Floor\nFloor 1\nFloor 2\nFloor 3 - Top!\nBack to Ground",
+        "starter_code": "#include <stdio.h>\n\nvoid floor_3() {\n    printf(\"Floor 3 - Top!\\n\");\n}\n\nvoid floor_2() {\n    printf(\"Floor 2\\n\");\n    // Call floor_3 here\n}\n\nvoid floor_1() {\n    printf(\"Floor 1\\n\");\n    floor_2();\n}\n\nint main() {\n    printf(\"Ground Floor\\n\");\n    floor_1();\n    printf(\"Back to Ground\\n\");\n    return 0;\n}"
+      }
+    ]
+  },
+  {
+    "id": "L09",
+    "title": "The Global Artifact",
+    "concept": "scope",
+    "description": "The temple's central artifact is visible from all chambers. But each room has its own treasures only accessible within.",
+    "code_template": "#include <stdio.h>\n\n// Declare a global variable 'artifact_power' = 100\n\nvoid east_chamber() {\n    int local_gem = 10;\n    printf(\"East: artifact=%d, gem=%d\\n\", artifact_power, local_gem);\n}\n\nvoid west_chamber() {\n    int local_gem = 20;\n    printf(\"West: artifact=%d, gem=%d\\n\", artifact_power, local_gem);\n}\n\nint main() {\n    east_chamber();\n    west_chamber();\n    printf(\"Center: artifact=%d\\n\", artifact_power);\n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "East: artifact=100, gem=10\nWest: artifact=100, gem=20\nCenter: artifact=100\n"
+    },
+    "hints": [
+      "Declare 'artifact_power' outside of any function.",
+      "Global variables can be used in any function in the file.",
+      "Keep each chamber's local_gem variable inside its own function."
+    ],
+    "xp_reward": 200,
+    "map_file": "maps/L09_global_artifact.json",
+    "challenges": [
+      {
+        "id": "global_vs_local_scope",
+        "prompt": "Make the artifact power visible in all chambers while keeping gems local.",
+        "expected_output": "East: artifact=100, gem=10\nWest: artifact=100, gem=20\nCenter: artifact=100",
+        "starter_code": "#include <stdio.h>\n\n// Declare a global variable 'artifact_power' = 100\n\nvoid east_chamber() {\n    int local_gem = 10;\n    printf(\"East: artifact=%d, gem=%d\\n\", artifact_power, local_gem);\n}\n\nvoid west_chamber() {\n    int local_gem = 20;\n    printf(\"West: artifact=%d, gem=%d\\n\", artifact_power, local_gem);\n}\n\nint main() {\n    east_chamber();\n    west_chamber();\n    printf(\"Center: artifact=%d\\n\", artifact_power);\n    return 0;\n}"
+      }
+    ]
+  },
+  {
+    "id": "L10",
+    "title": "The Recursive Mirror",
+    "concept": "recursion",
+    "description": "The mirror shows infinite reflections... but there must be a stopping point, or you'll be trapped forever!",
+    "code_template": "#include <stdio.h>\n\nvoid reflect(int depth) {\n    if (depth <= 0) {\n        printf(\"Base reflection reached!\\n\");\n        return;\n    }\n    printf(\"Reflection depth: %d\\n\", depth);\n    // Call reflect with depth - 1\n}\n\nint main() {\n    reflect(3);\n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Reflection depth: 3\nReflection depth: 2\nReflection depth: 1\nBase reflection reached!\n"
+    },
+    "hints": [
+      "Always include a base case to stop recursion.",
+      "Call reflect(depth - 1) to move toward the base case.",
+      "Make sure you print at each depth before the recursive call."
+    ],
+    "xp_reward": 250,
+    "map_file": "maps/L10_recursive_mirror.json",
+    "challenges": [
+      {
+        "id": "recursive_reflection",
+        "prompt": "Complete the recursive call so the reflections count down to the base case.",
+        "expected_output": "Reflection depth: 3\nReflection depth: 2\nReflection depth: 1\nBase reflection reached!",
+        "starter_code": "#include <stdio.h>\n\nvoid reflect(int depth) {\n    if (depth <= 0) {\n        printf(\"Base reflection reached!\\n\");\n        return;\n    }\n    printf(\"Reflection depth: %d\\n\", depth);\n    // Call reflect with depth - 1\n}\n\nint main() {\n    reflect(3);\n    return 0;\n}"
+      }
+    ]
+  },
+  {
+    "id": "L11",
+    "title": "The Address Spell",
+    "concept": "address-of operator",
+    "description": "To locate the hidden treasure, you must discover its exact address in the memory realm.",
+    "code_template": "#include <stdio.h>\n\nint main() {\n    int treasure = 42;\n    // Print the ADDRESS of treasure using &\n    // Format: printf(\"%p\\n\", ...);\n    return 0;\n}",
+    "success_criteria": {
+      "type": "compile_only"
+    },
+    "hints": [
+      "Use the & operator to get the address of a variable.",
+      "Print addresses with %p and cast to (void*).",
+      "The exact address changes each run; we only require compilation."
+    ],
+    "xp_reward": 225,
+    "map_file": "maps/L11_address_spell.json",
+    "challenges": [
+      {
+        "id": "print_address",
+        "prompt": "Reveal the memory address of the treasure using the address-of operator.",
+        "expected_output": "(varies)",
+        "starter_code": "#include <stdio.h>\n\nint main() {\n    int treasure = 42;\n    // Print the ADDRESS of treasure using & and %p\n    return 0;\n}"
+      }
+    ]
+  },
+  {
+    "id": "L12",
+    "title": "The Grappling Hook",
+    "concept": "pointer declaration",
+    "description": "Your grappling hook can grab distant ledges, but first you must aim it. Declare where it points!",
+    "code_template": "#include <stdio.h>\n\nint main() {\n    int ledge = 100;\n    // Declare a pointer 'hook' and point it to ledge\n    // Then print the value hook points to\n    printf(\"Grabbed: %d\\n\", *hook);\n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Grabbed: 100\n"
+    },
+    "hints": [
+      "Declare a pointer with: int *name = &variable;",
+      "The * in the declaration means 'pointer to int'.",
+      "Use &ledge to get the address of ledge."
+    ],
+    "xp_reward": 250,
+    "map_file": "maps/L12_grappling_hook.json",
+    "challenges": [
+      {
+        "id": "pointer_declare_hook",
+        "prompt": "Declare the 'hook' pointer so it grabs the ledge's value.",
+        "expected_output": "Grabbed: 100",
+        "starter_code": "#include <stdio.h>\n\nint main() {\n    int ledge = 100;\n    // Declare a pointer 'hook' and point it to ledge\n    // Then print the value hook points to\n    printf(\"Grabbed: %d\\n\", *hook);\n    return 0;\n}"
+      }
+    ]
+  },
+  {
+    "id": "L13",
+    "title": "The Dereference Pull",
+    "concept": "dereference operator",
+    "description": "The treasure is behind a barrier. Use your pointer to pull its value to you!",
+    "code_template": "#include <stdio.h>\n\nint main() {\n    int hidden_treasure = 777;\n    int *ptr = &hidden_treasure;\n    \n    // Change the treasure's value to 999 using the pointer\n    // Then print it\n    printf(\"Treasure value: %d\\n\", hidden_treasure);\n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Treasure value: 999\n"
+    },
+    "hints": [
+      "Use *ptr on the left side of = to change the value.",
+      "ptr stores an address; *ptr reads or writes the value at that address.",
+      "After updating through the pointer, printing hidden_treasure shows the new value."
+    ],
+    "xp_reward": 275,
+    "map_file": "maps/L13_dereference_pull.json",
+    "challenges": [
+      {
+        "id": "dereference_update",
+        "prompt": "Use the pointer to change the treasure's value to 999.",
+        "expected_output": "Treasure value: 999",
+        "starter_code": "#include <stdio.h>\n\nint main() {\n    int hidden_treasure = 777;\n    int *ptr = &hidden_treasure;\n    \n    // Change the treasure's value to 999 using the pointer\n    // Then print it\n    printf(\"Treasure value: %d\\n\", hidden_treasure);\n    return 0;\n}"
+      }
+    ]
+  },
+  {
+    "id": "L14",
+    "title": "The Array Navigator",
+    "concept": "pointer arithmetic",
+    "description": "The corridor has numbered chambers. Navigate to chamber 3 using pointer arithmetic.",
+    "code_template": "#include <stdio.h>\n\nint main() {\n    int chambers[5] = {10, 20, 30, 40, 50};\n    int *ptr = chambers;  // Points to first element\n    \n    // Use pointer arithmetic to print the 4th chamber (index 3)\n    // Hint: *(ptr + 3) or ptr[3]\n    printf(\"Chamber 3 contains: %d\\n\", ???);\n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Chamber 3 contains: 40\n"
+    },
+    "hints": [
+      "Adding 1 to a pointer moves it to the next array element.",
+      "ptr[3] is the same as *(ptr + 3).",
+      "Index 3 is the 4th chamber in the corridor."
+    ],
+    "xp_reward": 300,
+    "map_file": "maps/L14_array_navigator.json",
+    "challenges": [
+      {
+        "id": "pointer_arithmetic_navigate",
+        "prompt": "Use pointer arithmetic to read the value in chamber 3 (index 3).",
+        "expected_output": "Chamber 3 contains: 40",
+        "starter_code": "#include <stdio.h>\n\nint main() {\n    int chambers[5] = {10, 20, 30, 40, 50};\n    int *ptr = chambers;  // Points to first element\n    \n    // Use pointer arithmetic to print the 4th chamber (index 3)\n    // Hint: *(ptr + 3) or ptr[3]\n    printf(\"Chamber 3 contains: %d\\n\", ???);\n    return 0;\n}"
+      }
+    ]
+  },
+  {
+    "id": "L15",
+    "title": "The Null Trap",
+    "concept": "null pointers",
+    "description": "Some paths lead to void. Check before you step, or face a SEGFAULT!",
+    "code_template": "#include <stdio.h>\n\nint main() {\n    int treasure = 42;\n    int *safe_ptr = &treasure;\n    int *trap_ptr = NULL;\n    \n    // Safely print values - check for NULL first!\n    // If pointer is NULL, print \"Path is blocked!\"\n    // If pointer is valid, print \"Found: X\"\n    \n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Found: 42\nPath is blocked!\n"
+    },
+    "hints": [
+      "Compare pointers to NULL before dereferencing.",
+      "Print one line for the safe path and one for the trap.",
+      "Use if/else to choose which message to print."
+    ],
+    "xp_reward": 350,
+    "map_file": "maps/L15_null_trap.json",
+    "challenges": [
+      {
+        "id": "null_pointer_check",
+        "prompt": "Check each pointer before using it so you avoid the null trap.",
+        "expected_output": "Found: 42\nPath is blocked!",
+        "starter_code": "#include <stdio.h>\n\nint main() {\n    int treasure = 42;\n    int *safe_ptr = &treasure;\n    int *trap_ptr = NULL;\n    \n    // Safely print values - check for NULL first!\n    // If pointer is NULL, print \"Path is blocked!\"\n    // If pointer is valid, print \"Found: X\"\n    \n    return 0;\n}"
+      }
+    ]
   }
 ]

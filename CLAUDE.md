@@ -246,12 +246,84 @@ This script:
 
 ---
 
+## Large Codebase Analysis with Gemini CLI
+
+**When analyzing large code chunks or understanding the whole codebase**, use Gemini's massive context window:
+
+```bash
+gemini -p "<prompt>" --model gemini-3-pro-preview
+```
+
+### When to Use Gemini CLI
+
+- Analyzing files that exceed your context window
+- Understanding cross-cutting concerns across many files
+- Reviewing large PRs or diffs
+- Getting a holistic view of system architecture
+- Tracing data flow across the entire codebase
+
+### Best Practices for Gemini Prompts
+
+1. **Structure your prompt clearly** - Use sections/headers:
+   ```bash
+   gemini -p "## Task
+   Analyze the data flow in this codebase.
+
+   ## Context
+   This is a Rust/Tauri game with Svelte frontend.
+
+   ## Output Format
+   Provide a numbered list of the flow steps." --model gemini-3-pro-preview
+   ```
+
+2. **Place large context first** - Put code/files at the beginning, then ask your question:
+   ```bash
+   gemini -p "$(cat src/*.rs)
+
+   Based on the code above, identify all Tauri commands and their purposes." --model gemini-3-pro-preview
+   ```
+
+3. **Be specific about output format** - Request structured output:
+   - "Return as JSON with keys: function, purpose, dependencies"
+   - "Provide a bullet list of findings"
+   - "Create a markdown table of X vs Y"
+
+4. **Break complex analysis into steps** - Ask Gemini to plan first:
+   ```bash
+   gemini -p "First, list all the modules. Then, for each module, describe its responsibility. Finally, draw the dependency graph." --model gemini-3-pro-preview
+   ```
+
+5. **Use self-critique for accuracy** - Ask it to verify:
+   ```bash
+   gemini -p "Analyze this code for bugs. After listing potential issues, review each one and rate your confidence (high/medium/low)." --model gemini-3-pro-preview
+   ```
+
+### Example Use Cases
+
+```bash
+# Understand entire codebase structure
+gemini -p "$(find src -name '*.rs' -exec cat {} \;)
+
+Analyze this Rust codebase and provide:
+1. High-level architecture overview
+2. Module dependency graph
+3. Key data structures and their relationships" --model gemini-3-pro-preview
+
+# Trace a specific feature
+gemini -p "$(cat src/**/*.rs src-ui/src/**/*.ts)
+
+Trace how player movement works from frontend input to backend state update. List every file and function involved." --model gemini-3-pro-preview
+```
+
+---
+
 ## When in Doubt
 
 1. **Check constraints**: [`docs/core/CONSTRAINTS.md`](docs/core/CONSTRAINTS.md)
 2. **Find your domain**: [`docs/core/DOMAINS.md`](docs/core/DOMAINS.md)
 3. **Activate a skill**: Use Claude Code skills for specialized guidance
 4. **Use MCP tools**: For C compilation and code execution
+5. **Use Gemini CLI**: For large context analysis beyond your window
 
 ---
 

@@ -1,0 +1,80 @@
+{
+  "width": 22,
+  "height": 16,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "layers": [
+    {
+      "name": "floor",
+      "type": "tilelayer",
+      "width": 22,
+      "height": 16,
+      "data": [
+        4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+        4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,
+        4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,
+        4,1,4,4,1,1,1,1,1,1,1,1,1,1,1,1,4,4,1,1,1,4,
+        4,1,4,4,1,1,1,1,1,1,1,1,1,1,1,1,4,4,1,1,1,4,
+        4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,
+        4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,
+        4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,
+        4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,
+        4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,
+        4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,
+        4,1,4,4,1,1,1,1,1,1,1,1,1,1,1,1,4,4,1,1,1,4,
+        4,1,4,4,1,1,1,1,1,1,1,1,1,1,1,1,4,4,1,1,1,4,
+        4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,
+        4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,
+        4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4
+      ]
+    },
+    {
+      "name": "objects",
+      "type": "objectgroup",
+      "objects": [
+        {
+          "type": "spawn",
+          "x": 96,
+          "y": 256,
+          "width": 32,
+          "height": 32
+        },
+        {
+          "type": "terminal",
+          "x": 352,
+          "y": 256,
+          "width": 32,
+          "height": 32,
+          "properties": [
+             { "name": "id", "type": "string", "value": "main_terminal" },
+             { "name": "challenge_id", "type": "string", "value": "L07_return_val" }
+          ]
+        },
+        {
+          "type": "door",
+          "x": 608,
+          "y": 256,
+          "width": 32,
+          "height": 32,
+          "properties": [
+            { "name": "locked", "type": "bool", "value": true },
+            { "name": "requires", "type": "string", "value": "main_terminal" }
+          ]
+        },
+        {
+          "type": "npc",
+          "x": 160,
+          "y": 256,
+          "width": 32,
+          "height": 32,
+          "properties": [
+            { "name": "id", "type": "string", "value": "mentor" },
+            { "name": "sprite", "type": "string", "value": "npc_mentor" },
+            { "name": "dialogue", "type": "string", "value": "This training dummy needs to know how much damage you deal. Calculate it and RETURN the value." }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
