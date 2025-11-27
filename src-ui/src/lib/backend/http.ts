@@ -67,15 +67,44 @@ async function apiRequest<T>(
 // Polling manager for events
 class EventPoller {
     private intervals: Map<string, number> = new Map();
+    private pollIntervals: Map<string, number> = new Map();
     private callbacks: Map<string, Set<Function>> = new Map();
     private lastStates: Map<string, any> = new Map();
+    private shouldPoll: Map<string, () => boolean> = new Map();
+    private fetchers: Map<string, () => Promise<any>> = new Map();
+    private paused = false;
+    private removeVisibilityListener: (() => void) | null = null;
 
-    subscribe(eventType: string, callback: Function, pollInterval: number = 100): UnsubscribeFn {
+    constructor() {
+        if (typeof document !== 'undefined') {
+            const handler = () => {
+                if (document.hidden) {
+                    this.pauseAll();
+                } else {
+                    this.resumeAll();
+                }
+            };
+            document.addEventListener('visibilitychange', handler);
+            this.removeVisibilityListener = () => document.removeEventListener('visibilitychange', handler);
+        }
+    }
+
+    subscribe(
+        eventType: string,
+        callback: Function,
+        pollInterval: number = 500,
+        shouldPoll?: () => boolean,
+        fetcher?: () => Promise<any>
+    ): UnsubscribeFn {
         // Add callback to the set
         if (!this.callbacks.has(eventType)) {
             this.callbacks.set(eventType, new Set());
         }
         this.callbacks.get(eventType)!.add(callback);
+
+        if (shouldPoll) this.shouldPoll.set(eventType, shouldPoll);
+        if (fetcher) this.fetchers.set(eventType, fetcher);
+        this.pollIntervals.set(eventType, pollInterval);
 
         // Start polling if not already running
         if (!this.intervals.has(eventType)) {
@@ -94,8 +123,19 @@ class EventPoller {
         };
     }
 
+    private isPollingAllowed(eventType: string): boolean {
+        if (this.paused) return false;
+        if (typeof document !== 'undefined' && document.hidden) return false;
+        const shouldPoll = this.shouldPoll.get(eventType);
+        return shouldPoll ? shouldPoll() : true;
+    }
+
     private startPolling(eventType: string, interval: number) {
         const pollFn = async () => {
+            if (!this.isPollingAllowed(eventType)) {
+                return;
+            }
+
             try {
                 const callbacks = this.callbacks.get(eventType);
                 if (!callbacks || callbacks.size === 0) {
@@ -103,19 +143,22 @@ class EventPoller {
                     return;
                 }
 
-                // Poll based on event type
+                // Poll based on event type or custom fetcher
                 let data: any = null;
-                switch (eventType) {
-                    case 'game-tick':
-                        data = await apiRequest<RenderState>('/api/game/render-state');
-                        break;
-                    default:
-                        // Other events are not implemented on HTTP backend yet
-                        break;
+                const fetcher = this.fetchers.get(eventType);
+                if (fetcher) {
+                    data = await fetcher();
+                } else {
+                    switch (eventType) {
+                        case 'game-tick':
+                            data = await apiRequest<RenderState>('/api/game/render-state');
+                            break;
+                        default:
+                            break;
+                    }
                 }
 
                 if (data) {
-                    // Check if state actually changed (for game-tick)
                     if (eventType === 'game-tick') {
                         const lastState = this.lastStates.get(eventType);
                         const stateStr = JSON.stringify(data);
@@ -125,7 +168,6 @@ class EventPoller {
                         this.lastStates.set(eventType, stateStr);
                     }
 
-                    // Trigger all callbacks
                     callbacks.forEach(cb => {
                         try {
                             cb(data);
@@ -156,11 +198,33 @@ class EventPoller {
         }
     }
 
+    private pauseAll() {
+        this.paused = true;
+        this.intervals.forEach(intervalId => window.clearInterval(intervalId));
+        this.intervals.clear();
+    }
+
+    private resumeAll() {
+        if (!this.paused) return;
+        this.paused = false;
+        this.callbacks.forEach((set, eventType) => {
+            if (set.size === 0 || this.intervals.has(eventType)) return;
+            const interval = this.pollIntervals.get(eventType) ?? 500;
+            this.startPolling(eventType, interval);
+        });
+    }
+
     cleanup() {
         this.intervals.forEach(intervalId => window.clearInterval(intervalId));
         this.intervals.clear();
         this.callbacks.clear();
         this.lastStates.clear();
+        this.fetchers.clear();
+        this.shouldPoll.clear();
+        if (this.removeVisibilityListener) {
+            this.removeVisibilityListener();
+            this.removeVisibilityListener = null;
+        }
     }
 }
 
@@ -168,6 +232,19 @@ class EventPoller {
 class HttpBackend implements Backend {
     private poller = new EventPoller();
     private currentLevelData: LevelData | null = null;
+    private renderStateCache: { state: RenderState; timestamp: number } | null = null;
+
+    private cacheRenderState(state: RenderState) {
+        this.renderStateCache = { state, timestamp: Date.now() };
+    }
+
+    private getCachedRenderState(maxAgeMs = 500): RenderState | null {
+        if (!this.renderStateCache) return null;
+        if (Date.now() - this.renderStateCache.timestamp <= maxAgeMs) {
+            return this.renderStateCache.state;
+        }
+        return null;
+    }
 
     // Game lifecycle
     async initGame(): Promise<RenderState> {
@@ -184,14 +261,21 @@ class HttpBackend implements Backend {
     }
 
     async getRenderState(): Promise<RenderState> {
-        return apiRequest<RenderState>('/api/game/render-state');
+        const cached = this.getCachedRenderState();
+        if (cached) return cached;
+
+        const state = await apiRequest<RenderState>('/api/game/render-state');
+        this.cacheRenderState(state);
+        return state;
     }
 
     async processAction(action: PlayerAction): Promise<RenderState> {
-        return apiRequest<RenderState>('/api/game/action', {
+        const state = await apiRequest<RenderState>('/api/game/action', {
             method: 'POST',
             body: JSON.stringify(action),
         });
+        this.cacheRenderState(state);
+        return state;
     }
 
     // Levels
@@ -204,6 +288,7 @@ class HttpBackend implements Backend {
             method: 'POST',
         });
         this.currentLevelData = payload.level_data;
+        this.cacheRenderState(payload.render_state);
         // Keep render state current so callers can optionally refresh without another GET
         // but still return void to satisfy interface.
     }
@@ -226,7 +311,7 @@ class HttpBackend implements Backend {
         );
         // If backend included an updated render_state, cache it for the next tick
         if (result && 'render_state' in result && result.render_state) {
-            // No dedicated cache here; callers can call getRenderState after submit
+            this.cacheRenderState(result.render_state);
         }
         return result;
     }
@@ -244,8 +329,15 @@ class HttpBackend implements Backend {
     }
 
     // Events (using polling)
+    // Poll at 500ms for smoother UX while reducing API load (~2 req/sec vs ~3)
     async onGameTick(cb: (state: RenderState) => void): Promise<UnsubscribeFn> {
-        return this.poller.subscribe('game-tick', cb, 150);
+        return this.poller.subscribe(
+            'game-tick',
+            cb,
+            500,
+            () => this.currentLevelData !== null,
+            () => this.getRenderState()
+        );
     }
 
     async onCodeOutput(_cb: (output: CodeOutput) => void): Promise<UnsubscribeFn> {
@@ -266,6 +358,7 @@ class HttpBackend implements Backend {
     // Cleanup
     cleanup(): void {
         this.poller.cleanup();
+        this.renderStateCache = null;
     }
 }
 

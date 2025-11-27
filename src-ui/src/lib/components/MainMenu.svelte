@@ -3,9 +3,10 @@
         onNewGame?: () => void;
         onContinue?: () => void;
         onSettings?: () => void;
+        ready?: boolean;
     }
 
-    let { onNewGame, onContinue, onSettings }: Props = $props();
+    let { onNewGame, onContinue, onSettings, ready = true }: Props = $props();
 </script>
 
 <div class="main-menu">
@@ -22,15 +23,17 @@
         <!-- Menu buttons -->
         <div class="button-container">
             <button
-                class="pixel-button pixel-button-primary"
+                class="pixel-button {ready ? 'pixel-button-primary' : 'pixel-button-disabled'}"
                 onclick={onNewGame}
+                disabled={!ready}
             >
-                NEW QUEST
+                {ready ? 'NEW QUEST' : 'LOADING...'}
             </button>
 
             <button
-                class="pixel-button pixel-button-primary"
+                class="pixel-button {ready ? 'pixel-button-primary' : 'pixel-button-disabled'}"
                 onclick={onContinue}
+                disabled={!ready}
             >
                 CONTINUE
             </button>

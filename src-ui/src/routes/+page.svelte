@@ -106,6 +106,9 @@
         if (first) {
             startLevel(first.id);
             addInfoToast('Starting new quest...');
+        } else {
+            console.warn('[handleNewGame] No levels available yet');
+            addInfoToast('Loading levels, please wait...');
         }
     }
 
@@ -114,6 +117,9 @@
         if (first) {
             startLevel(first.id);
             addInfoToast('Continuing quest...');
+        } else {
+            console.warn('[handleContinue] No levels available yet');
+            addInfoToast('Loading levels, please wait...');
         }
     }
 
@@ -153,9 +159,11 @@
         try {
             backend = await getBackend();
             renderState = await backend.initGame();
-            uiStatus = { ...uiStatus, loading: false, status: 'Main Menu', error: null };
+            uiStatus = { ...uiStatus, status: 'Loading levels...' };
             await hydrateLevels();
             await bindEvents();
+            // Only set loading false after levels are fetched
+            uiStatus = { ...uiStatus, loading: false, status: 'Main Menu', error: null };
         } catch (err) {
             console.error('[BOOT] error', err);
             uiStatus = { ...uiStatus, loading: false, error: normalizeError(err), status: 'Error' };
@@ -224,7 +232,11 @@
             const result = await backend.submitCode(code);
             lastCodeResult = result;
             if (result.success) {
-                renderState = await backend.getRenderState();
+                if (result.render_state) {
+                    renderState = result.render_state;
+                } else {
+                    renderState = await backend.getRenderState();
+                }
             }
         } catch (err) {
             uiStatus = { ...uiStatus, error: normalizeError(err) };
@@ -263,6 +275,7 @@
         onNewGame={handleNewGame}
         onContinue={handleContinue}
         onSettings={() => showSettings = true}
+        ready={!uiStatus.loading && levels.length > 0}
     />
 {:else}
     <GameWorld
