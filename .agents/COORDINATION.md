@@ -4,131 +4,147 @@
 
 ---
 
-## Quick Reference
-
-- **Check locks before writing**: See [File Lock Table](#file-lock-table)
-- **Claim a file**: Edit this file, set `Status: LOCKED`, add your Agent ID
-- **Release a file**: Set `Status: DONE`, clear Agent ID
-- **Request a file**: Add your ID to `Waiting` column, check back later
-
----
-
 ## Round 2 Agent Assignments
 
-| Agent | Role | Primary Mission |
-|-------|------|-----------------|
-| Agent A | DB Persistence | Wire db module to save sessions/progress |
-| Agent B | Frontend Fixes | Fix GameWorld.svelte type errors |
-| Agent C | Content L16-20 | Struct phase maps |
-| Agent D | Content L21-25 | Memory mgmt maps + levels.json |
+| Agent | Role | Status | Primary Mission |
+|-------|------|--------|-----------------|
+| **A** | DB Handlers | 🔄 IN PROGRESS | Wire db ops to API handlers (init_game, submit_code) |
+| **B** | Frontend QA | ⏳ PENDING | Fix GameWorld.svelte type errors, verify build |
+| **C** | Maps Creator | ⏳ PENDING | Create L16-L25 map files (all 10 maps) |
+| **D** | Level Writer | ⏳ PENDING | Add L16-L25 to levels.json, validate C puzzles |
 
 ---
 
 ## File Lock Table
 
-### Lock Status Key
-- `FREE` - Available for any agent to claim
-- `LOCKED` - Currently being modified by an agent
-- `DONE` - Completed, read-only unless reopened
-
-### Backend (Agent A Domain)
-
-| File Path | Status | Locked By | Waiting | Notes |
-|-----------|--------|-----------|---------|-------|
-| `src-api/src/main.rs` | FREE | - | - | Wire db ops to handlers |
-| `src-api/src/db/operations.rs` | FREE | - | - | May need adjustments |
-
-### Frontend (Agent B Domain)
-
-| File Path | Status | Locked By | Waiting | Notes |
-|-----------|--------|-----------|---------|-------|
-| `src-ui/src/lib/components/GameWorld.svelte` | FREE | - | - | Fix 3 type errors |
-| `src-ui/src/lib/types.ts` | FREE | - | - | May need type fixes |
-
-### Map Files - Levels 16-20 (Agent C Domain)
-
-| File Path | Status | Locked By | Waiting | Notes |
-|-----------|--------|-----------|---------|-------|
-| `src/assets/maps/L16_blueprint_scroll.json` | FREE | - | - | NEW FILE |
-| `src/assets/maps/L17_chest_contents.json` | FREE | - | - | NEW FILE |
-| `src/assets/maps/L18_teleport_chest.json` | FREE | - | - | NEW FILE |
-| `src/assets/maps/L19_guild_hierarchy.json` | FREE | - | - | NEW FILE |
-| `src/assets/maps/L20_army_roster.json` | FREE | - | - | NEW FILE |
-
-### Map Files - Levels 21-25 (Agent D Domain)
-
-| File Path | Status | Locked By | Waiting | Notes |
-|-----------|--------|-----------|---------|-------|
-| `src/assets/maps/L21_summon_land.json` | FREE | - | - | NEW FILE |
-| `src/assets/maps/L22_banish_spell.json` | FREE | - | - | NEW FILE |
-| `src/assets/maps/L23_cursed_hoarding.json` | FREE | - | - | NEW FILE |
-| `src/assets/maps/L24_expanding_army.json` | FREE | - | - | NEW FILE |
-| `src/assets/maps/L25_chain_portals.json` | FREE | - | - | NEW FILE |
-
-### Level Definitions (Agent D Domain)
-
-| File Path | Status | Locked By | Waiting | Notes |
-|-----------|--------|-----------|---------|-------|
-| `src/assets/levels.json` | FREE | - | - | Add L16-L25 |
+| File Path | Status | Owner | Notes |
+|-----------|--------|-------|-------|
+| **Backend** |
+| `src-api/src/main.rs` | 🟢 FREE | - | Add db calls to handlers |
+| `src-api/src/db/operations.rs` | ✅ DONE | A | Retry logic added |
+| `src-api/src/db/mod.rs` | ✅ DONE | A | Cleaned up |
+| **Frontend** |
+| `src-ui/src/lib/components/GameWorld.svelte` | 🟢 FREE | - | Fix 3 type errors |
+| `src-ui/src/lib/types.ts` | 🟢 FREE | - | May need fixes |
+| **Maps L16-L20 (Structs)** |
+| `src/assets/maps/L16_*.json` | 🟢 FREE | - | struct definition |
+| `src/assets/maps/L17_*.json` | 🟢 FREE | - | struct members |
+| `src/assets/maps/L18_*.json` | 🟢 FREE | - | struct pointers |
+| `src/assets/maps/L19_*.json` | 🟢 FREE | - | nested structs |
+| `src/assets/maps/L20_*.json` | 🟢 FREE | - | array of structs |
+| **Maps L21-L25 (Memory)** |
+| `src/assets/maps/L21_*.json` | 🟢 FREE | - | malloc basics |
+| `src/assets/maps/L22_*.json` | 🟢 FREE | - | free memory |
+| `src/assets/maps/L23_*.json` | 🟢 FREE | - | memory leaks |
+| `src/assets/maps/L24_*.json` | 🟢 FREE | - | dynamic arrays |
+| `src/assets/maps/L25_*.json` | 🟢 FREE | - | linked lists |
+| **Level Definitions** |
+| `src/assets/levels.json` | 🟢 FREE | - | Add L16-L25 entries |
 
 ---
 
-## Locking Protocol
+## Agent Tasks
 
-### To Claim a File:
-1. Read this COORDINATION.md file
-2. Find the file in the lock table
-3. Check if `Status` is `FREE`
-4. If FREE: Edit this file, change `Status` to `LOCKED`, add your Agent ID
-5. If LOCKED: Add your Agent ID to `Waiting` column, work on something else
+### Agent A: DB Handlers
+**Goal**: Make game state actually persist to PostgreSQL
 
-### To Release a File:
-1. Finish your work on the file
-2. Edit this COORDINATION.md
-3. Change `Status` to `DONE` (or `FREE` if others may need it)
-4. Clear your Agent ID from `Locked By`
-5. If someone is in `Waiting`, notify them (or they'll check on next read)
+**Files**: `src-api/src/main.rs`
 
-### Conflict Resolution:
-- First agent to update COORDINATION.md wins the lock
-- If you see a stale lock (>30 min), you may claim it
-- When in doubt, wait and check again
+**Tasks**:
+1. [ ] In `init_game` handler: Call `db::operations::save_session()` to persist new sessions
+2. [ ] In `get_game_state` handler: Call `db::operations::get_session()` to load from DB
+3. [ ] In `submit_code` handler: Call `db::operations::complete_level()` on success
+4. [ ] Run `cargo build` - must pass
+5. [ ] Test: Create session, verify it persists across server restart
+
+**Already Done**:
+- [x] Neon-optimized pool settings (max_connections=3, timeouts)
+- [x] Retry logic with exponential backoff in operations.rs
+- [x] Removed redundant create_pool function
 
 ---
 
-## Completion Checklist
+### Agent B: Frontend QA
+**Goal**: Fix type errors and verify frontend builds cleanly
 
-### Agent A: DB Persistence
-- [ ] Modified `init_game` to persist sessions
-- [ ] Modified `get_game_state` to load from DB
-- [ ] Modified `submit_code` to persist completions
-- [ ] `cargo build` passes
-- [ ] Updated lock table: All files marked DONE
+**Files**: `src-ui/src/lib/components/GameWorld.svelte`, `src-ui/src/lib/types.ts`
 
-### Agent B: Frontend Fixes
-- [ ] Fixed type errors in `GameWorld.svelte`
-- [ ] `npm run check` passes with 0 errors
-- [ ] `npm run build` passes
-- [ ] Updated lock table: All files marked DONE
+**Tasks**:
+1. [ ] Identify the 3 type errors (run `npm run check`)
+2. [ ] Fix `tile_type` comparison issues in GameWorld.svelte
+3. [ ] Ensure `TileType` union type covers all cases
+4. [ ] Run `npm run check` - must pass with 0 errors
+5. [ ] Run `npm run build` - must succeed
+6. [ ] Visual test: Game renders correctly
 
-### Agent C: Maps L16-L20
-- [ ] Created `L16_blueprint_scroll.json`
-- [ ] Created `L17_chest_contents.json`
-- [ ] Created `L18_teleport_chest.json`
-- [ ] Created `L19_guild_hierarchy.json`
-- [ ] Created `L20_army_roster.json`
-- [ ] Validated JSON syntax
-- [ ] Updated lock table: All files marked DONE
+**Hints**:
+- Type errors are in tile comparisons like `tile.tile_type === 'terminal'`
+- Check if `TileType` in types.ts matches what Rust sends
 
-### Agent D: Maps L21-L25 + Level Definitions
-- [ ] Created `L21_summon_land.json`
-- [ ] Created `L22_banish_spell.json`
-- [ ] Created `L23_cursed_hoarding.json`
-- [ ] Created `L24_expanding_army.json`
-- [ ] Created `L25_chain_portals.json`
-- [ ] Added L16-L25 to `levels.json`
-- [ ] Verified ALL C puzzles with `compile_and_run_c`
-- [ ] Updated lock table: All files marked DONE
+---
+
+### Agent C: Maps Creator
+**Goal**: Create 10 new map files for Structs (L16-20) and Memory (L21-25) phases
+
+**Files**: `src/assets/maps/L16_*.json` through `src/assets/maps/L25_*.json`
+
+**Tasks**:
+1. [ ] Create L16 map: struct definition ("Blueprint Scroll")
+2. [ ] Create L17 map: struct members ("Chest Contents")
+3. [ ] Create L18 map: struct pointers ("Teleport Chest")
+4. [ ] Create L19 map: nested structs ("Guild Hierarchy")
+5. [ ] Create L20 map: array of structs ("Army Roster")
+6. [ ] Create L21 map: malloc basics ("Summon Land")
+7. [ ] Create L22 map: free memory ("Banish Spell")
+8. [ ] Create L23 map: memory leaks ("Cursed Hoarding")
+9. [ ] Create L24 map: dynamic arrays ("Expanding Army")
+10. [ ] Create L25 map: linked lists ("Chain Portals")
+11. [ ] Validate all JSON: `python -m json.tool < file.json`
+
+**Reference**: See existing maps in `src/assets/maps/L01_*.json` for format
+
+---
+
+### Agent D: Level Writer
+**Goal**: Add L16-L25 level definitions with validated C puzzles
+
+**Files**: `src/assets/levels.json`
+
+**Dependencies**: Wait for Agent C to create map files
+
+**Tasks**:
+1. [ ] Add L16 entry: struct definition puzzle
+2. [ ] Add L17 entry: struct members puzzle
+3. [ ] Add L18 entry: struct pointers puzzle
+4. [ ] Add L19 entry: nested structs puzzle
+5. [ ] Add L20 entry: array of structs puzzle
+6. [ ] Add L21 entry: malloc basics puzzle
+7. [ ] Add L22 entry: free memory puzzle
+8. [ ] Add L23 entry: memory leaks puzzle
+9. [ ] Add L24 entry: dynamic arrays puzzle
+10. [ ] Add L25 entry: linked lists puzzle
+11. [ ] **MANDATORY**: Use `compile_and_run_c` to verify EVERY puzzle solution
+12. [ ] Validate JSON: `python -m json.tool < levels.json`
+
+**C Puzzle Validation** (REQUIRED):
+```
+Use MCP tool: compile_and_run_c(source_code, input_data)
+Every puzzle MUST compile and produce expected output
+```
+
+---
+
+## Dependencies
+
+```
+Agent A (DB Handlers) ──────────────────┐
+Agent B (Frontend QA) ──────────────────┼──→ Round 3: Integration Test
+Agent C (Maps L16-25) ──────┬───────────┤
+Agent D (Levels L16-25) ────┘ (waits C) ┘
+```
+
+**Parallel**: A, B, C can work simultaneously
+**Sequential**: D waits for C's maps before adding to levels.json
 
 ---
 
@@ -136,41 +152,36 @@
 
 ```
 === ROUND 1 COMPLETED ===
+[2025-11-27] All Round 1 deliverables done:
+  - DB module created (sqlx persistence layer)
+  - Frontend components (Settings, ErrorBoundary, ProgressTracker, Achievements)
+  - Maps L06-L15 (Functions + Pointers phases)
+  - Level definitions L01-L15
+  - Integration complete, builds passing
 
-[2025-11-27] Round 1 Summary:
-  - Agent 1: Database module (sqlx persistence layer) - DONE
-  - Agent 2: Frontend components (Settings, ErrorBoundary, ProgressTracker, Achievements) - DONE
-  - Agent 3: Maps L06-L10 (Functions phase) - DONE
-  - Agent 4: Maps L11-L15 (Pointers phase) - DONE
-  - Agent 5: Level definitions L01-L15 - DONE
-  - Agent 6: Integration (wired everything together) - DONE
-  - All builds passing (cargo build + npm run build)
-  - 3 pre-existing type errors in GameWorld.svelte identified for Round 2
+=== ROUND 2 IN PROGRESS ===
+[2025-11-27] Agent A partial work:
+  - Neon pool optimization DONE
+  - Retry logic DONE
+  - REMAINING: Wire handlers to db ops
 
-=== ROUND 2 START ===
-
-[Round 2] 4 agents assigned:
-  - Agent A: DB Persistence (wire existing db module to handlers)
-  - Agent B: Frontend Fixes (GameWorld.svelte type errors)
-  - Agent C: Content L16-20 (struct phase)
-  - Agent D: Content L21-25 (memory management) + levels.json updates
-
-Dependency: Agent D must wait for Agent C's maps before adding L16-20 to levels.json
+[Agents: Add your updates here]
 ```
 
 ---
 
-## Dependencies Graph
+## Quick Commands
 
+```bash
+# Backend check
+cd src-api && cargo check
+
+# Frontend check
+cd src-ui && npm run check
+
+# Validate JSON
+python -m json.tool < src/assets/levels.json
+
+# Test C puzzle
+# Use MCP: compile_and_run_c(source_code, input_data)
 ```
-Agent A (DB Persistence) ─────────────────┐
-Agent B (Frontend Fixes) ─────────────────┼──→ Integration (Round 3)
-Agent C (Maps L16-20) ────┬───────────────┤
-Agent D (Maps L21-25) ────┴── levels.json ┘
-```
-
-**Phase 1 (Parallel):** Agents A, B, C, D work simultaneously on their own files
-**Phase 2 (Sequential):** Agent D adds L16-L20 to levels.json after Agent C completes
-**Phase 3:** Integration testing (future round)
-
----

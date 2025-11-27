@@ -13,9 +13,9 @@ use code_warrior::{
 };
 use serde::{Deserialize, Serialize};
 use sqlx::{Pool, Postgres};
-use std::collections::HashMap;
 use std::net::SocketAddr;
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
+use std::time::Duration;
 use tower_http::cors::{Any, CorsLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -94,10 +94,14 @@ async fn main() {
     let database_url = std::env::var("DATABASE_URL")
         .expect("DATABASE_URL must be set in environment or .env file");
 
-    // Create database connection pool
+    // Create database connection pool with Neon optimization
     tracing::info!("Connecting to database...");
     let pool = sqlx::postgres::PgPoolOptions::new()
-        .max_connections(5)
+        .max_connections(3)                    // Lower max for Neon free tier
+        .min_connections(0)                    // Allow pool to shrink to 0
+        .acquire_timeout(Duration::from_secs(10))   // Timeout for getting connections
+        .idle_timeout(Duration::from_secs(300))     // Drop idle connections after 5 mins
+        .max_lifetime(Duration::from_secs(1800))    // Recreate connections after 30 mins
         .connect(&database_url)
         .await
         .expect("Failed to connect to database");

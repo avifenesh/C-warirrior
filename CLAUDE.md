@@ -45,9 +45,19 @@ You are an expert Systems Engineer and Game Developer building "Code Warrior: C 
 **Available MCP servers in `tools/`:**
 
 - **`c_compiler_mcp`**: Compile and run C code (MANDATORY for puzzle validation)
-  - Tool: `compile_and_run_c(source_code, input_data)`
+  - `compile_and_run_c(source_code, input_data)` - Human-readable output
+  - `compile_and_run_c_structured(source_code, input_data)` - JSON output (preferred for programmatic use)
+  - `validate_puzzle_suite(solution_code, test_cases)` - Batch validate multiple test cases (most efficient)
+
 - **`generate_map`** (future): Procedural map generation
   - Current: Use `tools/generate_map.py` via bash
+
+**Tool Selection Guide:**
+| Use Case | Tool |
+|----------|------|
+| Quick single test | `compile_and_run_c` |
+| Programmatic validation | `compile_and_run_c_structured` |
+| Multiple test cases | `validate_puzzle_suite` (compiles once, runs many) |
 
 **Learn more**: [`docs/ai/mcp-servers.md`](docs/ai/mcp-servers.md)
 
@@ -327,21 +337,49 @@ Trace how player movement works from frontend input to backend state update. Lis
 
 ---
 
-## Full Documentation Index
+## Documentation Loading Strategy
 
-**Entry Point**: [`docs/ai/README.md`](docs/ai/README.md)
+**Load documentation on-demand, not upfront.** This reduces context pollution and improves accuracy.
 
-**Core** (Read these first):
-- [`docs/core/CONSTRAINTS.md`](docs/core/CONSTRAINTS.md) - Critical rules
-- [`docs/core/DOMAINS.md`](docs/core/DOMAINS.md) - Task mapping
-- [`docs/core/WORKFLOWS.md`](docs/core/WORKFLOWS.md) - Step-by-step guides
+### Always Loaded (from CLAUDE.md)
+- Four Core Mandates
+- Technology Stack
+- Production URLs
 
-**Claude Code Specific**:
-- [`docs/ai/skills.md`](docs/ai/skills.md) - Skills guide
-- [`docs/ai/mcp-servers.md`](docs/ai/mcp-servers.md) - MCP tools
-- `.claude/skills/*` - Individual skill definitions
+### Load When Working In Domain
 
-**Technical**:
+| Task | Load These Files |
+|------|------------------|
+| **Creating C puzzle** | `src/assets/levels.json` (structure), invoke `c-puzzle-designer` skill |
+| **Adding Rust feature** | Invoke `rust-tauri-patterns` skill, grep existing patterns |
+| **Designing game mechanic** | Invoke `game-metaphor-mapper` skill |
+| **Understanding architecture** | Invoke `code-warrior-architect` skill |
+| **Debugging frontend** | Read specific component in `src-ui/src/lib/` |
+| **Debugging backend** | Read specific handler in `src-api/src/` or `src-tauri/src/` |
+| **Modifying levels** | `src/assets/levels.json` directly |
+
+### Don't Pre-Read
+- ❌ `docs/architecture/system.md` - Use skill instead
+- ❌ `docs/game_design/mechanics.md` - Use skill instead
+- ❌ `docs/curriculum/progression.md` - Only when designing curriculum
+- ❌ Multiple files "just in case" - Load on demand
+
+### Skill-First Approach
+Skills contain condensed, actionable guidance. **Prefer invoking a skill over reading documentation files.**
+
+```
+Good: "Use the rust-tauri-patterns skill to add a command"
+Bad:  "Let me read docs/architecture/system.md first"
+```
+
+### Full Documentation Index (Reference Only)
+
+**Core**:
+- `docs/core/CONSTRAINTS.md` - Critical rules
+- `docs/core/DOMAINS.md` - Task mapping
+- `docs/core/WORKFLOWS.md` - Step-by-step guides
+
+**Technical** (load when needed):
 - `docs/architecture/system.md` - System design
 - `docs/game_design/mechanics.md` - Game mechanics
 - `docs/curriculum/progression.md` - Educational theory

@@ -14,13 +14,7 @@ use sqlx::{Pool, Postgres};
 /// Type alias for the database connection pool
 pub type DbPool = Pool<Postgres>;
 
-/// Create a new database connection pool
-pub async fn create_pool(database_url: &str) -> Result<DbPool, sqlx::Error> {
-    sqlx::postgres::PgPoolOptions::new()
-        .max_connections(5)
-        .connect(database_url)
-        .await
-}
+
 
 /// Initialize database tables (run migrations)
 pub async fn init_database(pool: &DbPool) -> Result<(), sqlx::Error> {

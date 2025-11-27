@@ -1,11 +1,12 @@
 //! Database CRUD operations for sessions and player progress
 
-use super::models::{NewProgress, NewSession, Session};
-use super::DbPool;
+ //! Database CRUD operations for sessions and player progress
 
+use super::models::{NewSession, NewProgress, Session};
+use super::DbPool;
 use rand::Rng;
-use serde_json::Value;
 use std::time::Duration;
+use serde_json::Value;
 
 /// Simple exponential backoff with jitter for Neon optimization
 fn backoff_delay(attempt: u32) -> Duration {
@@ -26,7 +27,7 @@ fn backoff_delay(attempt: u32) -> Duration {
 pub async fn get_session(pool: &DbPool, device_id: &str) -> Result<Option<Session>, sqlx::Error> {
     let max_attempts = 5;
     let mut attempts = 0;
-
+    
     loop {
         match sqlx::query_as::<_, Session>(
             r#"
@@ -53,11 +54,11 @@ pub async fn get_session(pool: &DbPool, device_id: &str) -> Result<Option<Sessio
     }
 }
 
-/// Create or update a session (upsert) with retry logic
-pub async fn save_session(pool: &DbPool, session: &NewSession) -> Result<Session, sqlx::Error> {
+/// Create or update a session (upsert) (with retry logic)
+pub async fn save_session(pool: &DbPool, session: &NewSession) -> Result<Option<Session>, sqlx::Error> {
     let max_attempts = 5;
     let mut attempts = 0;
-
+    
     loop {
         match sqlx::query_as::<_, Session>(
             r#"
@@ -70,7 +71,7 @@ pub async fn save_session(pool: &DbPool, session: &NewSession) -> Result<Session
         )
         .bind(&session.device_id)
         .bind(&session.game_state)
-        .fetch_one(pool)
+        .fetch_optional(pool)
         .await
         {
             Ok(session) => return Ok(session),
@@ -95,7 +96,7 @@ pub async fn update_session_state(
 ) -> Result<(), sqlx::Error> {
     let max_attempts = 5;
     let mut attempts = 0;
-
+    
     loop {
         match sqlx::query(
             r#"
@@ -127,24 +128,17 @@ pub async fn update_session_state(
 pub async fn save_progress(pool: &DbPool, progress: &NewProgress) -> Result<(), sqlx::Error> {
     sqlx::query(
         r#"
-        INSERT INTO player_progress (device_id, completed_levels, total_xp, current_level, achievements)
-        VALUES ($1, $2, $3, $4, $5)
-        ON CONFLICT (device_id)
-        DO UPDATE SET
-            completed_levels = $2,
-            total_xp = $3,
-            current_level = $4,
-            achievements = $5,
-            updated_at = NOW()
+        INSERT INTO player_progress (device_id, level_id, completed, xp_earned, completed_at)
+        VALUES ($1, $2, $3, $4, NOW())
+        ON CONFLICT (device_id, level_id)
+        DO UPDATE SET completed = $3, xp_earned = $4, completed_at = NOW()
         "#,
     )
     .bind(&progress.device_id)
-    .bind(&progress.completed_levels)
-    .bind(progress.total_xp)
-    .bind(&progress.current_level)
-    .bind(&progress.achievements)
+    .bind(&progress.level_id)
+    .bind(progress.completed)
+    .bind(progress.xp_earned)
     .execute(pool)
     .await?;
-
     Ok(())
 }

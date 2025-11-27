@@ -1,42 +1,56 @@
-# Agent C: Content Creator (L16-L20 Structs Phase)
+# Agent C: Maps Creator
 
-## Role
-Create levels 16-20 covering C structs.
+## Goal
+Create 10 new map files for Structs (L16-20) and Memory (L21-25) phases.
 
-## Context
-The curriculum progression:
-- L01-L05: Basics (printf, variables, if/else, loops, arrays)
-- L06-L10: Functions (void, return, stack, scope, recursion)
-- L11-L15: Pointers (address-of, declaration, dereference, arithmetic, NULL)
-- **L16-L20: Structs** (YOUR DOMAIN)
-- L21-L25: Memory Management (Agent D)
+## Status: ⏳ PENDING
 
-## Files You Own (LOCK these)
-- `src/assets/maps/L16_*.json` (NEW)
-- `src/assets/maps/L17_*.json` (NEW)
-- `src/assets/maps/L18_*.json` (NEW)
-- `src/assets/maps/L19_*.json` (NEW)
-- `src/assets/maps/L20_*.json` (NEW)
+## Tasks
+1. [ ] Create L16 map: struct definition ("Blueprint Scroll")
+2. [ ] Create L17 map: struct members ("Chest Contents")
+3. [ ] Create L18 map: struct pointers ("Teleport Chest")
+4. [ ] Create L19 map: nested structs ("Guild Hierarchy")
+5. [ ] Create L20 map: array of structs ("Army Roster")
+6. [ ] Create L21 map: malloc basics ("Summon Land")
+7. [ ] Create L22 map: free memory ("Banish Spell")
+8. [ ] Create L23 map: memory leaks ("Cursed Hoarding")
+9. [ ] Create L24 map: dynamic arrays ("Expanding Army")
+10. [ ] Create L25 map: linked lists ("Chain Portals")
+11. [ ] Validate all JSON: `python -m json.tool < file.json`
 
-## Files to READ (coordinate with Agent D)
-- `src/assets/levels.json` - Agent D will add your levels here
+## Files to Create
+```
+src/assets/maps/L16_blueprint_scroll.json
+src/assets/maps/L17_chest_contents.json
+src/assets/maps/L18_teleport_chest.json
+src/assets/maps/L19_guild_hierarchy.json
+src/assets/maps/L20_army_roster.json
+src/assets/maps/L21_summon_land.json
+src/assets/maps/L22_banish_spell.json
+src/assets/maps/L23_cursed_hoarding.json
+src/assets/maps/L24_expanding_army.json
+src/assets/maps/L25_chain_portals.json
+```
 
-## Struct Concepts to Cover
-| Level | Concept | Game Metaphor |
-|-------|---------|---------------|
+## Game Metaphors
+
+### Structs Phase (L16-L20)
+| Level | Concept | Metaphor |
+|-------|---------|----------|
 | L16 | struct definition | Blueprint scroll - define a hero's attributes |
 | L17 | struct members | Chest contents - access individual items |
 | L18 | struct pointers | Teleport to chest - modify via pointer |
 | L19 | nested structs | Guild hierarchy - struct inside struct |
 | L20 | array of structs | Army roster - manage multiple heroes |
 
-## Tasks
-1. **Read `.agents/COORDINATION.md`** - Check lock table
-2. **Lock your map files** - Update COORDINATION.md
-3. **Create 5 map files** following existing format (see L01-L15 maps)
-4. **Validate JSON syntax**: `python -m json.tool < file.json`
-5. **Document map files** in communication log for Agent D
-6. **Update lock table** - Mark maps as DONE
+### Memory Phase (L21-L25)
+| Level | Concept | Metaphor |
+|-------|---------|----------|
+| L21 | malloc basics | Summon land - create memory from void |
+| L22 | free memory | Banish spell - release memory back |
+| L23 | memory leaks | Cursed hoarding - forget to free |
+| L24 | dynamic arrays | Expanding army - realloc |
+| L25 | linked lists | Chain of portals - pointer chains |
 
 ## Map Format Reference
 ```json
@@ -55,23 +69,25 @@ The curriculum progression:
       "type": "objectgroup",
       "name": "objects",
       "objects": [
-        { "type": "spawn", "x": 96, "y": 224, ... },
-        { "type": "terminal", "x": 320, "y": 224, ... },
-        { "type": "door", "x": 576, "y": 224, ... }
+        { "type": "spawn", "x": 96, "y": 224, "width": 32, "height": 32 },
+        { "type": "terminal", "x": 320, "y": 224, "width": 32, "height": 32 },
+        { "type": "door", "x": 576, "y": 224, "width": 32, "height": 32 }
       ]
     }
   ]
 }
 ```
 
-Tile IDs: 1=floor, 3=wall, 4=decorative_wall
+**Tile IDs**: 1=floor/grass, 3=wall, 4=decorative_wall
 
-## DO NOT
-- Edit `levels.json` (Agent D does this)
-- Touch existing map files L01-L15
+## Reference
+See existing maps: `src/assets/maps/L01_*.json` through `src/assets/maps/L15_*.json`
 
-## Completion Criteria
-- [ ] 5 map files created (L16-L20)
-- [ ] All JSON validates
-- [ ] Maps documented in communication log
-- [ ] Lock table updated
+## Validation
+```bash
+# For each file:
+python -m json.tool < src/assets/maps/L16_blueprint_scroll.json
+```
+
+## Communication
+After completing maps, update `.agents/COORDINATION.md` communication log so Agent D knows maps are ready.
