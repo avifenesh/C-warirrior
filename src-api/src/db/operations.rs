@@ -1,6 +1,6 @@
 //! Database CRUD operations for sessions and player progress
 
-use super::models::{NewProgress, NewSession, Session};
+use super::models::{NewProgress, NewSession, PlayerProgress, Session};
 use super::DbPool;
 
 use rand::Rng;
@@ -12,13 +12,13 @@ fn backoff_delay(attempt: u32) -> Duration {
     let base_delay = Duration::from_millis(50);
     let max_delay = Duration::from_millis(1000);
     let jitter_factor = 0.5;
-    
+
     let exponential_delay = base_delay * 2_u32.pow(attempt.min(8));
     let capped_delay = exponential_delay.min(max_delay);
-    
+
     let jitter_range = capped_delay.as_secs_f64() * jitter_factor;
     let jitter = rand::thread_rng().gen_range(-jitter_range..=jitter_range);
-    
+
     Duration::from_secs_f64((capped_delay.as_secs_f64() + jitter).max(0.0))
 }
 
@@ -124,8 +124,11 @@ pub async fn update_session_state(
 }
 
 /// Create or update player progress (upsert)
-pub async fn save_progress(pool: &DbPool, progress: &NewProgress) -> Result<(), sqlx::Error> {
-    sqlx::query(
+pub async fn save_progress(
+    pool: &DbPool,
+    progress: &NewProgress,
+) -> Result<PlayerProgress, sqlx::Error> {
+    sqlx::query_as::<_, PlayerProgress>(
         r#"
         INSERT INTO player_progress (device_id, completed_levels, total_xp, current_level, achievements)
         VALUES ($1, $2, $3, $4, $5)
@@ -136,6 +139,7 @@ pub async fn save_progress(pool: &DbPool, progress: &NewProgress) -> Result<(), 
             current_level = $4,
             achievements = $5,
             updated_at = NOW()
+        RETURNING id, device_id, completed_levels, total_xp, current_level, achievements, created_at, updated_at
         "#,
     )
     .bind(&progress.device_id)
@@ -143,6 +147,35 @@ pub async fn save_progress(pool: &DbPool, progress: &NewProgress) -> Result<(), 
     .bind(progress.total_xp)
     .bind(&progress.current_level)
     .bind(&progress.achievements)
+    .fetch_one(pool)
+    .await
+}
+
+/// Mark a level as completed and add XP in player_progress
+pub async fn complete_level(
+    pool: &DbPool,
+    device_id: &str,
+    level_id: &str,
+    xp_earned: i32,
+) -> Result<(), sqlx::Error> {
+    sqlx::query(
+        r#"
+        INSERT INTO player_progress (device_id, completed_levels, total_xp, current_level, achievements)
+        VALUES ($1, ARRAY[$2], $3, NULL, ARRAY[]::text[])
+        ON CONFLICT (device_id)
+        DO UPDATE SET
+            completed_levels = CASE
+                WHEN NOT ($2 = ANY(player_progress.completed_levels))
+                    THEN array_append(player_progress.completed_levels, $2)
+                ELSE player_progress.completed_levels
+            END,
+            total_xp = player_progress.total_xp + $3,
+            updated_at = NOW()
+        "#,
+    )
+    .bind(device_id)
+    .bind(level_id)
+    .bind(xp_earned)
     .execute(pool)
     .await?;
 

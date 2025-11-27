@@ -1,0 +1,140 @@
+{
+  "width": 20,
+  "height": 16,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "layers": [
+    {
+      "type": "tilelayer",
+      "name": "floor",
+      "width": 20,
+      "height": 16,
+      "data": [
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+        4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4,
+        4, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 4,
+        4, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 4,
+        4, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 4,
+        4, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 4,
+        4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4,
+        4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4,
+        4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4,
+        4, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 4,
+        4, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 4,
+        4, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 4,
+        4, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 4,
+        4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4,
+        4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4,
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
+      ]
+    },
+    {
+      "type": "objectgroup",
+      "name": "objects",
+      "objects": [
+        {
+          "type": "spawn",
+          "x": 288,
+          "y": 448,
+          "width": 32,
+          "height": 32
+        },
+        {
+          "type": "terminal",
+          "x": 288,
+          "y": 224,
+          "width": 32,
+          "height": 32,
+          "properties": [
+            {
+              "name": "hint",
+              "type": "string",
+              "value": "free(ptr) banishes the land back to void. Set pointer to NULL after freeing."
+            }
+          ]
+        },
+        {
+          "type": "door",
+          "x": 544,
+          "y": 32,
+          "width": 32,
+          "height": 32,
+          "properties": [
+            {
+              "name": "locked",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "type": "npc",
+          "x": 96,
+          "y": 96,
+          "width": 32,
+          "height": 32,
+          "properties": [
+            {
+              "name": "name",
+              "type": "string",
+              "value": "Banisher"
+            },
+            {
+              "name": "dialogue",
+              "type": "string",
+              "value": "What malloc creates, free destroys. The top lands still exist. The bottom lands were banished to void."
+            }
+          ]
+        },
+        {
+          "type": "hazard",
+          "x": 64,
+          "y": 288,
+          "width": 128,
+          "height": 128,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "freed_zone_left"
+            },
+            {
+              "name": "damage",
+              "type": "string",
+              "value": "instant"
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "value": "USE AFTER FREE"
+            }
+          ]
+        },
+        {
+          "type": "hazard",
+          "x": 448,
+          "y": 288,
+          "width": 128,
+          "height": 128,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "freed_zone_right"
+            },
+            {
+              "name": "damage",
+              "type": "string",
+              "value": "instant"
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "value": "USE AFTER FREE"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

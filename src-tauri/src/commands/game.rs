@@ -1,8 +1,8 @@
 use tauri::State;
 
+use crate::GameStateWrapper;
 use code_warrior::game::constants::TILE_SIZE;
 use code_warrior::game::state::{GamePhase, GameState, PlayerAction, RenderState};
-use crate::GameStateWrapper;
 
 #[tauri::command]
 pub async fn init_game(state: State<'_, GameStateWrapper>) -> Result<RenderState, String> {

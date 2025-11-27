@@ -1,6 +1,6 @@
-use serde::Deserialize;
 use crate::game::state::Position;
 use crate::game::world::{Tile, TileType, World};
+use serde::Deserialize;
 
 // --- Tiled JSON Format ---
 
@@ -110,7 +110,9 @@ impl TiledMap {
 
         for layer in &self.layers {
             match layer {
-                TiledLayer::TileLayer { name, data, width, .. } => {
+                TiledLayer::TileLayer {
+                    name, data, width, ..
+                } => {
                     if name == "floor" || name == "tiles" {
                         for (i, &tile_id) in data.iter().enumerate() {
                             let x = i % width;
@@ -135,7 +137,7 @@ impl TiledMap {
                         // Tiled coordinates are in pixels, World expects tiles for grid placement
                         // But wait, World uses Position (float pixels) for spawn
                         // and Tile grid (indices) for tiles.
-                        
+
                         let grid_x = (obj.x / self.tile_width as f32) as usize;
                         let grid_y = (obj.y / self.tile_height as f32) as usize;
 
@@ -158,7 +160,7 @@ impl TiledMap {
                                             }
                                         }
                                     }
-                                    
+
                                     world.tiles[grid_y][grid_x] = Tile {
                                         tile_type: TileType::Door,
                                         walkable: !is_locked,
@@ -179,7 +181,7 @@ impl TiledMap {
 impl LegacyMap {
     pub fn to_world(&self) -> World {
         let mut world = World::new(self.width, self.height);
-        
+
         // Set tiles from 2D array
         for (y, row) in self.tiles.iter().enumerate() {
             for (x, &tile_id) in row.iter().enumerate() {
@@ -220,7 +222,8 @@ impl LegacyMap {
 
 fn tile_id_to_tile(id: u32) -> Tile {
     match id {
-        0 => Tile { // Void
+        0 => Tile {
+            // Void
             tile_type: TileType::Void,
             walkable: false,
             interactable: false,
@@ -231,10 +234,11 @@ fn tile_id_to_tile(id: u32) -> Tile {
         4 => Tile::wall(), // Wall top is still wall
         5 => Tile::terminal(),
         6 => Tile::door(), // Locked door
-        7 => Tile { // Open door
-             tile_type: TileType::Door,
-             walkable: true,
-             interactable: true,
+        7 => Tile {
+            // Open door
+            tile_type: TileType::Door,
+            walkable: true,
+            interactable: true,
         },
         _ => Tile::floor(),
     }
@@ -245,7 +249,9 @@ pub fn load_map_file(map_path: &str) -> Result<MapFormat, String> {
         "maps/L01_first_spell.json" => include_str!("../assets/maps/L01_first_spell.json"),
         "maps/L02_empty_backpack.json" => include_str!("../assets/maps/L02_empty_backpack.json"),
         "maps/L03_gatekeeper.json" => include_str!("../assets/maps/L03_gatekeeper.json"),
-        "maps/L04_repeating_strike.json" => include_str!("../assets/maps/L04_repeating_strike.json"),
+        "maps/L04_repeating_strike.json" => {
+            include_str!("../assets/maps/L04_repeating_strike.json")
+        }
         "maps/L05_array_fortress.json" => include_str!("../assets/maps/L05_array_fortress.json"),
         _ => return Err(format!("Unknown map file: {}", map_path)),
     };
@@ -258,6 +264,9 @@ pub fn load_map_file(map_path: &str) -> Result<MapFormat, String> {
     // Fallback to LegacyMap
     match serde_json::from_str::<LegacyMap>(json_str) {
         Ok(legacy_map) => Ok(MapFormat::Legacy(legacy_map)),
-        Err(e) => Err(format!("Failed to parse map {} as either Tiled or Legacy: {}", map_path, e)),
+        Err(e) => Err(format!(
+            "Failed to parse map {} as either Tiled or Legacy: {}",
+            map_path, e
+        )),
     }
 }

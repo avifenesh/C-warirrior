@@ -7,4 +7,3 @@ pub enum PuzzleState {
     Completed,
     Failed,
 }
-

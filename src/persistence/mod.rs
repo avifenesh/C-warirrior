@@ -65,9 +65,7 @@ impl SaveManager {
         {
             let appdata = std::env::var("APPDATA")
                 .map_err(|_| "APPDATA environment variable not set".to_string())?;
-            Ok(PathBuf::from(appdata)
-                .join("code-warrior")
-                .join("saves"))
+            Ok(PathBuf::from(appdata).join("code-warrior").join("saves"))
         }
 
         #[cfg(target_os = "linux")]
@@ -91,24 +89,24 @@ impl SaveManager {
         let path = self.get_save_path(&data.slot_name);
         let json = serde_json::to_string_pretty(data)
             .map_err(|e| format!("Failed to serialize save data: {}", e))?;
-        fs::write(&path, json)
-            .map_err(|e| format!("Failed to write save file: {}", e))?;
+        fs::write(&path, json).map_err(|e| format!("Failed to write save file: {}", e))?;
         Ok(())
     }
 
     /// Load game data from a slot
     pub fn load(&self, slot_name: &str) -> Result<SaveData, String> {
         let path = self.get_save_path(slot_name);
-        let json = fs::read_to_string(&path)
-            .map_err(|e| format!("Failed to read save file: {}", e))?;
-        let data: SaveData = serde_json::from_str(&json)
-            .map_err(|e| format!("Failed to parse save data: {}", e))?;
+        let json =
+            fs::read_to_string(&path).map_err(|e| format!("Failed to read save file: {}", e))?;
+        let data: SaveData =
+            serde_json::from_str(&json).map_err(|e| format!("Failed to parse save data: {}", e))?;
 
         // Check version compatibility
         if data.version > SaveData::CURRENT_VERSION {
             return Err(format!(
                 "Save file version {} is newer than supported version {}",
-                data.version, SaveData::CURRENT_VERSION
+                data.version,
+                SaveData::CURRENT_VERSION
             ));
         }
 
@@ -119,8 +117,7 @@ impl SaveManager {
     pub fn delete(&self, slot_name: &str) -> Result<(), String> {
         let path = self.get_save_path(slot_name);
         if path.exists() {
-            fs::remove_file(&path)
-                .map_err(|e| format!("Failed to delete save file: {}", e))?;
+            fs::remove_file(&path).map_err(|e| format!("Failed to delete save file: {}", e))?;
         }
         Ok(())
     }

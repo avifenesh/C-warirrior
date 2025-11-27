@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 use tauri::State;
 
-use code_warrior::persistence::{SaveData, SaveManager, SaveSlotInfo};
 use crate::GameStateWrapper;
+use code_warrior::persistence::{SaveData, SaveManager, SaveSlotInfo};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SaveResult {
@@ -72,9 +72,7 @@ pub async fn load_game(
 
 /// List all available save slots
 #[tauri::command]
-pub async fn list_saves(
-    save_manager: State<'_, SaveManager>,
-) -> Result<Vec<SaveSlotInfo>, String> {
+pub async fn list_saves(save_manager: State<'_, SaveManager>) -> Result<Vec<SaveSlotInfo>, String> {
     save_manager.list_saves()
 }
 

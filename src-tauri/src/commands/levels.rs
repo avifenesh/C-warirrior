@@ -1,8 +1,8 @@
 use tauri::State;
 
+use crate::GameStateWrapper;
 use code_warrior::game::world::World;
 use code_warrior::levels::{load_map_file, LevelData, LevelInfo, LevelRegistry};
-use crate::GameStateWrapper;
 
 #[tauri::command]
 pub async fn get_available_levels(

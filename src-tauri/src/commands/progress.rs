@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 use tauri::State;
 
-use code_warrior::levels::LevelRegistry;
 use crate::GameStateWrapper;
+use code_warrior::levels::LevelRegistry;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LevelCompleteResult {

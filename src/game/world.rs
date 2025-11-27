@@ -9,7 +9,7 @@ pub enum TileType {
     Floor,
     Wall,
     Water,
-    Void,     // NULL/danger zone
+    Void, // NULL/danger zone
     Door,
     Terminal, // Code submission point
 }

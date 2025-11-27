@@ -4,11 +4,7 @@ use super::state::Position;
 use super::world::{TileType, World};
 
 /// Calculate new position after moving in a direction
-pub fn calculate_movement(
-    current_pos: Position,
-    direction: Direction,
-    distance: f32,
-) -> Position {
+pub fn calculate_movement(current_pos: Position, direction: Direction, distance: f32) -> Position {
     match direction {
         Direction::Up => Position::new(current_pos.x, current_pos.y - distance),
         Direction::Down => Position::new(current_pos.x, current_pos.y + distance),

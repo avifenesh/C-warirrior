@@ -14,8 +14,6 @@ use sqlx::{Pool, Postgres};
 /// Type alias for the database connection pool
 pub type DbPool = Pool<Postgres>;
 
-
-
 /// Initialize database tables (run migrations)
 pub async fn init_database(pool: &DbPool) -> Result<(), sqlx::Error> {
     schema::run_migrations(pool).await

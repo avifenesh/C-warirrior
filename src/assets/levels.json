@@ -388,5 +388,265 @@
         "starter_code": "#include <stdio.h>\n\nint main() {\n    int treasure = 42;\n    int *safe_ptr = &treasure;\n    int *trap_ptr = NULL;\n    \n    // Safely print values - check for NULL first!\n    // If pointer is NULL, print \"Path is blocked!\"\n    // If pointer is valid, print \"Found: X\"\n    \n    return 0;\n}"
       }
     ]
+  },
+  {
+    "id": "L16",
+    "title": "The Blueprint Scroll",
+    "concept": "struct definition",
+    "description": "The ancient scroll contains a blueprint for creating heroes. Define the structure that holds a warrior's attributes.",
+    "code_template": "#include <stdio.h>\n\n// Define a struct 'Hero' with:\n// - char name[50]\n// - int hp\n// - int level\n\nint main() {\n    struct Hero warrior = {\"Valor\", 100, 5};\n    printf(\"Hero: %s, HP: %d, Level: %d\\n\", warrior.name, warrior.hp, warrior.level);\n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Hero: Valor, HP: 100, Level: 5\n"
+    },
+    "hints": [
+      "Structs group related data together using: struct Name { ... };",
+      "Use 'char name[50]' for a string field",
+      "Initialize with: struct Hero h = {\"name\", 100, 5};"
+    ],
+    "xp_reward": 300,
+    "map_file": "maps/L16_blueprint_scroll.json",
+    "challenges": [
+      {
+        "id": "define_hero_struct",
+        "prompt": "Define the Hero struct with name, hp, and level fields.",
+        "expected_output": "Hero: Valor, HP: 100, Level: 5",
+        "starter_code": "#include <stdio.h>\n\n// Define a struct 'Hero' with name, hp, and level\n\nint main() {\n    struct Hero warrior = {\"Valor\", 100, 5};\n    printf(\"Hero: %s, HP: %d, Level: %d\\n\", warrior.name, warrior.hp, warrior.level);\n    return 0;\n}"
+      }
+    ]
+  },
+  {
+    "id": "L17",
+    "title": "The Chest Contents",
+    "concept": "struct members",
+    "description": "You found a treasure chest! Use dot notation to access and modify its contents.",
+    "code_template": "#include <stdio.h>\n\nstruct Chest {\n    int gold;\n    int gems;\n    int keys;\n};\n\nint main() {\n    struct Chest treasure;\n    \n    // Set gold to 500, gems to 10, keys to 3\n    // Then print: \"Chest: X gold, Y gems, Z keys\"\n    \n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Chest: 500 gold, 10 gems, 3 keys\n"
+    },
+    "hints": [
+      "Access struct members with dot notation: chest.gold = 500;",
+      "Each field must be set individually",
+      "Use %d for integers in printf"
+    ],
+    "xp_reward": 325,
+    "map_file": "maps/L17_chest_contents.json",
+    "challenges": [
+      {
+        "id": "access_struct_members",
+        "prompt": "Set the chest contents using dot notation and print the result.",
+        "expected_output": "Chest: 500 gold, 10 gems, 3 keys",
+        "starter_code": "#include <stdio.h>\n\nstruct Chest {\n    int gold;\n    int gems;\n    int keys;\n};\n\nint main() {\n    struct Chest treasure;\n    // Set gold=500, gems=10, keys=3 using dot notation\n    // Print: \"Chest: X gold, Y gems, Z keys\"\n    return 0;\n}"
+      }
+    ]
+  },
+  {
+    "id": "L18",
+    "title": "The Teleport Chest",
+    "concept": "struct pointers",
+    "description": "The chest is behind a magical barrier. Use a pointer to reach through and modify its contents!",
+    "code_template": "#include <stdio.h>\n\nstruct Chest {\n    int gold;\n};\n\nvoid add_gold(struct Chest *c, int amount) {\n    // Use arrow operator to add gold\n}\n\nint main() {\n    struct Chest treasure = {100};\n    add_gold(&treasure, 50);\n    printf(\"Gold: %d\\n\", treasure.gold);\n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Gold: 150\n"
+    },
+    "hints": [
+      "Use the arrow operator (->) to access members through a pointer",
+      "c->gold is equivalent to (*c).gold",
+      "Add the amount to the existing gold: c->gold += amount;"
+    ],
+    "xp_reward": 350,
+    "map_file": "maps/L18_teleport_chest.json",
+    "challenges": [
+      {
+        "id": "struct_pointer_arrow",
+        "prompt": "Use the arrow operator to modify the chest through a pointer.",
+        "expected_output": "Gold: 150",
+        "starter_code": "#include <stdio.h>\n\nstruct Chest {\n    int gold;\n};\n\nvoid add_gold(struct Chest *c, int amount) {\n    // Use -> to add gold\n}\n\nint main() {\n    struct Chest treasure = {100};\n    add_gold(&treasure, 50);\n    printf(\"Gold: %d\\n\", treasure.gold);\n    return 0;\n}"
+      }
+    ]
+  },
+  {
+    "id": "L19",
+    "title": "The Guild Hierarchy",
+    "concept": "nested structs",
+    "description": "The guild has a hierarchy. Each guild has a leader, and the leader is also a hero with their own attributes.",
+    "code_template": "#include <stdio.h>\n\nstruct Hero {\n    char name[50];\n    int level;\n};\n\nstruct Guild {\n    char guild_name[50];\n    struct Hero leader;\n    int member_count;\n};\n\nint main() {\n    struct Guild warriors = {\"Iron Fist\", {\"Maximus\", 50}, 100};\n    \n    // Print: \"Guild: X, Leader: Y (Lv.Z), Members: N\"\n    printf(\"Guild: %s, Leader: %s (Lv.%d), Members: %d\\n\",\n           ???);\n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Guild: Iron Fist, Leader: Maximus (Lv.50), Members: 100\n"
+    },
+    "hints": [
+      "Access nested struct members with multiple dots: guild.leader.name",
+      "The leader is a Hero struct inside the Guild struct",
+      "Use warriors.guild_name, warriors.leader.name, etc."
+    ],
+    "xp_reward": 375,
+    "map_file": "maps/L19_guild_hierarchy.json",
+    "challenges": [
+      {
+        "id": "nested_struct_access",
+        "prompt": "Access the nested Hero struct inside Guild to print the hierarchy.",
+        "expected_output": "Guild: Iron Fist, Leader: Maximus (Lv.50), Members: 100",
+        "starter_code": "#include <stdio.h>\n\nstruct Hero {\n    char name[50];\n    int level;\n};\n\nstruct Guild {\n    char guild_name[50];\n    struct Hero leader;\n    int member_count;\n};\n\nint main() {\n    struct Guild warriors = {\"Iron Fist\", {\"Maximus\", 50}, 100};\n    // Print the guild info using nested access\n    return 0;\n}"
+      }
+    ]
+  },
+  {
+    "id": "L20",
+    "title": "The Army Roster",
+    "concept": "array of structs",
+    "description": "The army needs a roster! Create an array of soldiers and iterate through them.",
+    "code_template": "#include <stdio.h>\n\nstruct Soldier {\n    char name[20];\n    int strength;\n};\n\nint main() {\n    struct Soldier army[3] = {\n        {\"Grunt\", 10},\n        {\"Knight\", 25},\n        {\"Champion\", 50}\n    };\n    \n    // Loop through and print each soldier\n    // Format: \"Soldier: X, Strength: Y\"\n    \n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Soldier: Grunt, Strength: 10\nSoldier: Knight, Strength: 25\nSoldier: Champion, Strength: 50\n"
+    },
+    "hints": [
+      "Use a for loop: for(int i = 0; i < 3; i++)",
+      "Access array elements with: army[i].name",
+      "Each iteration prints one soldier"
+    ],
+    "xp_reward": 400,
+    "map_file": "maps/L20_army_roster.json",
+    "challenges": [
+      {
+        "id": "array_of_structs_loop",
+        "prompt": "Loop through the army array and print each soldier.",
+        "expected_output": "Soldier: Grunt, Strength: 10\nSoldier: Knight, Strength: 25\nSoldier: Champion, Strength: 50",
+        "starter_code": "#include <stdio.h>\n\nstruct Soldier {\n    char name[20];\n    int strength;\n};\n\nint main() {\n    struct Soldier army[3] = {\n        {\"Grunt\", 10},\n        {\"Knight\", 25},\n        {\"Champion\", 50}\n    };\n    // Loop and print each soldier\n    return 0;\n}"
+      }
+    ]
+  },
+  {
+    "id": "L21",
+    "title": "Summon Land",
+    "concept": "malloc basics",
+    "description": "The void stretches before you. Use malloc to summon solid ground from nothingness!",
+    "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    // Allocate memory for one integer using malloc\n    int *land = ???;\n    \n    *land = 42;\n    printf(\"Land summoned with value: %d\\n\", *land);\n    \n    free(land);\n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Land summoned with value: 42\n"
+    },
+    "hints": [
+      "malloc returns a pointer to allocated memory",
+      "Use: int *ptr = (int*)malloc(sizeof(int));",
+      "sizeof(int) tells malloc how many bytes to allocate"
+    ],
+    "xp_reward": 425,
+    "map_file": "maps/L21_summon_land.json",
+    "challenges": [
+      {
+        "id": "malloc_single_int",
+        "prompt": "Use malloc to allocate space for one integer.",
+        "expected_output": "Land summoned with value: 42",
+        "starter_code": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    // Allocate memory for one integer\n    int *land = ???;\n    *land = 42;\n    printf(\"Land summoned with value: %d\\n\", *land);\n    free(land);\n    return 0;\n}"
+      }
+    ]
+  },
+  {
+    "id": "L22",
+    "title": "The Banish Spell",
+    "concept": "free memory",
+    "description": "What you summon, you must also banish! Release the memory back to the void.",
+    "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    int *summoned = (int*)malloc(sizeof(int));\n    *summoned = 999;\n    printf(\"Value before banish: %d\\n\", *summoned);\n    \n    // Free the memory here\n    \n    printf(\"Memory banished!\\n\");\n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Value before banish: 999\nMemory banished!\n"
+    },
+    "hints": [
+      "Use free(pointer) to release allocated memory",
+      "Always free memory that was malloc'd",
+      "After free, don't use the pointer again"
+    ],
+    "xp_reward": 450,
+    "map_file": "maps/L22_banish_spell.json",
+    "challenges": [
+      {
+        "id": "free_memory",
+        "prompt": "Free the allocated memory using the free function.",
+        "expected_output": "Value before banish: 999\nMemory banished!",
+        "starter_code": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    int *summoned = (int*)malloc(sizeof(int));\n    *summoned = 999;\n    printf(\"Value before banish: %d\\n\", *summoned);\n    // Free the memory\n    printf(\"Memory banished!\\n\");\n    return 0;\n}"
+      }
+    ]
+  },
+  {
+    "id": "L23",
+    "title": "The Cursed Hoarding",
+    "concept": "memory leaks",
+    "description": "A curse afflicts those who hoard without releasing! Find and fix the memory leak.",
+    "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    for(int i = 0; i < 3; i++) {\n        int *treasure = (int*)malloc(sizeof(int));\n        *treasure = (i + 1) * 100;\n        printf(\"Found treasure: %d\\n\", *treasure);\n        // FIX: Free memory inside the loop!\n    }\n    printf(\"All treasures collected properly!\\n\");\n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Found treasure: 100\nFound treasure: 200\nFound treasure: 300\nAll treasures collected properly!\n"
+    },
+    "hints": [
+      "Memory allocated inside a loop should be freed inside the loop",
+      "Each malloc needs a matching free",
+      "Add free(treasure) before the loop iteration ends"
+    ],
+    "xp_reward": 475,
+    "map_file": "maps/L23_cursed_hoarding.json",
+    "challenges": [
+      {
+        "id": "fix_memory_leak",
+        "prompt": "Add the missing free() call to prevent the memory leak.",
+        "expected_output": "Found treasure: 100\nFound treasure: 200\nFound treasure: 300\nAll treasures collected properly!",
+        "starter_code": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    for(int i = 0; i < 3; i++) {\n        int *treasure = (int*)malloc(sizeof(int));\n        *treasure = (i + 1) * 100;\n        printf(\"Found treasure: %d\\n\", *treasure);\n        // Add free here\n    }\n    printf(\"All treasures collected properly!\\n\");\n    return 0;\n}"
+      }
+    ]
+  },
+  {
+    "id": "L24",
+    "title": "The Expanding Army",
+    "concept": "dynamic arrays",
+    "description": "Your army grows! Use realloc to expand the barracks when new recruits arrive.",
+    "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    int *army = (int*)malloc(2 * sizeof(int));\n    army[0] = 10;\n    army[1] = 20;\n    printf(\"Army size 2: %d, %d\\n\", army[0], army[1]);\n    \n    // Expand to size 4 using realloc\n    army = ???;\n    army[2] = 30;\n    army[3] = 40;\n    printf(\"Army size 4: %d, %d, %d, %d\\n\", army[0], army[1], army[2], army[3]);\n    \n    free(army);\n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Army size 2: 10, 20\nArmy size 4: 10, 20, 30, 40\n"
+    },
+    "hints": [
+      "realloc can grow or shrink allocated memory",
+      "Use: ptr = (int*)realloc(ptr, new_size);",
+      "realloc preserves existing data"
+    ],
+    "xp_reward": 500,
+    "map_file": "maps/L24_expanding_army.json",
+    "challenges": [
+      {
+        "id": "realloc_expand",
+        "prompt": "Use realloc to expand the army array from 2 to 4 elements.",
+        "expected_output": "Army size 2: 10, 20\nArmy size 4: 10, 20, 30, 40",
+        "starter_code": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    int *army = (int*)malloc(2 * sizeof(int));\n    army[0] = 10;\n    army[1] = 20;\n    printf(\"Army size 2: %d, %d\\n\", army[0], army[1]);\n    // Expand to size 4\n    army[2] = 30;\n    army[3] = 40;\n    printf(\"Army size 4: %d, %d, %d, %d\\n\", army[0], army[1], army[2], army[3]);\n    free(army);\n    return 0;\n}"
+      }
+    ]
+  },
+  {
+    "id": "L25",
+    "title": "Chain of Portals",
+    "concept": "linked lists",
+    "description": "Create a chain of magical portals, each pointing to the next. This is the foundation of linked lists!",
+    "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\nstruct Portal {\n    int destination;\n    struct Portal *next;\n};\n\nint main() {\n    // Create 3 portals: 10 -> 20 -> 30 -> NULL\n    struct Portal *first = (struct Portal*)malloc(sizeof(struct Portal));\n    struct Portal *second = (struct Portal*)malloc(sizeof(struct Portal));\n    struct Portal *third = (struct Portal*)malloc(sizeof(struct Portal));\n    \n    first->destination = 10;\n    first->next = second;\n    \n    second->destination = 20;\n    // Link second to third\n    \n    third->destination = 30;\n    third->next = NULL;\n    \n    // Traverse and print\n    struct Portal *current = first;\n    while(current != NULL) {\n        printf(\"Portal to: %d\\n\", current->destination);\n        current = current->next;\n    }\n    \n    free(first); free(second); free(third);\n    return 0;\n}",
+    "success_criteria": {
+      "type": "exact_match",
+      "expected_stdout": "Portal to: 10\nPortal to: 20\nPortal to: 30\n"
+    },
+    "hints": [
+      "Link nodes with: node->next = another_node;",
+      "The last node's next should be NULL",
+      "Traverse with: while(current != NULL) { ... current = current->next; }"
+    ],
+    "xp_reward": 550,
+    "map_file": "maps/L25_chain_portals.json",
+    "challenges": [
+      {
+        "id": "linked_list_basic",
+        "prompt": "Complete the portal chain by linking second to third.",
+        "expected_output": "Portal to: 10\nPortal to: 20\nPortal to: 30",
+        "starter_code": "#include <stdio.h>\n#include <stdlib.h>\n\nstruct Portal {\n    int destination;\n    struct Portal *next;\n};\n\nint main() {\n    struct Portal *first = (struct Portal*)malloc(sizeof(struct Portal));\n    struct Portal *second = (struct Portal*)malloc(sizeof(struct Portal));\n    struct Portal *third = (struct Portal*)malloc(sizeof(struct Portal));\n    \n    first->destination = 10;\n    first->next = second;\n    \n    second->destination = 20;\n    // Link second to third\n    \n    third->destination = 30;\n    third->next = NULL;\n    \n    struct Portal *current = first;\n    while(current != NULL) {\n        printf(\"Portal to: %d\\n\", current->destination);\n        current = current->next;\n    }\n    \n    free(first); free(second); free(third);\n    return 0;\n}"
+      }
+    ]
   }
 ]

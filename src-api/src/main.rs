@@ -97,11 +97,11 @@ async fn main() {
     // Create database connection pool with Neon optimization
     tracing::info!("Connecting to database...");
     let pool = sqlx::postgres::PgPoolOptions::new()
-        .max_connections(3)                    // Lower max for Neon free tier
-        .min_connections(0)                    // Allow pool to shrink to 0
-        .acquire_timeout(Duration::from_secs(10))   // Timeout for getting connections
-        .idle_timeout(Duration::from_secs(300))     // Drop idle connections after 5 mins
-        .max_lifetime(Duration::from_secs(1800))    // Recreate connections after 30 mins
+        .max_connections(3) // Lower max for Neon free tier
+        .min_connections(0) // Allow pool to shrink to 0
+        .acquire_timeout(Duration::from_secs(10)) // Timeout for getting connections
+        .idle_timeout(Duration::from_secs(300)) // Drop idle connections after 5 mins
+        .max_lifetime(Duration::from_secs(1800)) // Recreate connections after 30 mins
         .connect(&database_url)
         .await
         .expect("Failed to connect to database");
@@ -196,22 +196,25 @@ async fn get_or_create_session(
             let game_state: GameState = serde_json::from_value(session.game_state)
                 .map_err(|e| format!("Failed to parse game state: {}", e))?;
             Ok(game_state)
-        },
+        }
         Ok(None) => {
             // Create new session
             let new_state = GameState::new();
             let session_json = serde_json::to_value(&new_state)
                 .map_err(|e| format!("Failed to serialize game state: {}", e))?;
-            
-            db::save_session(pool, &db::NewSession {
-                device_id: device_id.to_string(),
-                game_state: session_json,
-            })
+
+            db::save_session(
+                pool,
+                &db::NewSession {
+                    device_id: device_id.to_string(),
+                    game_state: session_json,
+                },
+            )
             .await
             .map_err(|e| format!("Failed to create session: {}", e))?;
-            
+
             Ok(new_state)
-        },
+        }
         Err(e) => Err(format!("Database error: {}", e)),
     }
 }
@@ -224,7 +227,7 @@ async fn update_session(
 ) -> Result<(), String> {
     let state_json = serde_json::to_value(&state)
         .map_err(|e| format!("Failed to serialize game state: {}", e))?;
-        
+
     db::update_session_state(pool, device_id, &state_json)
         .await
         .map_err(|e| format!("Failed to update session: {}", e))?;
@@ -237,24 +240,19 @@ async fn update_session(
         current_level: state.current_level_id.clone(),
         achievements: vec![], // TODO: Extract achievements from state if we add them
     };
-    
+
     db::save_progress(pool, &progress)
         .await
         .map_err(|e| format!("Failed to save progress: {}", e))?;
-        
+
     Ok(())
 }
 
 // Handler functions
 
-async fn health_check(
-    State(state): State<Arc<AppState>>,
-) -> Json<HealthResponse> {
+async fn health_check(State(state): State<Arc<AppState>>) -> Json<HealthResponse> {
     // Check database health
-    let db_status = match sqlx::query("SELECT 1")
-        .fetch_one(&state.db)
-        .await
-    {
+    let db_status = match sqlx::query("SELECT 1").fetch_one(&state.db).await {
         Ok(_) => "connected".to_string(),
         Err(e) => {
             tracing::error!("Database health check failed: {}", e);
@@ -277,11 +275,12 @@ async fn init_game(
     tracing::info!("Initializing new game session for device: {}", device_id.0);
 
     // Force create new state or reset? For now, just get/create
-    let game_state = get_or_create_session(&state.db, &device_id.0).await
+    let game_state = get_or_create_session(&state.db, &device_id.0)
+        .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
     // If we wanted to force reset, we would do it here
-    
+
     Ok(Json(InitGameResponse {
         device_id: device_id.0,
         game_state,
@@ -294,7 +293,8 @@ async fn get_game_state(
 ) -> Result<Json<GameState>, (StatusCode, String)> {
     tracing::debug!("Fetching game state for device: {}", device_id.0);
 
-    let game_state = get_or_create_session(&state.db, &device_id.0).await
+    let game_state = get_or_create_session(&state.db, &device_id.0)
+        .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
     Ok(Json(game_state))
@@ -306,7 +306,8 @@ async fn get_render_state(
 ) -> Result<Json<RenderState>, (StatusCode, String)> {
     tracing::debug!("Fetching render state for device: {}", device_id.0);
 
-    let game_state = get_or_create_session(&state.db, &device_id.0).await
+    let game_state = get_or_create_session(&state.db, &device_id.0)
+        .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
     Ok(Json(game_state.to_render_state()))
@@ -319,7 +320,8 @@ async fn process_action(
 ) -> Result<Json<RenderState>, (StatusCode, String)> {
     tracing::info!("Processing action for device: {}", device_id.0);
 
-    let mut game_state = get_or_create_session(&state.db, &device_id.0).await
+    let mut game_state = get_or_create_session(&state.db, &device_id.0)
+        .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
     // Process the action
@@ -352,7 +354,8 @@ async fn process_action(
     }
 
     // Update session
-    update_session(&state.db, &device_id.0, game_state.clone()).await
+    update_session(&state.db, &device_id.0, game_state.clone())
+        .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
     Ok(Json(game_state.to_render_state()))
@@ -364,7 +367,8 @@ async fn get_available_levels(
 ) -> Result<Json<Vec<LevelInfo>>, (StatusCode, String)> {
     tracing::debug!("Fetching available levels for device: {}", device_id.0);
 
-    let game_state = get_or_create_session(&state.db, &device_id.0).await
+    let game_state = get_or_create_session(&state.db, &device_id.0)
+        .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
     let mut levels_info = state.levels.get_all_info();
@@ -386,13 +390,16 @@ async fn load_level(
     tracing::info!("Loading level '{}' for device: {}", level_id, device_id.0);
 
     // Get level data
-    let level = state
-        .levels
-        .get_level(&level_id)
-        .ok_or_else(|| (StatusCode::NOT_FOUND, format!("Level '{}' not found", level_id)))?;
+    let level = state.levels.get_level(&level_id).ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            format!("Level '{}' not found", level_id),
+        )
+    })?;
 
     // Get or create game state
-    let mut game_state = get_or_create_session(&state.db, &device_id.0).await
+    let mut game_state = get_or_create_session(&state.db, &device_id.0)
+        .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
     // Check if level is unlocked
@@ -411,7 +418,8 @@ async fn load_level(
     game_state.update_unlocked_levels(state.levels.get_prerequisites());
 
     // Save updated state
-    update_session(&state.db, &device_id.0, game_state.clone()).await
+    update_session(&state.db, &device_id.0, game_state.clone())
+        .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
     Ok(Json(LoadLevelResponse {
@@ -428,20 +436,28 @@ async fn submit_code(
     tracing::info!("Submitting code for device: {}", device_id.0);
 
     // Get game state
-    let mut game_state = get_or_create_session(&state.db, &device_id.0).await
+    let mut game_state = get_or_create_session(&state.db, &device_id.0)
+        .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
     // Get current level
     let level_id = game_state
         .current_level_id
         .as_ref()
-        .ok_or_else(|| (StatusCode::BAD_REQUEST, "No level currently loaded".to_string()))?
+        .ok_or_else(|| {
+            (
+                StatusCode::BAD_REQUEST,
+                "No level currently loaded".to_string(),
+            )
+        })?
         .clone();
 
-    let level = state
-        .levels
-        .get_level(&level_id)
-        .ok_or_else(|| (StatusCode::NOT_FOUND, format!("Level '{}' not found", level_id)))?;
+    let level = state.levels.get_level(&level_id).ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            format!("Level '{}' not found", level_id),
+        )
+    })?;
 
     // Compile and run code
     let execution_result = state
@@ -466,13 +482,30 @@ async fn submit_code(
         // Update unlocked levels
         game_state.update_unlocked_levels(state.levels.get_prerequisites());
 
-        format!("Success! Your code produced the correct output. You earned {} XP!", xp)
+        format!(
+            "Success! Your code produced the correct output. You earned {} XP!",
+            xp
+        )
     } else {
         "Output doesn't match expected result. Try again!".to_string()
     };
 
+    if success {
+        let xp_delta = xp_earned.unwrap_or(0);
+        let xp_i32 = (xp_delta.min(i32::MAX as u32)) as i32;
+        db::complete_level(&state.db, &device_id.0, &level_id, xp_i32)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    format!("Failed to record progress: {}", e),
+                )
+            })?;
+    }
+
     // Save updated state
-    update_session(&state.db, &device_id.0, game_state.clone()).await
+    update_session(&state.db, &device_id.0, game_state.clone())
+        .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
     Ok(Json(SubmitCodeResponse {
@@ -485,4 +518,73 @@ async fn submit_code(
         xp_earned,
         render_state: game_state.to_render_state(),
     }))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::db::{self, NewSession};
+    use super::*;
+    use sqlx::postgres::PgPoolOptions;
+    use uuid::Uuid;
+
+    #[tokio::test]
+    async fn session_persists_across_pool_restart() {
+        dotenvy::dotenv().ok();
+        let database_url = match std::env::var("DATABASE_URL") {
+            Ok(url) => url,
+            Err(_) => {
+                eprintln!("Skipping persistence test because DATABASE_URL is not set");
+                return;
+            }
+        };
+
+        let device_id = format!("test-persist-{}", Uuid::new_v4());
+        let initial_state = GameState::new();
+        let state_json = serde_json::to_value(&initial_state).expect("serialize game state");
+
+        let pool = PgPoolOptions::new()
+            .max_connections(1)
+            .connect(&database_url)
+            .await
+            .expect("connect first pool");
+
+        db::init_database(&pool).await.expect("run migrations");
+
+        db::save_session(
+            &pool,
+            &NewSession {
+                device_id: device_id.clone(),
+                game_state: state_json.clone(),
+            },
+        )
+        .await
+        .expect("save session");
+
+        drop(pool);
+
+        let pool = PgPoolOptions::new()
+            .max_connections(1)
+            .connect(&database_url)
+            .await
+            .expect("connect second pool");
+
+        let stored = db::get_session(&pool, &device_id)
+            .await
+            .expect("load session");
+
+        assert!(stored.is_some());
+        assert_eq!(stored.unwrap().device_id, device_id);
+
+        sqlx::query("DELETE FROM sessions WHERE device_id = $1")
+            .bind(&device_id)
+            .execute(&pool)
+            .await
+            .expect("cleanup session");
+
+        sqlx::query("DELETE FROM player_progress WHERE device_id = $1")
+            .bind(&device_id)
+            .execute(&pool)
+            .await
+            .expect("cleanup progress");
+    }
 }

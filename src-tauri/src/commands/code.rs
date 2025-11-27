@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Emitter, State};
 
+use crate::GameStateWrapper;
 use code_warrior::compiler::CCompiler;
 use code_warrior::levels::LevelRegistry;
-use crate::GameStateWrapper;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CodeResult {
@@ -57,7 +57,10 @@ pub async fn submit_code(
 
     println!("[submit_code] Calling compiler...");
     let execution_result = compiler.compile_and_run(&code).await?;
-    println!("[submit_code] Compiler returned: success={}", execution_result.run_success());
+    println!(
+        "[submit_code] Compiler returned: success={}",
+        execution_result.run_success()
+    );
     let success = level_data.validate_output(&execution_result);
 
     let mut xp_earned = 0;
@@ -88,8 +91,10 @@ pub async fn submit_code(
             .cloned()
             .collect();
 
-        println!("[submit_code] Level completed! XP earned: {}, newly unlocked: {:?}",
-                 xp_earned, newly_unlocked);
+        println!(
+            "[submit_code] Level completed! XP earned: {}, newly unlocked: {:?}",
+            xp_earned, newly_unlocked
+        );
     }
 
     let feedback = if execution_result.compile_error.is_some() {

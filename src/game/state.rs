@@ -240,7 +240,7 @@ impl GameState {
             viewport_offset: Position::new(offset_x as f32, offset_y as f32),
             game_phase: self.game_phase,
             current_level_id: self.current_level_id.clone(),
-            map: None, // Can be populated when we have a TileMap in GameState
+            map: None,           // Can be populated when we have a TileMap in GameState
             objects: Vec::new(), // Can be populated when we have objects in GameState
             show_terminal: self.game_phase == GamePhase::Coding,
             active_dialogue: None, // Can be populated when we add dialogue system

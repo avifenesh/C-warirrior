@@ -1,0 +1,116 @@
+{
+  "width": 20,
+  "height": 16,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "layers": [
+    {
+      "type": "tilelayer",
+      "name": "floor",
+      "width": 20,
+      "height": 16,
+      "data": [
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+        4, 1, 1, 1, 1, 1, 3, 0, 0, 0, 0, 0, 0, 3, 1, 1, 1, 1, 1, 4,
+        4, 1, 1, 1, 1, 1, 3, 0, 0, 0, 0, 0, 0, 3, 1, 1, 1, 1, 1, 4,
+        4, 1, 1, 1, 1, 1, 3, 0, 0, 0, 0, 0, 0, 3, 1, 1, 1, 1, 1, 4,
+        4, 1, 1, 1, 1, 1, 3, 0, 0, 0, 0, 0, 0, 3, 1, 1, 1, 1, 1, 4,
+        4, 1, 1, 1, 1, 1, 3, 0, 0, 2, 2, 0, 0, 3, 1, 1, 1, 1, 1, 4,
+        4, 1, 1, 1, 1, 1, 3, 0, 0, 2, 2, 0, 0, 3, 1, 1, 1, 1, 1, 4,
+        4, 1, 1, 1, 1, 1, 3, 0, 0, 0, 0, 0, 0, 3, 1, 1, 1, 1, 1, 4,
+        4, 1, 1, 1, 1, 1, 3, 0, 0, 0, 0, 0, 0, 3, 1, 1, 1, 1, 1, 4,
+        4, 1, 1, 1, 1, 1, 3, 0, 0, 0, 0, 0, 0, 3, 1, 1, 1, 1, 1, 4,
+        4, 1, 1, 1, 1, 1, 3, 0, 0, 0, 0, 0, 0, 3, 1, 1, 1, 1, 1, 4,
+        4, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 4,
+        4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4,
+        4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4,
+        4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4,
+        4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
+      ]
+    },
+    {
+      "type": "objectgroup",
+      "name": "objects",
+      "objects": [
+        {
+          "type": "spawn",
+          "x": 96,
+          "y": 448,
+          "width": 32,
+          "height": 32
+        },
+        {
+          "type": "terminal",
+          "x": 288,
+          "y": 192,
+          "width": 32,
+          "height": 32,
+          "properties": [
+            {
+              "name": "hint",
+              "type": "string",
+              "value": "malloc(size) summons memory from the void. Returns a pointer to the new land."
+            }
+          ]
+        },
+        {
+          "type": "door",
+          "x": 544,
+          "y": 448,
+          "width": 32,
+          "height": 32,
+          "properties": [
+            {
+              "name": "locked",
+              "type": "bool",
+              "value": true
+            }
+          ]
+        },
+        {
+          "type": "npc",
+          "x": 96,
+          "y": 192,
+          "width": 32,
+          "height": 32,
+          "properties": [
+            {
+              "name": "name",
+              "type": "string",
+              "value": "Memory Sage"
+            },
+            {
+              "name": "dialogue",
+              "type": "string",
+              "value": "The void contains infinite potential. malloc creates land from nothing. Always check if the spell succeeded!"
+            }
+          ]
+        },
+        {
+          "type": "hazard",
+          "x": 224,
+          "y": 32,
+          "width": 192,
+          "height": 320,
+          "properties": [
+            {
+              "name": "id",
+              "type": "string",
+              "value": "void_zone"
+            },
+            {
+              "name": "damage",
+              "type": "string",
+              "value": "instant"
+            },
+            {
+              "name": "message",
+              "type": "string",
+              "value": "FELL INTO THE VOID"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

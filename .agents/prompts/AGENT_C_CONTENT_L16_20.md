@@ -3,7 +3,7 @@
 ## Goal
 Create 10 new map files for Structs (L16-20) and Memory (L21-25) phases.
 
-## Status: ⏳ PENDING
+## Status: ✅ COMPLETE
 
 ## Tasks
 1. [ ] Create L16 map: struct definition ("Blueprint Scroll")
