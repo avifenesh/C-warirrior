@@ -4,7 +4,8 @@
     import type { RenderState, Direction } from '$lib/types';
     import { loadAssets, DEFAULT_MANIFEST, type LoadedAssets } from '$lib/engine/assets';
     import { ANIMATIONS, startAnimation, getCurrentFrame, type AnimationState } from '$lib/engine/animation';
-    import { Camera, applyCameraTransform, resetCameraTransform } from '$lib/engine/camera';
+    import { GameRenderer } from '$lib/engine/renderer';
+    import { Camera } from '$lib/engine/camera';
     import { ParticleSystem, emitXpSparkles, emitCodeSuccessBurst } from '$lib/engine/particles';
 
     interface Props {
@@ -20,6 +21,8 @@
     const dispatcher = createEventDispatcher();
     let canvasRef = $state<HTMLCanvasElement | null>(null);
     let containerRef = $state<HTMLDivElement | null>(null);
+    let renderer: GameRenderer | null = null;
+    
     let assets = $state<LoadedAssets | null>(null);
     let assetsLoaded = $state(false);
 
@@ -33,8 +36,7 @@
     let terminalAnimState = $state<AnimationState | null>(null);
     let lastPlayerPos = { x: 0, y: 0 }; // NOT reactive - just for comparison
     let lastCodeSuccess = false; // NOT reactive - track code success state
-    let animationTime = $state(0);
-
+    
     // Backend uses 32px tile size for positions
     const BACKEND_TILE_SIZE = 32;
 
@@ -109,24 +111,23 @@
 
         // Load assets
         console.log('[GameWorld] Starting asset load...');
+        if (canvasRef) {
+            renderer = new GameRenderer(canvasRef, { tileSize });
+        }
+
         loadAssets(DEFAULT_MANIFEST)
             .then((loadedAssets) => {
-                console.log('[GameWorld] Assets loaded successfully:', {
-                    sprites: loadedAssets.sprites.size,
-                    tiles: loadedAssets.tiles.size,
-                });
-                console.log('[GameWorld] Tile keys:', Array.from(loadedAssets.tiles.keys()));
-                console.log('[GameWorld] Sprite keys:', Array.from(loadedAssets.sprites.keys()));
-                console.log('[GameWorld] Floor tile:', loadedAssets.tiles.get('floor'));
+                console.log('[GameWorld] Assets loaded successfully');
                 assets = loadedAssets;
                 assetsLoaded = true;
+                renderer?.setAssets(loadedAssets);
+                
                 // Initialize animations
                 playerAnimState = startAnimation(ANIMATIONS.playerIdle);
                 terminalAnimState = startAnimation(ANIMATIONS.terminalGlow);
             })
             .catch((err) => {
                 console.error('[GameWorld] Asset loading failed:', err);
-                // Mark as loaded anyway so we use fallback
                 assetsLoaded = true;
             });
 
@@ -138,7 +139,6 @@
 
             const deltaTime = lastFrameTime > 0 ? currentTime - lastFrameTime : 16.67;
             lastFrameTime = currentTime;
-            animationTime = currentTime;
 
             // Track player movement and update animations (non-reactive)
             if (currentState) {
@@ -171,16 +171,18 @@
             // Update particles
             particles.update(deltaTime);
 
-            // Render scene with snapshot
-            if (canvasRef) {
-                const context = canvasRef.getContext('2d');
-                if (context) {
-                    try {
-                        context.imageSmoothingEnabled = false;
-                        drawScene(context, currentState);
-                    } catch (err) {
-                        console.error('[GameWorld] Rendering error:', err);
-                    }
+            // Render scene
+            if (renderer && canvasRef) {
+                try {
+                    renderer.render(
+                        currentState, 
+                        particles, 
+                        deltaTime,
+                        currentTime,
+                        { player: playerAnimState, terminal: terminalAnimState }
+                    );
+                } catch (err) {
+                    console.error('[GameWorld] Rendering error:', err);
                 }
             }
 
@@ -194,242 +196,6 @@
         };
     });
 
-    function drawScene(context: CanvasRenderingContext2D, state: RenderState | null) {
-        const width = canvasRef?.width ?? 0;
-        const height = canvasRef?.height ?? 0;
-
-        // Clear background with natural dark
-        context.fillStyle = '#0a0a14';
-        context.fillRect(0, 0, width, height);
-
-        if (!state) {
-            // Loading state with pixel art style
-            context.fillStyle = '#fbbf24';
-            context.font = '12px "Press Start 2P", "Courier New", monospace';
-            context.textAlign = 'center';
-            context.fillText(assetsLoaded ? 'Entering world...' : 'Loading...', width / 2, height / 2);
-            return;
-        }
-
-        if (!assetsLoaded || !assets) {
-            // Assets still loading, show colored rectangles as fallback
-            drawFallbackScene(context, state);
-            return;
-        }
-
-        // Extra null safety check - state may be partially populated during init
-        if (!state.visible_tiles || !state.player) {
-            return;
-        }
-
-        const playerTile = {
-            x: Math.floor(state.player.position.x / BACKEND_TILE_SIZE) - state.viewport_offset.x,
-            y: Math.floor(state.player.position.y / BACKEND_TILE_SIZE) - state.viewport_offset.y,
-        };
-
-        // Draw tiles with sprites
-        for (let y = 0; y < state.visible_tiles.length; y++) {
-            for (let x = 0; x < state.visible_tiles[y].length; x++) {
-                const tile = state.visible_tiles[y][x];
-                const tileX = x * tileSize;
-                const tileY = y * tileSize;
-
-                // Draw solid background color first (handles transparent sprites)
-                context.fillStyle = getTileColor(tile.tile_type);
-                context.fillRect(tileX, tileY, tileSize, tileSize);
-
-                // For interactive tiles (terminal), draw grass texture first as base
-                if (tile.tile_type === 'terminal') {
-                    const grassSprite = assets.tiles.get('grass');
-                    if (grassSprite) {
-                        context.drawImage(grassSprite, tileX, tileY, tileSize, tileSize);
-                    }
-                }
-
-                // Then draw tile sprite on top (if available)
-                const tileSprite = getTileSprite(tile.tile_type, tile.walkable);
-                if (tileSprite) {
-                    // Check if this is an animated tile (sprite sheet - width > height)
-                    const isAnimatedTile = (tile.tile_type === 'water' || tile.tile_type === 'terminal')
-                        && tileSprite.width > tileSprite.height;
-
-                    if (isAnimatedTile) {
-                        // 4-frame animation (water: 200ms, terminal: 300ms for slower pulse)
-                        const frameCount = 4;
-                        const frameDuration = tile.tile_type === 'terminal' ? 300 : 200;
-                        const frameIndex = Math.floor(animationTime / frameDuration) % frameCount;
-                        const frameWidth = tileSprite.width / frameCount;
-                        context.drawImage(
-                            tileSprite,
-                            frameIndex * frameWidth, 0, frameWidth, tileSprite.height, // source
-                            tileX, tileY, tileSize, tileSize // destination
-                        );
-                    } else {
-                        context.drawImage(tileSprite, tileX, tileY, tileSize, tileSize);
-                    }
-                }
-
-                const manhattan = Math.abs(playerTile.x - x) + Math.abs(playerTile.y - y);
-                const isNear = manhattan <= 1;
-
-                // Highlight for interactable tiles when player is near
-                if (tile.tile_type === 'terminal' && isNear) {
-                    // Simple pixel-style highlight border
-                    context.strokeStyle = '#fbbf24'; // gold for terminal
-                    context.lineWidth = 2;
-                    context.strokeRect(tileX + 1, tileY + 1, tileSize - 2, tileSize - 2);
-                }
-
-                // Locked door indicator
-                if (tile.tile_type === 'door' && !tile.walkable) {
-                    // Red lock indicator
-                    context.fillStyle = '#dc2626';
-                    context.fillRect(tileX + tileSize - 8, tileY + 4, 4, 4);
-                }
-            }
-        }
-
-        // Draw player with sprite
-        // Scale from backend coords (32px tiles) to frontend coords
-        const scaleFactor = tileSize / BACKEND_TILE_SIZE;
-        const px = state.player.position.x * scaleFactor - state.viewport_offset.x * tileSize;
-        const py = state.player.position.y * scaleFactor - state.viewport_offset.y * tileSize;
-
-        // Get player sprite based on facing direction
-        const playerSpriteName = `player_${state.player.facing}`;
-        const playerSprite = assets.sprites.get(playerSpriteName);
-
-        if (playerSprite) {
-            // Draw animated player sprite
-            const frameIndex = playerAnimState ? getCurrentFrame(playerAnimState, animationTime) : 0;
-            let spriteOffsetX = px - tileSize / 2;
-            let spriteOffsetY = py - tileSize / 2;
-
-            // Handle sprite sheets vs single frames
-            const isSpriteSheet = playerSprite.width > playerSprite.height || playerSprite.height > playerSprite.width;
-            
-            if (isSpriteSheet) {
-                // Assume horizontal strip for now (common format)
-                // If vertical strip is needed, we'd check dimensions
-                const frameWidth = playerSprite.height; // Assume square frames based on height
-                const frameX = frameIndex * frameWidth;
-                
-                context.drawImage(
-                    playerSprite, 
-                    frameX, 0, frameWidth, playerSprite.height, // Source
-                    spriteOffsetX, spriteOffsetY, tileSize, tileSize // Destination
-                );
-            } else {
-                // Single frame - add "bobbing" animation if walking
-                // Use ID comparison to avoid Svelte 5 proxy equality mismatch
-                if (playerAnimState?.animation?.id === ANIMATIONS.playerWalk.id) {
-                    const bobOffset = Math.sin(animationTime / 50) * 2; // +/- 2px bob
-                    spriteOffsetY += bobOffset;
-                }
-                
-                context.drawImage(playerSprite, spriteOffsetX, spriteOffsetY, tileSize, tileSize);
-            }
-        } else {
-            // Fallback to colored knight shape if sprite not loaded
-            context.fillStyle = '#708090'; // armor gray
-            context.fillRect(px - tileSize * 0.35, py - tileSize * 0.4, tileSize * 0.7, tileSize * 0.8);
-            // Gold trim
-            context.fillStyle = '#fbbf24';
-            context.fillRect(px - tileSize * 0.2, py - tileSize * 0.35, tileSize * 0.4, tileSize * 0.1);
-        }
-
-        // Render particles (on top of everything)
-        particles.render(context, state.viewport_offset, tileSize);
-    }
-
-    function getTileSprite(tileType: string, walkable: boolean): HTMLImageElement | null | undefined {
-        if (!assets) return null;
-
-        let spriteName: string;
-        switch (tileType) {
-            case 'floor':
-                spriteName = 'grass';  // Changed from 'floor' to 'grass'
-                break;
-            case 'wall':
-                spriteName = 'wall';
-                break;
-            case 'water':
-                spriteName = 'water';
-                break;
-            case 'void':
-                spriteName = 'void';
-                break;
-            case 'terminal':
-                spriteName = 'terminal';
-                break;
-            case 'door':
-                spriteName = walkable ? 'door_open' : 'door_locked';
-                break;
-            case 'npc':
-                // NPC sprites are in sprites map, not tiles
-                return assets.sprites.get('npc_mentor');
-            default:
-                spriteName = 'grass';  // Default to grass tile
-        }
-
-        return assets.tiles.get(spriteName);
-    }
-
-    function drawFallbackScene(context: CanvasRenderingContext2D, state: RenderState) {
-        const playerTile = {
-            x: Math.floor(state.player.position.x / BACKEND_TILE_SIZE) - state.viewport_offset.x,
-            y: Math.floor(state.player.position.y / BACKEND_TILE_SIZE) - state.viewport_offset.y,
-        };
-
-        // Draw tiles
-        for (let y = 0; y < state.visible_tiles.length; y++) {
-            for (let x = 0; x < state.visible_tiles[y].length; x++) {
-                const tile = state.visible_tiles[y][x];
-                const tileX = x * tileSize;
-                const tileY = y * tileSize;
-                context.fillStyle = getTileColor(tile.tile_type);
-                context.fillRect(tileX, tileY, tileSize, tileSize);
-
-                const manhattan = Math.abs(playerTile.x - x) + Math.abs(playerTile.y - y);
-                const isNear = manhattan <= 1;
-
-                if (tile.tile_type === 'terminal' && isNear) {
-                    context.strokeStyle = '#fbbf24';
-                    context.lineWidth = 2;
-                    context.strokeRect(tileX + 1, tileY + 1, tileSize - 2, tileSize - 2);
-                }
-            }
-        }
-
-        // Draw player fallback (knight shape)
-        // Scale from backend coords to frontend coords
-        const scaleFactor = tileSize / BACKEND_TILE_SIZE;
-        const px = state.player.position.x * scaleFactor - state.viewport_offset.x * tileSize;
-        const py = state.player.position.y * scaleFactor - state.viewport_offset.y * tileSize;
-        context.fillStyle = '#708090'; // armor gray
-        context.fillRect(px - tileSize * 0.35, py - tileSize * 0.4, tileSize * 0.7, tileSize * 0.8);
-        context.fillStyle = '#fbbf24'; // gold trim
-        context.fillRect(px - tileSize * 0.2, py - tileSize * 0.35, tileSize * 0.4, tileSize * 0.1);
-    }
-
-    function getTileColor(type: string): string {
-        switch (type) {
-            case 'wall':
-                return '#4a4a4a'; // stone gray
-            case 'water':
-                return '#1e6091'; // natural blue
-            case 'void':
-                return '#0a0a14'; // dark void
-            case 'door':
-                return '#8b5a2b'; // visible wood brown (brighter)
-            case 'terminal':
-            case 'npc':
-                return '#3d7a37'; // same as floor (grass) - sprite has transparent bg
-            case 'floor':
-            default:
-                return '#3d7a37'; // grass green
-        }
-    }
 
     function handleContainerClick(event: MouseEvent) {
         // Don't steal focus if clicking inside a modal/form element

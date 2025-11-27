@@ -1,117 +1,269 @@
-/** Sprite rendering helpers. */
-export interface Sprite {
-    image: HTMLImageElement;
-    width: number;
-    height: number;
-    frames: number;
-    currentFrame: number;
-}
+import type { RenderState, Tile } from '$lib/types';
+import type { LoadedAssets, SpriteSheetConfig } from './assets';
+import type { ParticleSystem } from './particles';
+import { getCurrentFrame, type AnimationState } from './animation';
 
-/** Context passed to render helpers. */
-export interface RenderContext {
-    ctx: CanvasRenderingContext2D;
+export interface RenderConfig {
     tileSize: number;
-    camera: { x: number; y: number };
+    backendTileSize: number;
+    debug?: boolean;
 }
 
-/** Draw a sprite at world position. */
-export function drawSprite(
-    context: RenderContext,
-    sprite: Sprite,
-    worldX: number,
-    worldY: number
-): void {
-    const { ctx, tileSize, camera } = context;
-    if (!sprite.image || sprite.image.complete === false) return;
+export class GameRenderer {
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
+    private assets: LoadedAssets | null = null;
+    private config: RenderConfig;
+    private animationTime: number = 0;
 
-    const { x, y } = worldToScreen(worldX, worldY, camera, tileSize);
-    const frameWidth = sprite.width;
-    const frameHeight = sprite.height;
-    ctx.drawImage(
-        sprite.image,
-        sprite.currentFrame * frameWidth,
-        0,
-        frameWidth,
-        frameHeight,
-        x,
-        y,
-        frameWidth,
-        frameHeight
-    );
-}
+    constructor(canvas: HTMLCanvasElement, config: Partial<RenderConfig> = {}) {
+        this.canvas = canvas;
+        const ctx = canvas.getContext('2d', { alpha: false });
+        if (!ctx) throw new Error('Could not get 2D context');
+        this.ctx = ctx;
+        this.ctx.imageSmoothingEnabled = false;
 
-/** Draw a tile from a tileset atlas using 1D index (row-major). */
-export function drawTile(
-    context: RenderContext,
-    tileset: HTMLImageElement,
-    tileIndex: number,
-    worldX: number,
-    worldY: number
-): void {
-    const { ctx, tileSize, camera } = context;
-    if (!tileset || tileset.complete === false) return;
-    if (tileIndex < 0) return;
+        this.config = {
+            tileSize: 64,
+            backendTileSize: 32,
+            debug: false,
+            ...config
+        };
+    }
 
-    const tilesPerRow = Math.floor(tileset.width / tileSize) || 1;
-    const sx = (tileIndex % tilesPerRow) * tileSize;
-    const sy = Math.floor(tileIndex / tilesPerRow) * tileSize;
+    public setAssets(assets: LoadedAssets) {
+        this.assets = assets;
+    }
 
-    const { x, y } = worldToScreen(worldX, worldY, camera, tileSize);
-    ctx.drawImage(tileset, sx, sy, tileSize, tileSize, x, y, tileSize, tileSize);
-}
+    public resize(width: number, height: number) {
+        if (this.canvas.width !== width || this.canvas.height !== height) {
+            this.canvas.width = width;
+            this.canvas.height = height;
+            this.ctx.imageSmoothingEnabled = false; // Reset on resize
+        }
+    }
 
-/** Draw animated sprite (frame selection based on elapsed frameTime in ms). */
-export function drawAnimatedSprite(
-    context: RenderContext,
-    sprite: Sprite,
-    worldX: number,
-    worldY: number,
-    frameTime: number
-): void {
-    if (sprite.frames <= 0) return drawSprite(context, sprite, worldX, worldY);
-    const frameWidth = sprite.width;
-    const { ctx } = context;
-    if (!sprite.image || sprite.image.complete === false) return;
+    public render(
+        state: RenderState | null,
+        particles: ParticleSystem | null,
+        dt: number,
+        currentTime: number,
+        animState?: { player: AnimationState | null; terminal: AnimationState | null }
+    ) {
+        this.animationTime = currentTime;
 
-    const defaultFrameDuration = 150; // ms per frame
-    const frameIndex = Math.floor(frameTime / defaultFrameDuration) % sprite.frames;
-    sprite.currentFrame = frameIndex;
-    const { x, y } = worldToScreen(worldX, worldY, context.camera, context.tileSize);
-    ctx.drawImage(
-        sprite.image,
-        frameIndex * frameWidth,
-        0,
-        frameWidth,
-        sprite.height,
-        x,
-        y,
-        frameWidth,
-        sprite.height
-    );
-}
+        // Clear screen
+        this.ctx.fillStyle = '#0a0a14';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-/** Convert world coordinates (in pixels) to screen coordinates. */
-export function worldToScreen(
-    worldX: number,
-    worldY: number,
-    camera: { x: number; y: number },
-    tileSize: number
-): { x: number; y: number } {
-    return {
-        x: Math.round(worldX - camera.x * tileSize),
-        y: Math.round(worldY - camera.y * tileSize),
-    };
-}
+        if (!state) {
+            this.renderLoading();
+            return;
+        }
 
-/** Convert screen coordinates to world coordinates. */
-export function screenToWorld(
-    screenX: number,
-    screenY: number,
-    camera: { x: number; y: number },
-    tileSize: number
-): { x: number; y: number } {
-    return {
-        x: screenX + camera.x * tileSize,
-        y: screenY + camera.y * tileSize,
-    };
+        if (!this.assets) {
+            this.renderFallback(state);
+            return;
+        }
+
+        this.renderScene(state, animState);
+        
+        if (particles) {
+            particles.render(this.ctx, state.viewport_offset, this.config.tileSize);
+        }
+    }
+
+    private renderLoading() {
+        const { width, height } = this.canvas;
+        this.ctx.fillStyle = '#fbbf24';
+        this.ctx.font = '12px "Press Start 2P", "Courier New", monospace';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText(this.assets ? 'Entering world...' : 'Loading assets...', width / 2, height / 2);
+    }
+
+    private renderFallback(state: RenderState) {
+        if (!state.visible_tiles || !state.player) return;
+
+        const { tileSize, backendTileSize } = this.config;
+        const viewport = state.viewport_offset;
+
+        // Draw tiles
+        for (let y = 0; y < state.visible_tiles.length; y++) {
+            for (let x = 0; x < state.visible_tiles[y].length; x++) {
+                const tile = state.visible_tiles[y][x];
+                const screenX = x * tileSize;
+                const screenY = y * tileSize;
+
+                // Grid style fallback
+                this.ctx.fillStyle = this.getFallbackColor(tile.tile_type);
+                this.ctx.fillRect(screenX, screenY, tileSize, tileSize);
+                this.ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+                this.ctx.strokeRect(screenX, screenY, tileSize, tileSize);
+
+                // Special highlight for interactables
+                if (tile.tile_type === 'terminal') {
+                    const playerTileX = Math.floor(state.player.position.x / backendTileSize) - viewport.x;
+                    const playerTileY = Math.floor(state.player.position.y / backendTileSize) - viewport.y;
+                    const dist = Math.abs(playerTileX - x) + Math.abs(playerTileY - y);
+                    
+                    if (dist <= 1) {
+                        this.ctx.strokeStyle = '#fbbf24';
+                        this.ctx.lineWidth = 2;
+                        this.ctx.strokeRect(screenX + 2, screenY + 2, tileSize - 4, tileSize - 4);
+                    }
+                }
+            }
+        }
+
+        // Draw player
+        const scale = tileSize / backendTileSize;
+        const px = (state.player.position.x * scale) - (viewport.x * tileSize);
+        const py = (state.player.position.y * scale) - (viewport.y * tileSize);
+
+        this.ctx.fillStyle = '#708090';
+        this.ctx.fillRect(px - tileSize * 0.35, py - tileSize * 0.4, tileSize * 0.7, tileSize * 0.8);
+        this.ctx.fillStyle = '#fbbf24'; // gold trim
+        this.ctx.fillRect(px - tileSize * 0.2, py - tileSize * 0.35, tileSize * 0.4, tileSize * 0.1);
+    }
+
+    private renderScene(state: RenderState, animState?: { player: AnimationState | null; terminal: AnimationState | null }) {
+        if (!state.visible_tiles || !state.player || !this.assets) return;
+
+        const { tileSize, backendTileSize } = this.config;
+        const viewport = state.viewport_offset;
+        const playerBackendX = Math.floor(state.player.position.x / backendTileSize);
+        const playerBackendY = Math.floor(state.player.position.y / backendTileSize);
+
+        // 1. Draw Tiles
+        for (let y = 0; y < state.visible_tiles.length; y++) {
+            for (let x = 0; x < state.visible_tiles[y].length; x++) {
+                const tile = state.visible_tiles[y][x];
+                const screenX = x * tileSize;
+                const screenY = y * tileSize;
+
+                // Draw background color to handle transparency
+                this.ctx.fillStyle = this.getFallbackColor(tile.tile_type);
+                this.ctx.fillRect(screenX, screenY, tileSize, tileSize);
+
+                // If terminal, draw grass base first
+                if (tile.tile_type === 'terminal') {
+                    const grass = this.assets.tiles.get('grass');
+                    if (grass) this.ctx.drawImage(grass, screenX, screenY, tileSize, tileSize);
+                }
+
+                // Draw tile sprite
+                const sprite = this.getTileSprite(tile);
+                if (sprite) {
+                    // Check for tile animation (e.g. water, terminal)
+                    const isAnimated = (tile.tile_type === 'water' || tile.tile_type === 'terminal') 
+                        && sprite.width > sprite.height;
+
+                    if (isAnimated) {
+                        const frameCount = 4;
+                        const duration = tile.tile_type === 'terminal' ? 300 : 200;
+                        const frameIdx = Math.floor(this.animationTime / duration) % frameCount;
+                        const frameW = sprite.width / frameCount;
+                        
+                        this.ctx.drawImage(
+                            sprite,
+                            frameIdx * frameW, 0, frameW, sprite.height,
+                            screenX, screenY, tileSize, tileSize
+                        );
+                    } else {
+                        this.ctx.drawImage(sprite, screenX, screenY, tileSize, tileSize);
+                    }
+                }
+
+                // Interactable highlight
+                if (tile.tile_type === 'terminal') {
+                    const dist = Math.abs((playerBackendX - viewport.x) - x) + Math.abs((playerBackendY - viewport.y) - y);
+                    if (dist <= 1) {
+                        this.ctx.strokeStyle = '#fbbf24';
+                        this.ctx.lineWidth = 2;
+                        this.ctx.strokeRect(screenX + 1, screenY + 1, tileSize - 2, tileSize - 2);
+                    }
+                }
+
+                // Locked door indicator
+                if (tile.tile_type === 'door' && !tile.walkable) {
+                    this.ctx.fillStyle = '#dc2626';
+                    this.ctx.fillRect(screenX + tileSize - 8, screenY + 4, 4, 4);
+                }
+            }
+        }
+
+        // 2. Draw Player
+        const scale = tileSize / backendTileSize;
+        const px = (state.player.position.x * scale) - (viewport.x * tileSize);
+        const py = (state.player.position.y * scale) - (viewport.y * tileSize);
+
+        const playerSpriteName = `player_${state.player.facing}`;
+        const playerSprite = this.assets.sprites.get(playerSpriteName);
+
+        if (playerSprite) {
+            // Determine animation frame
+            let frameIndex = 0;
+            if (animState?.player) {
+                frameIndex = getCurrentFrame(animState.player, this.animationTime);
+            }
+
+            const halfSize = tileSize / 2;
+            let drawX = px - halfSize;
+            let drawY = py - halfSize;
+
+            // Sprite Sheet Logic
+            const isSpriteSheet = playerSprite.width > playerSprite.height || playerSprite.height > playerSprite.width;
+            
+            if (isSpriteSheet) {
+                // Assume horizontal strip
+                const frameWidth = playerSprite.height; // Assume square frames
+                const frameX = frameIndex * frameWidth;
+                
+                this.ctx.drawImage(
+                    playerSprite,
+                    frameX, 0, frameWidth, playerSprite.height,
+                    drawX, drawY, tileSize, tileSize
+                );
+            } else {
+                // Single frame + Bobbing
+                if (animState?.player?.animation?.id?.includes('walk')) {
+                    const bob = Math.sin(this.animationTime / 50) * 2;
+                    drawY += bob;
+                }
+                this.ctx.drawImage(playerSprite, drawX, drawY, tileSize, tileSize);
+            }
+        } else {
+            // Fallback Player
+            this.ctx.fillStyle = '#708090';
+            this.ctx.fillRect(px - tileSize * 0.35, py - tileSize * 0.4, tileSize * 0.7, tileSize * 0.8);
+            this.ctx.fillStyle = '#fbbf24';
+            this.ctx.fillRect(px - tileSize * 0.2, py - tileSize * 0.35, tileSize * 0.4, tileSize * 0.1);
+        }
+    }
+
+    private getTileSprite(tile: Tile): HTMLImageElement | undefined {
+        if (!this.assets) return undefined;
+        
+        let key = 'grass'; // default
+        switch (tile.tile_type) {
+            case 'floor': key = 'grass'; break;
+            case 'wall': key = 'wall'; break;
+            case 'water': key = 'water'; break;
+            case 'void': key = 'void'; break;
+            case 'terminal': key = 'terminal'; break;
+            case 'door': key = tile.walkable ? 'door_open' : 'door_locked'; break;
+        }
+        return this.assets.tiles.get(key);
+    }
+
+    private getFallbackColor(type: string): string {
+        switch (type) {
+            case 'wall': return '#4a4a4a';
+            case 'water': return '#1e6091';
+            case 'void': return '#0a0a14';
+            case 'door': return '#8b5a2b';
+            case 'terminal': return '#3d7a37';
+            default: return '#3d7a37'; // grass
+        }
+    }
 }

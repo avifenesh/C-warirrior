@@ -165,6 +165,8 @@ export interface CodeResult {
     execution_time_ms: number;
     feedback?: string;
     hint?: string | null;
+    render_state?: RenderState;
+    xp_earned?: number;
 }
 
 // ============================================================================
