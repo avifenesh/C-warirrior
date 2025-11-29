@@ -39,7 +39,8 @@ export function createTauriBackend(): Backend {
         getLevelData: () => invoke<LevelData>('get_level_data'),
 
         // Code
-        submitCode: (code: string) => invoke<CodeResult>('submit_code', { code }),
+        submitCode: (code: string, testOnly: boolean = false) =>
+            invoke<CodeResult>('submit_code', { code, testOnly }),
         getHint: (hintIndex: number) => invoke<string>('get_hint', { hintIndex }),
 
         // Save/Load

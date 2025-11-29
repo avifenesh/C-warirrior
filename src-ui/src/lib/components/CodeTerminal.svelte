@@ -1,5 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher, onMount, tick } from 'svelte';
+    import type { Lesson, TestSuiteResult, TestCase } from '../types';
 
     interface Props {
         initialCode?: string;
@@ -15,9 +16,15 @@
             stderr?: string;
             compile_error?: string;
             message?: string;
+            feedback?: string;
+            test_results?: TestSuiteResult;
         } | null;
         onClose?: () => void;
         onRequestHint?: () => void;
+        // Function-based challenge props
+        lesson?: Lesson | null;
+        functionSignature?: string;
+        sampleTests?: TestCase[];
     }
 
     let {
@@ -31,7 +38,13 @@
         output = null,
         onClose,
         onRequestHint,
+        lesson = null,
+        functionSignature = '',
+        sampleTests = [],
     }: Props = $props();
+
+    // Track which action is in progress
+    let testingInProgress = $state(false);
 
     const dispatcher = createEventDispatcher();
     let code = $state(initialCode);
@@ -106,8 +119,17 @@
         return 'Ready';
     });
 
+    // Whether this is a function-based challenge
+    const isFunctionBased = $derived(!!lesson || !!functionSignature);
+
     function submit() {
-        dispatcher('submit', { code });
+        testingInProgress = false;
+        dispatcher('submit', { code, testOnly: false });
+    }
+
+    function runTests() {
+        testingInProgress = true;
+        dispatcher('submit', { code, testOnly: true });
     }
 
     function handleClose() {
@@ -266,14 +288,14 @@
                 <h2 class="grimoire-title">SPELL CODEX</h2>
             </div>
             <div class="flex items-center gap-3">
-                {#if challenge}
+                {#if challenge || lesson}
                     <button
                         onclick={openMissionBriefing}
                         class="mission-btn"
-                        aria-label="View mission"
-                        title="View Mission"
+                        aria-label={lesson ? "View lesson" : "View mission"}
+                        title={lesson ? "View Lesson" : "View Mission"}
                     >
-                        &#128220; Mission
+                        {lesson ? '📚 Lesson' : '📜 Mission'}
                     </button>
                 {/if}
                 <span class="status-badge {busy ? 'casting' : isSuccess ? 'success' : isFailure ? 'failure' : ''}">
@@ -291,25 +313,51 @@
 
         <!-- Body -->
         <div class="grimoire-body">
-            <!-- Mission Briefing Modal -->
-            {#if showMissionBriefing && challenge}
+            <!-- Mission Briefing Modal / Lesson Display -->
+            {#if showMissionBriefing && (challenge || lesson)}
                 <div class="mission-briefing-overlay">
-                    <div class="mission-briefing-modal">
+                    <div class="mission-briefing-modal {lesson ? 'lesson-modal' : ''}">
                         <div class="mission-briefing-header">
-                            <span class="mission-icon">&#128220;</span>
-                            <h2 class="mission-briefing-title">MISSION BRIEFING</h2>
+                            <span class="mission-icon">{lesson ? '📚' : '📜'}</span>
+                            <h2 class="mission-briefing-title">{lesson ? lesson.title : 'MISSION BRIEFING'}</h2>
                         </div>
                         <div class="mission-briefing-content">
-                            <p class="mission-briefing-text">{challenge}</p>
-                            {#if expectedOutput}
-                                <div class="mission-expected">
-                                    <span class="mission-expected-label">Target Output:</span>
-                                    <code class="mission-expected-value">{expectedOutput}</code>
+                            {#if lesson}
+                                <!-- Lesson content -->
+                                <div class="lesson-content">
+                                    {#each lesson.content as paragraph}
+                                        <p class="lesson-paragraph">{paragraph}</p>
+                                    {/each}
+                                    {#if lesson.examples && lesson.examples.length > 0}
+                                        <div class="lesson-examples">
+                                            <h4 class="lesson-examples-title">Examples:</h4>
+                                            {#each lesson.examples as example}
+                                                <div class="lesson-example">
+                                                    <pre class="lesson-example-code"><code>{example.code}</code></pre>
+                                                    <p class="lesson-example-explanation">{example.explanation}</p>
+                                                </div>
+                                            {/each}
+                                        </div>
+                                    {/if}
                                 </div>
+                                {#if functionSignature}
+                                    <div class="function-signature-box">
+                                        <span class="function-signature-label">Your Function:</span>
+                                        <code class="function-signature-code">{functionSignature}</code>
+                                    </div>
+                                {/if}
+                            {:else}
+                                <p class="mission-briefing-text">{challenge}</p>
+                                {#if expectedOutput}
+                                    <div class="mission-expected">
+                                        <span class="mission-expected-label">Target Output:</span>
+                                        <code class="mission-expected-value">{expectedOutput}</code>
+                                    </div>
+                                {/if}
                             {/if}
                         </div>
                         <div class="mission-briefing-footer">
-                            <p class="mission-tip">Press the <span class="mission-highlight">📜 Mission</span> button anytime to review this objective.</p>
+                            <p class="mission-tip">Press the <span class="mission-highlight">{lesson ? '📚 Lesson' : '📜 Mission'}</span> button anytime to review.</p>
                             <button onclick={dismissMissionBriefing} class="mission-start-btn">
                                 BEGIN QUEST
                             </button>
@@ -401,49 +449,112 @@
             <div class="grimoire-footer">
                 <p class="controls-hint">
                     <kbd class="key">ESC</kbd> close |
-                    <kbd class="key">Ctrl+Enter</kbd> cast
+                    <kbd class="key">Ctrl+Enter</kbd> {isFunctionBased ? 'submit' : 'cast'}
                 </p>
-                <button
-                    onclick={submit}
-                    disabled={submitting && !output}
-                    class="cast-btn {isSuccess ? 'success' : ''}"
-                >
-                    {submitting && !output ? 'CASTING...' : 'CAST SPELL'}
-                </button>
+                <div class="action-buttons">
+                    {#if isFunctionBased}
+                        <!-- Function-based: TEST and SUBMIT buttons -->
+                        <button
+                            onclick={runTests}
+                            disabled={submitting && !output}
+                            class="test-btn"
+                        >
+                            {submitting && !output && testingInProgress ? 'TESTING...' : 'TEST'}
+                        </button>
+                        <button
+                            onclick={submit}
+                            disabled={submitting && !output}
+                            class="submit-btn {isSuccess ? 'success' : ''}"
+                        >
+                            {submitting && !output && !testingInProgress ? 'SUBMITTING...' : 'SUBMIT'}
+                        </button>
+                    {:else}
+                        <!-- Legacy output-based: CAST SPELL button -->
+                        <button
+                            onclick={submit}
+                            disabled={submitting && !output}
+                            class="cast-btn {isSuccess ? 'success' : ''}"
+                        >
+                            {submitting && !output ? 'CASTING...' : 'CAST SPELL'}
+                        </button>
+                    {/if}
+                </div>
             </div>
 
             <!-- Output Panel -->
             <div class="output-panel">
                 <div class="output-header">
-                    <span>&#9998; OUTPUT</span>
+                    <span>{isFunctionBased ? '🧪 TEST RESULTS' : '✎ OUTPUT'}</span>
                     {#if isSuccess}
-                        <span class="output-status success">Spell worked!</span>
+                        <span class="output-status success">{isFunctionBased ? 'All tests passed!' : 'Spell worked!'}</span>
                     {:else if isFailure}
-                        <span class="output-status failure">Spell fizzled...</span>
+                        <span class="output-status failure">{isFunctionBased ? 'Tests failed' : 'Spell fizzled...'}</span>
                     {/if}
                 </div>
 
                 {#if output}
                     {#if output.compile_error}
                         <div class="output-box error">
+                            <div class="compile-error-header">Compilation Error:</div>
                             {output.compile_error}
                         </div>
                     {/if}
-                    {#if output.stdout}
-                        <div class="output-box stdout">
-                            {output.stdout}
+
+                    <!-- Test Results for function-based challenges -->
+                    {#if output.test_results}
+                        <div class="test-results">
+                            <div class="test-results-summary">
+                                <span class="test-count {output.test_results.passed ? 'passed' : 'failed'}">
+                                    {output.test_results.passed_count}/{output.test_results.total} tests passed
+                                </span>
+                            </div>
+                            <div class="test-cases">
+                                {#each output.test_results.results as result, i}
+                                    <div class="test-case {result.passed ? 'passed' : 'failed'}">
+                                        <div class="test-case-header">
+                                            <span class="test-case-icon">{result.passed ? '✓' : '✗'}</span>
+                                            <span class="test-case-label">Test {i + 1}</span>
+                                        </div>
+                                        <div class="test-case-details">
+                                            <div class="test-case-row">
+                                                <span class="test-label">Input:</span>
+                                                <code class="test-value">{JSON.stringify(result.input)}</code>
+                                            </div>
+                                            <div class="test-case-row">
+                                                <span class="test-label">Expected:</span>
+                                                <code class="test-value expected">{result.expected}</code>
+                                            </div>
+                                            <div class="test-case-row">
+                                                <span class="test-label">Got:</span>
+                                                <code class="test-value {result.passed ? 'correct' : 'incorrect'}">{result.actual}</code>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {/each}
+                            </div>
                         </div>
+                    {:else}
+                        <!-- Legacy output display -->
+                        {#if output.stdout}
+                            <div class="output-box stdout">
+                                {output.stdout}
+                            </div>
+                        {/if}
+                        {#if output.stderr}
+                            <div class="output-box warning">
+                                {output.stderr}
+                            </div>
+                        {/if}
                     {/if}
-                    {#if output.stderr}
-                        <div class="output-box warning">
-                            {output.stderr}
-                        </div>
-                    {/if}
-                    {#if output.message}
+
+                    <!-- Feedback message -->
+                    {#if output.feedback}
+                        <p class="output-feedback {isSuccess ? 'success' : 'failure'}">{output.feedback}</p>
+                    {:else if output.message}
                         <p class="output-message">{output.message}</p>
                     {/if}
                 {:else}
-                    <p class="output-empty">Awaiting incantation...</p>
+                    <p class="output-empty">{isFunctionBased ? 'Click TEST to run sample tests...' : 'Awaiting incantation...'}</p>
                 {/if}
             </div>
         </div>
@@ -1046,5 +1157,283 @@
     }
     :global(.hl-comment) {
         color: #64748b;
+    }
+
+    /* Lesson Modal Styles */
+    .lesson-modal {
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .lesson-content {
+        text-align: left;
+    }
+
+    .lesson-paragraph {
+        font-size: 14px;
+        color: #e2e8f0;
+        line-height: 1.6;
+        margin-bottom: 12px;
+    }
+
+    .lesson-examples {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 2px solid #1e293b;
+    }
+
+    .lesson-examples-title {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 10px;
+        color: #67e8f9;
+        margin-bottom: 12px;
+    }
+
+    .lesson-example {
+        margin-bottom: 16px;
+    }
+
+    .lesson-example-code {
+        background: #0a0a14;
+        border: 2px solid #1e293b;
+        padding: 10px 12px;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 12px;
+        color: #4ade80;
+        margin-bottom: 8px;
+        overflow-x: auto;
+    }
+
+    .lesson-example-explanation {
+        font-size: 12px;
+        color: #94a3b8;
+        font-style: italic;
+    }
+
+    .function-signature-box {
+        background: #0a0a14;
+        border: 3px solid #3b82f6;
+        padding: 12px 16px;
+        margin-top: 16px;
+        text-align: center;
+    }
+
+    .function-signature-label {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 9px;
+        color: #64748b;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .function-signature-code {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 14px;
+        color: #67e8f9;
+    }
+
+    /* Action Buttons Container */
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    /* TEST Button */
+    .test-btn {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 10px;
+        padding: 10px 20px;
+        background: linear-gradient(180deg, #92400e 0%, #78350f 100%);
+        border: 3px solid #fbbf24;
+        border-bottom-color: #92400e;
+        border-right-color: #92400e;
+        box-shadow: 4px 4px 0 #0a0a1e;
+        color: #fef3c7;
+        cursor: pointer;
+        transition: transform 0.1s;
+    }
+
+    .test-btn:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 #0a0a1e;
+    }
+
+    .test-btn:active {
+        transform: translate(4px, 4px);
+        box-shadow: none;
+    }
+
+    .test-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    /* SUBMIT Button */
+    .submit-btn {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 10px;
+        padding: 10px 20px;
+        background: linear-gradient(180deg, #059669 0%, #047857 100%);
+        border: 3px solid #34d399;
+        border-bottom-color: #047857;
+        border-right-color: #047857;
+        box-shadow: 4px 4px 0 #0a0a1e;
+        color: #d1fae5;
+        cursor: pointer;
+        transition: transform 0.1s;
+    }
+
+    .submit-btn:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 #0a0a1e;
+    }
+
+    .submit-btn:active {
+        transform: translate(4px, 4px);
+        box-shadow: none;
+    }
+
+    .submit-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .submit-btn.success {
+        background: linear-gradient(180deg, #166534 0%, #14532d 100%);
+        border-color: #22c55e;
+        border-bottom-color: #166534;
+        border-right-color: #166534;
+    }
+
+    /* Test Results Styles */
+    .test-results {
+        margin-top: 8px;
+    }
+
+    .test-results-summary {
+        padding: 8px 12px;
+        margin-bottom: 8px;
+    }
+
+    .test-count {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 10px;
+    }
+
+    .test-count.passed {
+        color: #4ade80;
+    }
+
+    .test-count.failed {
+        color: #f87171;
+    }
+
+    .test-cases {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .test-case {
+        background: #0f172a;
+        border: 2px solid #1e293b;
+        padding: 10px 12px;
+    }
+
+    .test-case.passed {
+        border-left: 4px solid #22c55e;
+    }
+
+    .test-case.failed {
+        border-left: 4px solid #ef4444;
+    }
+
+    .test-case-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+
+    .test-case-icon {
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .test-case.passed .test-case-icon {
+        color: #4ade80;
+    }
+
+    .test-case.failed .test-case-icon {
+        color: #f87171;
+    }
+
+    .test-case-label {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 8px;
+        color: #94a3b8;
+    }
+
+    .test-case-details {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .test-case-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .test-label {
+        font-size: 11px;
+        color: #64748b;
+        min-width: 65px;
+    }
+
+    .test-value {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 12px;
+        color: #e2e8f0;
+    }
+
+    .test-value.expected {
+        color: #67e8f9;
+    }
+
+    .test-value.correct {
+        color: #4ade80;
+    }
+
+    .test-value.incorrect {
+        color: #f87171;
+    }
+
+    .compile-error-header {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 9px;
+        color: #f87171;
+        margin-bottom: 6px;
+    }
+
+    .output-feedback {
+        font-size: 12px;
+        margin-top: 10px;
+        padding: 8px 12px;
+        border-radius: 2px;
+    }
+
+    .output-feedback.success {
+        background: #052e16;
+        border: 2px solid #166534;
+        color: #4ade80;
+    }
+
+    .output-feedback.failure {
+        background: #450a0a;
+        border: 2px solid #7f1d1d;
+        color: #fca5a5;
     }
 </style>

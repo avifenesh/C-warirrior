@@ -339,13 +339,13 @@ class HttpBackend implements Backend {
     }
 
     // Code
-    async submitCode(code: string): Promise<CodeResult> {
+    async submitCode(code: string, testOnly: boolean = false): Promise<CodeResult> {
         this.markActivity(); // User submitted code
         const result = await apiRequest<CodeResult & { render_state?: RenderState; xp_earned?: number }>(
             '/api/code/submit',
             {
                 method: 'POST',
-                body: JSON.stringify({ code }),
+                body: JSON.stringify({ code, test_only: testOnly }),
             }
         );
         // If backend included an updated render_state, cache it for the next tick

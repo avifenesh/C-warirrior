@@ -126,17 +126,71 @@ export interface Challenge {
     starter_code: string;
 }
 
+// ============================================================================
+// Function-Based Challenge Types
+// ============================================================================
+
+export interface LessonExample {
+    code: string;
+    explanation: string;
+}
+
+export interface Lesson {
+    title: string;
+    content: string[];
+    examples: LessonExample[];
+}
+
+export interface FunctionParameter {
+    name: string;
+    type: string;
+}
+
+export interface FunctionSignature {
+    name: string;
+    return_type: string;
+    parameters: FunctionParameter[];
+}
+
+export interface TestCase {
+    input: unknown[];
+    expected: string;
+    sample: boolean;
+}
+
+export interface TestCaseResult {
+    input: unknown[];
+    expected: string;
+    actual: string;
+    passed: boolean;
+}
+
+export interface TestSuiteResult {
+    passed: boolean;
+    total: number;
+    passed_count: number;
+    results: TestCaseResult[];
+    compilation_error?: string | null;
+}
+
+// ============================================================================
+
 export interface LevelData {
     id: string;
     title: string;
     concept: string;
     description: string;
     code_template: string;
-    success_criteria: SuccessCriteria;
+    success_criteria?: SuccessCriteria;
     hints: string[];
     xp_reward: number;
     world_config: WorldConfig;
     challenges: Challenge[];
+    // New function-based challenge fields
+    lesson?: Lesson;
+    function_signature?: FunctionSignature;
+    user_template?: string;
+    test_cases?: TestCase[];
 }
 
 export interface LevelInfo {
@@ -169,6 +223,7 @@ export interface CodeResult {
     render_state?: RenderState;
     xp_earned?: number;
     doors_unlocked?: boolean;
+    test_results?: TestSuiteResult;
 }
 
 // ============================================================================

@@ -39,7 +39,10 @@
     // Derived values
     let showMainMenu = $derived((renderState?.game_phase ?? 'main_menu') === 'main_menu' || !renderState?.current_level_id);
     let showTerminal = $derived(renderState?.show_terminal ?? false);
-    let codeTemplate = $derived(currentLevelData?.code_template ?? codeDraft);
+    // For function-based challenges, use user_template; otherwise use code_template
+    let codeTemplate = $derived(
+        currentLevelData?.user_template ?? currentLevelData?.code_template ?? codeDraft
+    );
     let isLevelComplete = $derived(renderState?.game_phase === 'level_complete');
     let currentLevelId = $derived(renderState?.current_level_id ?? null);
 
@@ -151,9 +154,10 @@
         }
     }
 
-    async function handleCodeSubmit(event: CustomEvent<{ code: string }>) {
+    async function handleCodeSubmit(event: CustomEvent<{ code: string; testOnly?: boolean }>) {
         codeDraft = event.detail.code;
-        await submitCode(codeDraft);
+        const testOnly = event.detail.testOnly ?? false;
+        await submitCode(codeDraft, testOnly);
         if (lastCodeResult) addToast(lastCodeResult);
     }
 
@@ -253,12 +257,12 @@
         }
     }
 
-    async function submitCode(code: string) {
+    async function submitCode(code: string, testOnly: boolean = false) {
         if (!backend) return;
         uiStatus = { ...uiStatus, error: null };
         codeSubmitting = true;
         try {
-            const result = await backend.submitCode(code);
+            const result = await backend.submitCode(code, testOnly);
             lastCodeResult = result;
             if (result.success) {
                 if (result.render_state) {
@@ -327,7 +331,9 @@
                         stdout: lastCodeResult.stdout,
                         stderr: lastCodeResult.stderr,
                         compile_error: lastCodeResult.compile_error ?? undefined,
-                        message: lastCodeResult.feedback
+                        message: lastCodeResult.feedback,
+                        feedback: lastCodeResult.feedback,
+                        test_results: lastCodeResult.test_results
                     } : null}
                     challenge={currentLevelData?.description ?? 'Complete the challenge'}
                     expectedOutput={currentLevelData?.challenges?.[0]?.expected_output}
@@ -335,6 +341,10 @@
                     {loadingHint}
                     onClose={handleTerminalClose}
                     onRequestHint={handleRequestHint}
+                    lesson={currentLevelData?.lesson ?? null}
+                    functionSignature={currentLevelData?.function_signature
+                        ? `${currentLevelData.function_signature.return_type} ${currentLevelData.function_signature.name}(${currentLevelData.function_signature.parameters.map(p => `${p.type} ${p.name}`).join(', ')})`
+                        : ''}
                     on:submit={handleCodeSubmit}
                 />
             {/if}

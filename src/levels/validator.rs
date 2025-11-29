@@ -4,6 +4,10 @@ use crate::compiler::ExecutionOutput;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 
+// ============================================================================
+// Legacy Success Criteria (for backward compatibility)
+// ============================================================================
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum SuccessCriteria {
@@ -50,4 +54,32 @@ impl SuccessCriteria {
             SuccessCriteria::Any { criteria } => criteria.iter().any(|c| c.validate(output)),
         }
     }
+}
+
+// ============================================================================
+// New Test Suite Results (for function-based challenges)
+// ============================================================================
+
+/// Result of running a single test case
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TestCaseResult {
+    pub input: Vec<serde_json::Value>,
+    pub expected: String,
+    pub actual: String,
+    pub passed: bool,
+}
+
+/// Result of running all (or sample) test cases for a level
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TestSuiteResult {
+    /// Whether all tests passed
+    pub passed: bool,
+    /// Total number of tests run
+    pub total: usize,
+    /// Number of tests that passed
+    pub passed_count: usize,
+    /// Individual test case results
+    pub results: Vec<TestCaseResult>,
+    /// Compilation error if any
+    pub compilation_error: Option<String>,
 }

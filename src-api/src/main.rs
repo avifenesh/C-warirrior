@@ -9,7 +9,7 @@ use axum::{
 use code_warrior::{
     compiler::CCompiler,
     game::{GamePhase, GameState, PlayerAction, RenderState},
-    levels::{LevelData, LevelInfo, LevelRegistry},
+    levels::{generate_harness, LevelData, LevelInfo, LevelRegistry, TestCaseResult, TestSuiteResult},
 };
 use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
@@ -53,6 +53,8 @@ struct LoadLevelResponse {
 #[derive(Debug, Deserialize)]
 struct SubmitCodeRequest {
     code: String,
+    #[serde(default)]
+    test_only: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -67,6 +69,8 @@ struct SubmitCodeResponse {
     xp_earned: Option<u32>,
     doors_unlocked: bool,
     render_state: RenderState,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    test_results: Option<TestSuiteResult>,
 }
 
 #[derive(Debug, Serialize)]
@@ -471,7 +475,7 @@ async fn submit_code(
     axum::Extension(device_id): axum::Extension<DeviceId>,
     Json(payload): Json<SubmitCodeRequest>,
 ) -> Result<Json<SubmitCodeResponse>, (StatusCode, String)> {
-    tracing::info!("Submitting code for device: {}", device_id.0);
+    tracing::info!("Submitting code for device: {}, test_only: {}", device_id.0, payload.test_only);
 
     // Get game state
     let mut game_state = get_or_create_session(&state, &device_id.0)
@@ -495,9 +499,22 @@ async fn submit_code(
             StatusCode::NOT_FOUND,
             format!("Level '{}' not found", level_id),
         )
-    })?;
+    })?.clone();
 
-    // Compile and run code
+    // Check if this is a function-based challenge
+    if level.is_function_based() {
+        return run_function_based_challenge(
+            &state,
+            &device_id.0,
+            &payload.code,
+            payload.test_only,
+            &level,
+            &level_id,
+            &mut game_state,
+        ).await;
+    }
+
+    // Legacy output-based challenge
     let execution_result = state
         .compiler
         .compile_and_run(&payload.code)
@@ -557,6 +574,151 @@ async fn submit_code(
         xp_earned,
         doors_unlocked: success,
         render_state: game_state.to_render_state(),
+        test_results: None,
+    }))
+}
+
+/// Run a function-based challenge with test cases
+async fn run_function_based_challenge(
+    state: &Arc<AppState>,
+    device_id: &str,
+    code: &str,
+    test_only: bool,
+    level: &LevelData,
+    level_id: &str,
+    game_state: &mut GameState,
+) -> Result<Json<SubmitCodeResponse>, (StatusCode, String)> {
+    tracing::info!("Running function-based challenge for level: {}", level_id);
+
+    let signature = level
+        .function_signature
+        .as_ref()
+        .ok_or_else(|| (StatusCode::INTERNAL_SERVER_ERROR, "Function signature missing".to_string()))?;
+
+    // Filter test cases: sample only for TEST, all for SUBMIT
+    let test_cases: Vec<_> = level
+        .test_cases
+        .iter()
+        .filter(|tc| !test_only || tc.sample)
+        .collect();
+
+    if test_cases.is_empty() {
+        return Err((StatusCode::BAD_REQUEST, "No test cases defined for this level".to_string()));
+    }
+
+    let mut results: Vec<TestCaseResult> = Vec::new();
+    let mut total_time_ms = 0u64;
+
+    // Run each test case
+    for test_case in &test_cases {
+        let harness = generate_harness(code, signature, test_case)
+            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to generate test harness: {}", e)))?;
+
+        let execution_result = state
+            .compiler
+            .compile_and_run(&harness)
+            .await
+            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
+
+        total_time_ms += execution_result.execution_time_ms;
+
+        // Check for compilation error
+        if let Some(ref err) = execution_result.compile_error {
+            let test_suite = TestSuiteResult {
+                passed: false,
+                total: test_cases.len(),
+                passed_count: 0,
+                results: vec![],
+                compilation_error: Some(err.clone()),
+            };
+
+            return Ok(Json(SubmitCodeResponse {
+                success: false,
+                stdout: String::new(),
+                stderr: execution_result.stderr,
+                compile_error: Some(err.clone()),
+                execution_time_ms: total_time_ms,
+                feedback: "Code failed to compile. Check for syntax errors.".to_string(),
+                hint: None,
+                xp_earned: None,
+                doors_unlocked: false,
+                render_state: game_state.to_render_state(),
+                test_results: Some(test_suite),
+            }));
+        }
+
+        let actual = execution_result.stdout.trim().to_string();
+        let expected = test_case.expected.trim().to_string();
+        let passed = actual == expected;
+
+        results.push(TestCaseResult {
+            input: test_case.input.clone(),
+            expected: expected.clone(),
+            actual,
+            passed,
+        });
+    }
+
+    let passed_count = results.iter().filter(|r| r.passed).count();
+    let all_passed = passed_count == results.len();
+
+    let test_suite = TestSuiteResult {
+        passed: all_passed,
+        total: results.len(),
+        passed_count,
+        results,
+        compilation_error: None,
+    };
+
+    let mut xp_earned = None;
+
+    // Only complete level on SUBMIT (not TEST) and if all passed
+    if all_passed && !test_only {
+        let xp = game_state.complete_level(level.xp_reward);
+        xp_earned = Some(xp);
+
+        game_state.update_unlocked_levels(state.levels.get_prerequisites());
+
+        let xp_i32 = (xp.min(i32::MAX as u32)) as i32;
+        db::complete_level(&state.db, device_id, level_id, xp_i32)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    format!("Failed to record progress: {}", e),
+                )
+            })?;
+    }
+
+    let feedback = if all_passed {
+        if test_only {
+            format!("All {} sample tests passed! Click SUBMIT to complete.", passed_count)
+        } else if xp_earned.is_some() && xp_earned.unwrap() > 0 {
+            format!("All {} tests passed! +{} XP! Doors have been unlocked!", test_suite.total, xp_earned.unwrap())
+        } else {
+            format!("All {} tests passed! Doors have been unlocked! (Level already completed)", test_suite.total)
+        }
+    } else {
+        format!("{}/{} tests passed. Check your logic and try again!", passed_count, test_suite.total)
+    };
+
+    // Save updated state
+    persist_session(state, device_id, game_state)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
+
+    Ok(Json(SubmitCodeResponse {
+        success: all_passed,
+        stdout: String::new(),
+        stderr: String::new(),
+        compile_error: None,
+        execution_time_ms: total_time_ms,
+        feedback,
+        hint: None,
+        xp_earned,
+        doors_unlocked: all_passed && !test_only,
+        render_state: game_state.to_render_state(),
+        test_results: Some(test_suite),
     }))
 }
 

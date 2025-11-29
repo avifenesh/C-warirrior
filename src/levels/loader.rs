@@ -3,6 +3,53 @@ use crate::game::progression::LevelPrerequisites;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+// ============================================================================
+// Function-Based Challenge System
+// ============================================================================
+
+/// Lesson content shown to player before the challenge
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Lesson {
+    pub title: String,
+    pub content: Vec<String>,
+    #[serde(default)]
+    pub examples: Vec<LessonExample>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LessonExample {
+    pub code: String,
+    pub explanation: String,
+}
+
+/// Function signature that player must implement
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FunctionSignature {
+    pub name: String,
+    pub return_type: String,
+    pub parameters: Vec<FunctionParameter>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FunctionParameter {
+    pub name: String,
+    #[serde(rename = "type")]
+    pub param_type: String,
+}
+
+/// Test case for function-based challenges
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TestCase {
+    pub input: Vec<serde_json::Value>,
+    pub expected: String,
+    #[serde(default)]
+    pub sample: bool,
+}
+
+// ============================================================================
+// World Configuration
+// ============================================================================
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum WorldPreset {
@@ -56,8 +103,22 @@ pub struct LevelData {
     pub concept: String,
     #[serde(default)]
     pub description: String,
+
+    // New function-based challenge system
+    #[serde(default)]
+    pub lesson: Option<Lesson>,
+    #[serde(default)]
+    pub function_signature: Option<FunctionSignature>,
+    #[serde(default)]
+    pub user_template: Option<String>,
+    #[serde(default)]
+    pub test_cases: Vec<TestCase>,
+
+    // Legacy fields (kept for backward compatibility during migration)
+    #[serde(default)]
     pub code_template: String,
-    pub success_criteria: SuccessCriteria,
+    #[serde(default)]
+    pub success_criteria: Option<SuccessCriteria>,
     #[serde(default)]
     pub hints: Vec<String>,
     #[serde(default = "default_xp")]
@@ -77,13 +138,26 @@ impl LevelData {
         serde_json::from_value(json.clone()).map_err(|e| format!("Failed to parse level: {}", e))
     }
 
-    /// Validate execution output against level criteria (only with compiler feature)
+    /// Check if this level uses the new function-based challenge system
+    pub fn is_function_based(&self) -> bool {
+        self.function_signature.is_some() && !self.test_cases.is_empty()
+    }
+
+    /// Get the template code for the player to start with
+    pub fn get_template(&self) -> &str {
+        self.user_template.as_deref().unwrap_or(&self.code_template)
+    }
+
+    /// Validate execution output against level criteria (legacy, only with compiler feature)
     #[cfg(feature = "compiler")]
     pub fn validate_output(&self, output: &crate::compiler::ExecutionOutput) -> bool {
         if !output.compile_success() {
             return false;
         }
-        self.success_criteria.validate(output)
+        match &self.success_criteria {
+            Some(criteria) => criteria.validate(output),
+            None => false, // Function-based levels use test_cases instead
+        }
     }
 }
 

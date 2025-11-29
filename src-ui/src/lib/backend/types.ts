@@ -35,7 +35,7 @@ export interface Backend {
     getLevelData(): Promise<LevelData>;
 
     // Code
-    submitCode(code: string): Promise<CodeResult>;
+    submitCode(code: string, testOnly?: boolean): Promise<CodeResult>;
     getHint(hintIndex: number): Promise<string>;
 
     // Save/Load

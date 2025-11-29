@@ -4,7 +4,7 @@ use tracing::{debug, info};
 
 use crate::GameStateWrapper;
 use code_warrior::compiler::CCompiler;
-use code_warrior::levels::LevelRegistry;
+use code_warrior::levels::{generate_harness, LevelRegistry, TestCaseResult, TestSuiteResult};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CodeResult {
@@ -18,6 +18,9 @@ pub struct CodeResult {
     pub xp_earned: u32,
     pub doors_unlocked: bool,
     pub render_state: code_warrior::game::RenderState,
+    /// Test results for function-based challenges
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub test_results: Option<TestSuiteResult>,
 }
 
 /// Event emitted when a level is completed
@@ -32,12 +35,14 @@ pub struct LevelCompleteEvent {
 #[tauri::command]
 pub async fn submit_code(
     code: String,
+    #[allow(unused_variables)] test_only: Option<bool>,
     state: State<'_, GameStateWrapper>,
     levels: State<'_, LevelRegistry>,
     compiler: State<'_, CCompiler>,
     app: AppHandle,
 ) -> Result<CodeResult, String> {
-    debug!("submit_code command received");
+    let test_only = test_only.unwrap_or(false);
+    debug!("submit_code command received, test_only={}", test_only);
 
     // Get level data before await to avoid holding MutexGuard across await
     let (level_data, level_id) = {
@@ -58,7 +63,23 @@ pub async fn submit_code(
         (level, level_id)
     };
 
-    debug!("Calling compiler");
+    // Check if this is a function-based challenge
+    if level_data.is_function_based() {
+        return run_function_based_challenge(
+            code,
+            test_only,
+            level_data,
+            level_id,
+            state,
+            levels,
+            compiler,
+            app,
+        )
+        .await;
+    }
+
+    // Legacy output-based challenge
+    debug!("Running legacy output-based challenge");
     let execution_result = compiler.compile_and_run(&code).await?;
     debug!(success = execution_result.run_success(), "Compiler returned");
     let success = level_data.validate_output(&execution_result);
@@ -140,6 +161,170 @@ pub async fn submit_code(
         xp_earned,
         doors_unlocked,
         render_state,
+        test_results: None,
+    })
+}
+
+/// Run a function-based challenge with test cases
+async fn run_function_based_challenge(
+    code: String,
+    test_only: bool,
+    level_data: code_warrior::levels::LevelData,
+    level_id: String,
+    state: State<'_, GameStateWrapper>,
+    levels: State<'_, LevelRegistry>,
+    compiler: State<'_, CCompiler>,
+    app: AppHandle,
+) -> Result<CodeResult, String> {
+    debug!("Running function-based challenge");
+
+    let signature = level_data
+        .function_signature
+        .as_ref()
+        .ok_or("Function signature missing")?;
+
+    // Filter test cases: sample only for TEST, all for SUBMIT
+    let test_cases: Vec<_> = level_data
+        .test_cases
+        .iter()
+        .filter(|tc| !test_only || tc.sample)
+        .collect();
+
+    if test_cases.is_empty() {
+        return Err("No test cases defined for this level".to_string());
+    }
+
+    let mut results: Vec<TestCaseResult> = Vec::new();
+    let mut total_time_ms = 0u64;
+
+    // Run each test case
+    for test_case in &test_cases {
+        let harness = generate_harness(&code, signature, test_case)
+            .map_err(|e| format!("Failed to generate test harness: {}", e))?;
+
+        let execution_result = compiler.compile_and_run(&harness).await?;
+        total_time_ms += execution_result.execution_time_ms;
+
+        // Check for compilation error
+        if let Some(ref err) = execution_result.compile_error {
+            let test_suite = TestSuiteResult {
+                passed: false,
+                total: test_cases.len(),
+                passed_count: 0,
+                results: vec![],
+                compilation_error: Some(err.clone()),
+            };
+
+            let render_state = {
+                let game_state = state.0.lock().map_err(|e| e.to_string())?;
+                game_state.to_render_state()
+            };
+
+            return Ok(CodeResult {
+                success: false,
+                stdout: String::new(),
+                stderr: execution_result.stderr,
+                compile_error: Some(err.clone()),
+                execution_time_ms: total_time_ms,
+                feedback: "Code failed to compile. Check for syntax errors.".to_string(),
+                hint: None,
+                xp_earned: 0,
+                doors_unlocked: false,
+                render_state,
+                test_results: Some(test_suite),
+            });
+        }
+
+        let actual = execution_result.stdout.trim().to_string();
+        let expected = test_case.expected.trim().to_string();
+        let passed = actual == expected;
+
+        results.push(TestCaseResult {
+            input: test_case.input.clone(),
+            expected: expected.clone(),
+            actual,
+            passed,
+        });
+    }
+
+    let passed_count = results.iter().filter(|r| r.passed).count();
+    let all_passed = passed_count == results.len();
+
+    let test_suite = TestSuiteResult {
+        passed: all_passed,
+        total: results.len(),
+        passed_count,
+        results,
+        compilation_error: None,
+    };
+
+    let mut xp_earned = 0;
+    let mut doors_unlocked = false;
+    let mut next_level_id: Option<String> = None;
+
+    // Only complete level on SUBMIT (not TEST) and if all passed
+    if all_passed && !test_only {
+        let mut game_state = state.0.lock().map_err(|e| e.to_string())?;
+
+        let previously_unlocked: std::collections::HashSet<_> =
+            game_state.progression.unlocked_levels.clone();
+
+        xp_earned = game_state.complete_level(level_data.xp_reward);
+        doors_unlocked = true;
+
+        game_state.update_unlocked_levels(levels.get_prerequisites());
+
+        let newly_unlocked: Vec<_> = game_state
+            .progression
+            .unlocked_levels
+            .iter()
+            .filter(|id| !previously_unlocked.contains(*id))
+            .cloned()
+            .collect();
+
+        info!(xp = xp_earned, unlocked = ?newly_unlocked, "Level completed");
+
+        next_level_id = levels.get_next_level(&level_id);
+
+        // Emit level_complete event
+        let event = LevelCompleteEvent {
+            level_id: level_id.clone(),
+            xp_earned,
+            next_level_id: next_level_id.clone(),
+            newly_unlocked,
+        };
+        let _ = app.emit("level_complete", event);
+    }
+
+    let feedback = if all_passed {
+        if test_only {
+            format!("All {} sample tests passed! Click SUBMIT to complete.", passed_count)
+        } else if xp_earned > 0 {
+            format!("All {} tests passed! +{} XP! Doors have been unlocked!", test_suite.total, xp_earned)
+        } else {
+            format!("All {} tests passed! Doors have been unlocked! (Level already completed)", test_suite.total)
+        }
+    } else {
+        format!("{}/{} tests passed. Check your logic and try again!", passed_count, test_suite.total)
+    };
+
+    let render_state = {
+        let game_state = state.0.lock().map_err(|e| e.to_string())?;
+        game_state.to_render_state()
+    };
+
+    Ok(CodeResult {
+        success: all_passed,
+        stdout: String::new(),
+        stderr: String::new(),
+        compile_error: None,
+        execution_time_ms: total_time_ms,
+        feedback,
+        hint: None,
+        xp_earned,
+        doors_unlocked,
+        render_state,
+        test_results: Some(test_suite),
     })
 }
 
