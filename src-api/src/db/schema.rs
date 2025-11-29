@@ -55,6 +55,22 @@ pub async fn run_migrations(pool: &Pool<Postgres>) -> Result<(), sqlx::Error> {
     .await?;
 
     // Create save_slots table for Save/Load feature
+    // First drop old table if schema changed (no device_id column)
+    sqlx::query(
+        r#"
+        DO $$
+        BEGIN
+            IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'save_slots')
+               AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'save_slots' AND column_name = 'device_id')
+            THEN
+                DROP TABLE save_slots;
+            END IF;
+        END $$;
+        "#,
+    )
+    .execute(pool)
+    .await?;
+
     sqlx::query(
         r#"
         CREATE TABLE IF NOT EXISTS save_slots (
