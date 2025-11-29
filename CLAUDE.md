@@ -208,7 +208,27 @@ await page.keyboard.press('e'); // Interact
 
 ### Automated Deployment & Validation
 
-**One-command deploy to all platforms:**
+**Local E2E only (run after every change):**
+
+```bash
+./tools/test-local-e2e.sh
+```
+
+This script:
+1. Assumes local API (`cd src-api && cargo run`) and frontend (`cd src-ui && API_URL=http://localhost:3000 npm run dev`) are running
+2. Runs full Playwright E2E tests against `localhost` (same flow as prod)
+
+**Local E2E then deploy (one-shot flow):**
+
+```bash
+./tools/test-local-and-deploy.sh
+```
+
+This script:
+1. Calls `test-local-e2e.sh` (aborts if local tests fail)
+2. Then calls `./tools/deploy-and-validate.sh` to deploy and validate production
+
+**Production-only deploy & validation**
 
 ```bash
 ./tools/deploy-and-validate.sh
@@ -221,7 +241,7 @@ This script:
 4. Runs Playwright validation (API health, levels, frontend, game flow, movement)
 5. Reports success/failure with production URLs
 
-**Use this script after any code changes to ensure both platforms work.**
+**Rule of thumb:** always run `./tools/test-local-e2e.sh` after changes; only trigger `test-local-and-deploy.sh` or `deploy-and-validate.sh` when you intend to deploy.
 
 ---
 

@@ -106,6 +106,39 @@ python tools/generate_map.py --algorithm rooms --rooms 8 > maps/dungeon_01.json
 - Enforce memory allocation patterns
 - Generate semantically correct memory visualizations
 
+### 4. Local E2E Only (`test-local-e2e.sh`)
+
+**Purpose**: Run full end-to-end tests against a local backend/frontend on `localhost` (no deploy).
+
+**Usage**:
+```bash
+./tools/test-local-e2e.sh
+```
+
+**Requirements**:
+- Local API running (default: `http://127.0.0.1:3000`):
+  ```bash
+  cd src-api && cargo run
+  ```
+- Local frontend dev server running (default: `http://localhost:1420`):
+  ```bash
+  cd src-ui && API_URL=http://127.0.0.1:3000 npm run dev
+  ```
+
+You can override the defaults:
+```bash
+LOCAL_API_URL=http://localhost:3000 LOCAL_FRONTEND_URL=http://localhost:1420 ./tools/test-local-e2e.sh
+```
+
+### 5. Local E2E + Deploy (`test-local-and-deploy.sh`)
+
+**Purpose**: Convenience wrapper that runs local E2E (`test-local-e2e.sh`) and, if it passes, deploys to Railway/Vercel and re-runs validation against production.
+
+**Usage**:
+```bash
+./tools/test-local-and-deploy.sh
+```
+
 ---
 
 ## Workflow Integration
