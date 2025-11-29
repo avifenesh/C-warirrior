@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite dev",
     "build": "npm run build:wasm && vite build",
-    "build:web": "npm run build:wasm && vite build",
-    "build:wasm": "cd ../src-wasm && wasm-pack build --target web --release && mkdir -p ../src-ui/src/lib/wasm && cp -r pkg/* ../src-ui/src/lib/wasm/",
+    "build:web": "vite build",
+    "build:wasm": "cd ../src-wasm && wasm-pack build --target web --release --out-dir ../src-ui/src/lib/wasm",
     "build:tauri": "TAURI_PLATFORM=1 vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
