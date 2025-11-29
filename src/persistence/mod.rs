@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
+
+#[cfg(not(target_arch = "wasm32"))]
 use std::fs;
+#[cfg(not(target_arch = "wasm32"))]
 use std::path::PathBuf;
 
 use crate::game::progression::ProgressionState;
@@ -19,6 +22,7 @@ pub struct SaveData {
 impl SaveData {
     pub const CURRENT_VERSION: u32 = 1;
 
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn new(slot_name: String) -> Self {
         Self {
             version: Self::CURRENT_VERSION,
@@ -32,13 +36,27 @@ impl SaveData {
                 .unwrap_or(0),
         }
     }
+
+    #[cfg(target_arch = "wasm32")]
+    pub fn new(slot_name: String) -> Self {
+        Self {
+            version: Self::CURRENT_VERSION,
+            slot_name,
+            progression: ProgressionState::new(),
+            current_level_id: None,
+            player_position: Position::new(0.0, 0.0),
+            timestamp: 0, // WASM doesn't have system time access
+        }
+    }
 }
 
-/// Manages save/load operations
+/// Manages save/load operations (filesystem-based, not available in WASM)
+#[cfg(not(target_arch = "wasm32"))]
 pub struct SaveManager {
     save_dir: PathBuf,
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 impl SaveManager {
     /// Create a new SaveManager with the default save directory
     pub fn new() -> Result<Self, String> {
@@ -157,6 +175,7 @@ impl SaveManager {
     }
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 impl Default for SaveManager {
     fn default() -> Self {
         Self::new().expect("Failed to create SaveManager")

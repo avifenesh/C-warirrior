@@ -1,7 +1,9 @@
 // Code Warrior - C Programming Educational Game
 // Rust backend library
 
+#[cfg(feature = "compiler")]
 pub mod compiler;
+
 pub mod game;
 pub mod levels;
 pub mod models;
@@ -14,6 +16,10 @@ pub use game::{
     TICK_RATE, TILE_SIZE, VIEWPORT_HEIGHT, VIEWPORT_WIDTH, XP_PER_LEVEL,
 };
 
+#[cfg(feature = "compiler")]
 pub use compiler::ExecutionOutput;
+
 pub use levels::{LevelData, LevelInfo, LevelRegistry, SuccessCriteria, WorldConfig, WorldPreset};
-pub use persistence::{SaveData, SaveManager, SaveSlotInfo};
+pub use persistence::{SaveData, SaveSlotInfo};
+#[cfg(not(target_arch = "wasm32"))]
+pub use persistence::SaveManager;

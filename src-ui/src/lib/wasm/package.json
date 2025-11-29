@@ -1,0 +1,15 @@
+{
+  "name": "code-warrior-wasm",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "code_warrior_wasm_bg.wasm",
+    "code_warrior_wasm.js",
+    "code_warrior_wasm.d.ts"
+  ],
+  "main": "code_warrior_wasm.js",
+  "types": "code_warrior_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

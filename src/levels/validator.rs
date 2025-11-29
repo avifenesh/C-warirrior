@@ -1,4 +1,6 @@
+#[cfg(feature = "compiler")]
 use crate::compiler::ExecutionOutput;
+#[cfg(feature = "compiler")]
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 
@@ -24,8 +26,9 @@ pub enum SuccessCriteria {
     Any { criteria: Vec<SuccessCriteria> },
 }
 
+#[cfg(feature = "compiler")]
 impl SuccessCriteria {
-    /// Validate execution output against criteria
+    /// Validate execution output against criteria (only available with compiler feature)
     pub fn validate(&self, output: &ExecutionOutput) -> bool {
         match self {
             SuccessCriteria::ExactMatch { expected_stdout } => {
