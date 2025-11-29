@@ -23,6 +23,7 @@ pub async fn get_available_levels(
             concept: level.concept.clone(),
             completed: game_state.is_level_completed(&level.id),
             locked: !game_state.is_level_unlocked(&level.id),
+            xp_reward: level.xp_reward,
         })
         .collect();
 

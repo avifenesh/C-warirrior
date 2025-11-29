@@ -805,35 +805,68 @@
 
     .code-highlight {
         position: absolute;
-        inset: 12px;
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
         margin: 0;
+        padding: 0;
         overflow: auto;
         white-space: pre-wrap;
+        word-wrap: break-word;
         font-family: 'IBM Plex Mono', 'Courier New', monospace;
         font-size: 13px;
-        line-height: 1.6;
+        line-height: 20.8px; /* 13px * 1.6 = 20.8px - explicit pixel value */
+        letter-spacing: normal;
+        tab-size: 4;
+        -moz-tab-size: 4;
         color: #e2e8f0;
         pointer-events: none;
         z-index: 1;
+        box-sizing: border-box;
+    }
+
+    .code-highlight code {
+        display: block;
+        margin: 0;
+        padding: 0;
+        font-family: inherit;
+        font-size: inherit;
+        line-height: inherit;
+        white-space: inherit;
+        tab-size: inherit;
+        -moz-tab-size: inherit;
     }
 
     .code-input {
         position: absolute;
-        inset: 12px;
-        width: calc(100% - 24px);
-        height: calc(100% - 24px);
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        width: auto;
+        height: auto;
+        margin: 0;
+        padding: 0;
         resize: none;
+        overflow: auto;
+        white-space: pre-wrap;
+        word-wrap: break-word;
         /* Use rgba with tiny alpha to ensure clickability while appearing transparent */
         background: rgba(0, 0, 0, 0.001);
         font-family: 'IBM Plex Mono', 'Courier New', monospace;
         font-size: 13px;
-        line-height: 1.6;
+        line-height: 20.8px; /* Must match .code-highlight exactly */
+        letter-spacing: normal;
+        tab-size: 4;
+        -moz-tab-size: 4;
         color: transparent;
         caret-color: #fbbf24;
         outline: none;
         border: none;
         z-index: 2;
         cursor: text;
+        box-sizing: border-box;
         /* Ensure it receives all pointer events */
         pointer-events: auto;
     }

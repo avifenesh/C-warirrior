@@ -19,6 +19,7 @@
     let currentLevelData = $state<LevelData | null>(null);
     let codeSubmitting = $state(false);
     let lastCodeResult = $state<CodeResult | null>(null);
+    let levelTransitioning = $state(false);
     let uiStatus = $state<{ loading: boolean; status: string; error: string | null }>({
         loading: true,
         status: 'Booting Code Warrior...',
@@ -91,10 +92,17 @@
     }
 
     async function handleNextLevel() {
+        if (levelTransitioning) return; // Prevent double-click
+
         const nextId = getNextLevelId();
         if (nextId) {
-            await startLevel(nextId);
-            addInfoToast(`Starting ${nextId}...`);
+            levelTransitioning = true;
+            try {
+                await startLevel(nextId);
+                addInfoToast(`Starting ${nextId}...`);
+            } finally {
+                levelTransitioning = false;
+            }
         } else {
             addInfoToast('Congratulations! You completed all levels!');
         }
@@ -355,9 +363,10 @@
 
                         <button
                             onclick={handleNextLevel}
+                            disabled={levelTransitioning}
                             class="pixel-button w-full"
                         >
-                            {getNextLevelId() ? 'CONTINUE QUEST' : 'RETURN TO VILLAGE'}
+                            {levelTransitioning ? 'LOADING...' : (getNextLevelId() ? 'CONTINUE QUEST' : 'RETURN TO VILLAGE')}
                         </button>
                     </div>
                 </div>
