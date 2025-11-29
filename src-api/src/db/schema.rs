@@ -98,5 +98,38 @@ pub async fn run_migrations(pool: &Pool<Postgres>) -> Result<(), sqlx::Error> {
     .execute(pool)
     .await?;
 
+    // Create quest_progress table for multi-quest tracking
+    sqlx::query(
+        r#"
+        CREATE TABLE IF NOT EXISTS quest_progress (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            device_id VARCHAR(255) NOT NULL,
+            level_id VARCHAR(50) NOT NULL,
+            quest_id VARCHAR(100) NOT NULL,
+            xp_earned INTEGER DEFAULT 0,
+            completed_at TIMESTAMPTZ DEFAULT NOW(),
+            UNIQUE(device_id, quest_id)
+        )
+        "#,
+    )
+    .execute(pool)
+    .await?;
+
+    sqlx::query(
+        r#"
+        CREATE INDEX IF NOT EXISTS idx_quest_progress_device_id ON quest_progress(device_id)
+        "#,
+    )
+    .execute(pool)
+    .await?;
+
+    sqlx::query(
+        r#"
+        CREATE INDEX IF NOT EXISTS idx_quest_progress_level_id ON quest_progress(device_id, level_id)
+        "#,
+    )
+    .execute(pool)
+    .await?;
+
     Ok(())
 }

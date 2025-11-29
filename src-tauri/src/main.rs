@@ -13,9 +13,9 @@ use code_warrior::persistence::SaveManager;
 
 mod commands;
 
-use commands::code::{get_hint, submit_code};
+use commands::code::{get_hint, submit_code, submit_quest_code};
 use commands::game::{get_game_state, get_progress, get_render_state, init_game, process_action};
-use commands::levels::{get_available_levels, get_level_data, load_level};
+use commands::levels::{get_available_levels, get_level_data, get_level_quests, load_level, load_quest};
 use commands::save::{autosave, delete_save, list_saves, load_game, save_game};
 
 pub struct GameStateWrapper(pub Mutex<GameState>);
@@ -48,8 +48,11 @@ fn main() {
             get_available_levels,
             load_level,
             get_level_data,
+            get_level_quests,
+            load_quest,
             // Code commands
             submit_code,
+            submit_quest_code,
             get_hint,
             // Save/Load commands
             save_game,

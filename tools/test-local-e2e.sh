@@ -17,14 +17,15 @@ echo "╚═══════════════════════�
 echo ""
 
 echo "▶ [1/3] Checking local backend at $LOCAL_API_URL..."
-API_HEALTH=$(curl -s "$LOCAL_API_URL/health" | grep -c '"ok"' || echo "0")
-if [ "$API_HEALTH" -eq 0 ]; then
+API_RESPONSE=$(curl -s --max-time 5 "$LOCAL_API_URL/health" 2>/dev/null || echo "")
+if echo "$API_RESPONSE" | grep -q '"ok"'; then
+    echo "  ✓ Local API healthy"
+else
     echo "  ✗ Local API health check failed"
     echo "    Make sure the backend is running, e.g.:"
     echo "      cd src-api && cargo run"
     exit 1
 fi
-echo "  ✓ Local API healthy"
 
 echo ""
 echo "▶ [2/3] Checking local frontend at $LOCAL_FRONTEND_URL..."

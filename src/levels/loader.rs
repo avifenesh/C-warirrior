@@ -47,6 +47,46 @@ pub struct TestCase {
 }
 
 // ============================================================================
+// Multi-Quest System
+// ============================================================================
+
+fn default_quest_xp() -> u32 {
+    25
+}
+
+/// A quest is a single challenge within a level
+/// Each level can have multiple quests that must all be completed
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Quest {
+    pub id: String,
+    #[serde(default)]
+    pub order: u32,
+    pub title: String,
+    pub description: String,
+    #[serde(default)]
+    pub recommended: bool,
+    pub function_signature: FunctionSignature,
+    pub user_template: String,
+    pub test_cases: Vec<TestCase>,
+    #[serde(default)]
+    pub hints: Vec<String>,
+    #[serde(default = "default_quest_xp")]
+    pub xp_reward: u32,
+}
+
+/// Quest info for frontend display (includes completion status)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct QuestInfo {
+    pub id: String,
+    pub order: u32,
+    pub title: String,
+    pub description: String,
+    pub recommended: bool,
+    pub completed: bool,
+    pub xp_reward: u32,
+}
+
+// ============================================================================
 // World Configuration
 // ============================================================================
 
@@ -104,7 +144,17 @@ pub struct LevelData {
     #[serde(default)]
     pub description: String,
 
-    // New function-based challenge system
+    // Visual theme for level-specific tile rendering
+    #[serde(default)]
+    pub theme: Option<String>,
+
+    // Multi-quest system (new)
+    #[serde(default)]
+    pub quests: Vec<Quest>,
+    #[serde(default)]
+    pub total_xp_reward: Option<u32>,
+
+    // Function-based challenge system (legacy single-quest)
     #[serde(default)]
     pub lesson: Option<Lesson>,
     #[serde(default)]
@@ -138,9 +188,61 @@ impl LevelData {
         serde_json::from_value(json.clone()).map_err(|e| format!("Failed to parse level: {}", e))
     }
 
+    /// Check if this level uses the multi-quest system
+    pub fn has_quests(&self) -> bool {
+        !self.quests.is_empty()
+    }
+
     /// Check if this level uses the new function-based challenge system
     pub fn is_function_based(&self) -> bool {
         self.function_signature.is_some() && !self.test_cases.is_empty()
+    }
+
+    /// Get quests for this level (backward compatible)
+    /// Returns the quests array if defined, otherwise creates a single quest from legacy fields
+    pub fn get_quests(&self) -> Vec<Quest> {
+        if !self.quests.is_empty() {
+            self.quests.clone()
+        } else if let Some(ref sig) = self.function_signature {
+            // Create single quest from legacy function-based fields
+            vec![Quest {
+                id: format!("{}_Q1", self.id),
+                order: 1,
+                title: self.title.clone(),
+                description: self.description.clone(),
+                recommended: true,
+                function_signature: sig.clone(),
+                user_template: self.user_template.clone().unwrap_or_default(),
+                test_cases: self.test_cases.clone(),
+                hints: self.hints.clone(),
+                xp_reward: self.xp_reward,
+            }]
+        } else {
+            // Legacy output-based level - no quests
+            vec![]
+        }
+    }
+
+    /// Get total quest count for this level
+    pub fn quest_count(&self) -> usize {
+        let quests = self.get_quests();
+        if quests.is_empty() { 1 } else { quests.len() }
+    }
+
+    /// Get total XP reward for completing all quests
+    pub fn get_total_xp(&self) -> u32 {
+        if let Some(total) = self.total_xp_reward {
+            total
+        } else if !self.quests.is_empty() {
+            self.quests.iter().map(|q| q.xp_reward).sum()
+        } else {
+            self.xp_reward
+        }
+    }
+
+    /// Get a specific quest by ID
+    pub fn get_quest(&self, quest_id: &str) -> Option<Quest> {
+        self.get_quests().into_iter().find(|q| q.id == quest_id)
     }
 
     /// Get the template code for the player to start with
@@ -175,6 +277,10 @@ pub struct LevelInfo {
     pub completed: bool,
     pub locked: bool,
     pub xp_reward: u32,
+    // Quest progress fields
+    pub total_quests: usize,
+    pub completed_quests: usize,
+    pub completion_percentage: f32,
 }
 
 impl LevelRegistry {
@@ -215,13 +321,19 @@ impl LevelRegistry {
         self.order
             .iter()
             .filter_map(|id| self.levels.get(id))
-            .map(|l| LevelInfo {
-                id: l.id.clone(),
-                title: l.title.clone(),
-                concept: l.concept.clone(),
-                completed: false, // Placeholder, logic for this belongs in GameState
-                locked: false,    // Placeholder
-                xp_reward: l.xp_reward,
+            .map(|l| {
+                let total_quests = l.quest_count();
+                LevelInfo {
+                    id: l.id.clone(),
+                    title: l.title.clone(),
+                    concept: l.concept.clone(),
+                    completed: false, // Placeholder, logic for this belongs in GameState
+                    locked: false,    // Placeholder
+                    xp_reward: l.get_total_xp(),
+                    total_quests,
+                    completed_quests: 0, // Placeholder
+                    completion_percentage: 0.0,
+                }
             })
             .collect()
     }

@@ -25,6 +25,11 @@
         lesson?: Lesson | null;
         functionSignature?: string;
         sampleTests?: TestCase[];
+        // Quest-specific props (for multi-quest levels)
+        questId?: string | null;
+        questTitle?: string | null;
+        questDescription?: string | null;
+        questXpReward?: number;
     }
 
     let {
@@ -41,7 +46,14 @@
         lesson = null,
         functionSignature = '',
         sampleTests = [],
+        questId = null,
+        questTitle = null,
+        questDescription = null,
+        questXpReward = 0,
     }: Props = $props();
+
+    // Whether this is a quest within a multi-quest level
+    const isQuestMode = $derived(!!questId);
 
     // Track which action is in progress
     let testingInProgress = $state(false);
@@ -124,12 +136,12 @@
 
     function submit() {
         testingInProgress = false;
-        dispatcher('submit', { code, testOnly: false });
+        dispatcher('submit', { code, testOnly: false, questId });
     }
 
     function runTests() {
         testingInProgress = true;
-        dispatcher('submit', { code, testOnly: true });
+        dispatcher('submit', { code, testOnly: true, questId });
     }
 
     function handleClose() {
@@ -285,7 +297,16 @@
         <div class="grimoire-header">
             <div class="flex items-center gap-3">
                 <span class="text-amber-400 text-lg">&#9733;</span>
-                <h2 class="grimoire-title">SPELL CODEX</h2>
+                <h2 class="grimoire-title">
+                    {#if isQuestMode && questTitle}
+                        {questTitle}
+                    {:else}
+                        SPELL CODEX
+                    {/if}
+                </h2>
+                {#if isQuestMode && questXpReward}
+                    <span class="quest-xp-badge">+{questXpReward} XP</span>
+                {/if}
             </div>
             <div class="flex items-center gap-3">
                 {#if challenge || lesson}
@@ -614,6 +635,15 @@
         color: #fbbf24;
         text-shadow: 2px 2px 0 #92400e;
         letter-spacing: 2px;
+    }
+
+    .quest-xp-badge {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 8px;
+        padding: 4px 8px;
+        background: linear-gradient(180deg, #14532d 0%, #166534 100%);
+        border: 2px solid #22c55e;
+        color: #bbf7d0;
     }
 
     .status-badge {

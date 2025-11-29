@@ -57,6 +57,29 @@ struct SubmitCodeRequest {
     test_only: bool,
 }
 
+#[derive(Debug, Deserialize)]
+struct SubmitQuestCodeRequest {
+    code: String,
+    quest_id: String,
+    #[serde(default)]
+    test_only: bool,
+}
+
+#[derive(Debug, Serialize)]
+struct QuestInfoResponse {
+    id: String,
+    order: u32,
+    title: String,
+    description: String,
+    recommended: bool,
+    completed: bool,
+    xp_reward: u32,
+    user_template: String,
+    function_signature: code_warrior::levels::FunctionSignature,
+    hints: Vec<String>,
+    test_cases: Vec<code_warrior::levels::TestCase>,
+}
+
 #[derive(Debug, Serialize)]
 struct SubmitCodeResponse {
     success: bool,
@@ -169,7 +192,10 @@ async fn main() {
         .route("/api/levels", get(get_available_levels))
         .route("/api/levels/:id/load", post(load_level))
         .route("/api/code/submit", post(submit_code))
+        .route("/api/code/submit-quest", post(submit_quest_code))
         .route("/api/levels/current", get(get_current_level))
+        .route("/api/levels/current/quests", get(get_level_quests))
+        .route("/api/levels/current/quests/:quest_id", get(get_quest))
         .route("/api/code/hint/:index", get(get_hint))
         .route("/api/player/progress", get(get_progress))
         .route("/api/saves", get(list_saves))
@@ -693,8 +719,8 @@ async fn run_function_based_challenge(
     let feedback = if all_passed {
         if test_only {
             format!("All {} sample tests passed! Click SUBMIT to complete.", passed_count)
-        } else if xp_earned.is_some() && xp_earned.unwrap() > 0 {
-            format!("All {} tests passed! +{} XP! Doors have been unlocked!", test_suite.total, xp_earned.unwrap())
+        } else if let Some(xp) = xp_earned.filter(|&x| x > 0) {
+            format!("All {} tests passed! +{} XP! Doors have been unlocked!", test_suite.total, xp)
         } else {
             format!("All {} tests passed! Doors have been unlocked! (Level already completed)", test_suite.total)
         }
@@ -745,6 +771,253 @@ async fn get_current_level(
     })?;
 
     Ok(Json(level.clone()))
+}
+
+async fn get_level_quests(
+    State(state): State<Arc<AppState>>,
+    axum::Extension(device_id): axum::Extension<DeviceId>,
+) -> Result<Json<Vec<QuestInfoResponse>>, (StatusCode, String)> {
+    let game_state = get_or_create_session(&state, &device_id.0)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
+
+    let level_id = game_state.current_level_id.as_ref().ok_or_else(|| {
+        (
+            StatusCode::BAD_REQUEST,
+            "No level currently loaded".to_string(),
+        )
+    })?;
+
+    let level = state.levels.get_level(level_id).ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            format!("Level '{}' not found", level_id),
+        )
+    })?;
+
+    let quests = level.get_quests();
+    let response: Vec<QuestInfoResponse> = quests.iter().map(|q| {
+        let completed = game_state.is_quest_completed(level_id, &q.id);
+        QuestInfoResponse {
+            id: q.id.clone(),
+            order: q.order,
+            title: q.title.clone(),
+            description: q.description.clone(),
+            recommended: q.recommended,
+            completed,
+            xp_reward: q.xp_reward,
+            user_template: q.user_template.clone(),
+            function_signature: q.function_signature.clone(),
+            hints: q.hints.clone(),
+            test_cases: q.test_cases.clone(),
+        }
+    }).collect();
+
+    Ok(Json(response))
+}
+
+async fn get_quest(
+    State(state): State<Arc<AppState>>,
+    axum::Extension(device_id): axum::Extension<DeviceId>,
+    Path(quest_id): Path<String>,
+) -> Result<Json<QuestInfoResponse>, (StatusCode, String)> {
+    let game_state = get_or_create_session(&state, &device_id.0)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
+
+    let level_id = game_state.current_level_id.as_ref().ok_or_else(|| {
+        (
+            StatusCode::BAD_REQUEST,
+            "No level currently loaded".to_string(),
+        )
+    })?;
+
+    let level = state.levels.get_level(level_id).ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            format!("Level '{}' not found", level_id),
+        )
+    })?;
+
+    let quests = level.get_quests();
+    let quest = quests.iter().find(|q| q.id == quest_id).ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            format!("Quest '{}' not found in level '{}'", quest_id, level_id),
+        )
+    })?;
+
+    let completed = game_state.is_quest_completed(level_id, &quest_id);
+
+    Ok(Json(QuestInfoResponse {
+        id: quest.id.clone(),
+        order: quest.order,
+        title: quest.title.clone(),
+        description: quest.description.clone(),
+        recommended: quest.recommended,
+        completed,
+        xp_reward: quest.xp_reward,
+        user_template: quest.user_template.clone(),
+        function_signature: quest.function_signature.clone(),
+        hints: quest.hints.clone(),
+        test_cases: quest.test_cases.clone(),
+    }))
+}
+
+async fn submit_quest_code(
+    State(state): State<Arc<AppState>>,
+    axum::Extension(device_id): axum::Extension<DeviceId>,
+    Json(payload): Json<SubmitQuestCodeRequest>,
+) -> Result<Json<SubmitCodeResponse>, (StatusCode, String)> {
+    tracing::info!("Submitting quest code for device: {}, quest: {}, test_only: {}",
+        device_id.0, payload.quest_id, payload.test_only);
+
+    let mut game_state = get_or_create_session(&state, &device_id.0)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
+
+    let level_id = game_state
+        .current_level_id
+        .as_ref()
+        .ok_or_else(|| (StatusCode::BAD_REQUEST, "No level currently loaded".to_string()))?
+        .clone();
+
+    let level = state.levels.get_level(&level_id).ok_or_else(|| {
+        (StatusCode::NOT_FOUND, format!("Level '{}' not found", level_id))
+    })?;
+
+    let quests = level.get_quests();
+    let total_quests = quests.len();
+    let quest = quests.iter().find(|q| q.id == payload.quest_id).ok_or_else(|| {
+        (StatusCode::NOT_FOUND, format!("Quest '{}' not found", payload.quest_id))
+    })?.clone();
+
+    // Filter test cases: sample only for TEST, all for SUBMIT
+    let test_cases: Vec<_> = quest
+        .test_cases
+        .iter()
+        .filter(|tc| !payload.test_only || tc.sample)
+        .collect();
+
+    if test_cases.is_empty() {
+        return Err((StatusCode::BAD_REQUEST, "No test cases defined for this quest".to_string()));
+    }
+
+    let mut results: Vec<TestCaseResult> = Vec::new();
+    let mut total_time_ms = 0u64;
+
+    for test_case in &test_cases {
+        let harness = generate_harness(&payload.code, &quest.function_signature, test_case)
+            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to generate test harness: {}", e)))?;
+
+        let execution_result = state
+            .compiler
+            .compile_and_run(&harness)
+            .await
+            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
+
+        total_time_ms += execution_result.execution_time_ms;
+
+        if let Some(ref err) = execution_result.compile_error {
+            let test_suite = TestSuiteResult {
+                passed: false,
+                total: test_cases.len(),
+                passed_count: 0,
+                results: vec![],
+                compilation_error: Some(err.clone()),
+            };
+
+            return Ok(Json(SubmitCodeResponse {
+                success: false,
+                stdout: String::new(),
+                stderr: execution_result.stderr,
+                compile_error: Some(err.clone()),
+                execution_time_ms: total_time_ms,
+                feedback: "Code failed to compile. Check for syntax errors.".to_string(),
+                hint: quest.hints.first().cloned(),
+                xp_earned: None,
+                doors_unlocked: false,
+                render_state: game_state.to_render_state(),
+                test_results: Some(test_suite),
+            }));
+        }
+
+        let actual = execution_result.stdout.trim().to_string();
+        let expected = test_case.expected.trim().to_string();
+        let passed = actual == expected;
+
+        results.push(TestCaseResult {
+            input: test_case.input.clone(),
+            expected: expected.clone(),
+            actual,
+            passed,
+        });
+    }
+
+    let passed_count = results.iter().filter(|r| r.passed).count();
+    let all_passed = passed_count == results.len();
+
+    let test_suite = TestSuiteResult {
+        passed: all_passed,
+        total: results.len(),
+        passed_count,
+        results,
+        compilation_error: None,
+    };
+
+    let mut xp_earned = None;
+    let mut doors_unlocked = false;
+    let mut quests_remaining = total_quests;
+
+    // Only complete quest on SUBMIT (not TEST) and if all passed
+    if all_passed && !payload.test_only {
+        let xp = game_state.complete_quest(&level_id, &payload.quest_id, quest.xp_reward);
+        xp_earned = Some(xp);
+
+        let completed_count = game_state.get_completed_quest_count(&level_id);
+        quests_remaining = total_quests.saturating_sub(completed_count);
+
+        // Check if all quests completed → level complete
+        if quests_remaining == 0 {
+            if let Some(_) = game_state.maybe_complete_level(total_quests) {
+                doors_unlocked = true;
+                game_state.update_unlocked_levels(state.levels.get_prerequisites());
+            }
+        }
+
+        // Persist state
+        persist_session(&state, &device_id.0, &game_state)
+            .await
+            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
+    }
+
+    let feedback = if all_passed {
+        if payload.test_only {
+            format!("All {} sample tests passed! Click SUBMIT to complete.", passed_count)
+        } else if quests_remaining == 0 {
+            format!("Quest complete! +{} XP! All quests done - doors unlocked!", xp_earned.unwrap_or(0))
+        } else if let Some(xp) = xp_earned.filter(|&x| x > 0) {
+            format!("Quest complete! +{} XP! {} quest(s) remaining.", xp, quests_remaining)
+        } else {
+            "Quest already completed. Try another quest!".to_string()
+        }
+    } else {
+        format!("{}/{} tests passed. Check your logic and try again!", passed_count, test_suite.total)
+    };
+
+    Ok(Json(SubmitCodeResponse {
+        success: all_passed,
+        stdout: String::new(),
+        stderr: String::new(),
+        compile_error: None,
+        execution_time_ms: total_time_ms,
+        feedback,
+        hint: if !all_passed { quest.hints.first().cloned() } else { None },
+        xp_earned,
+        doors_unlocked,
+        render_state: game_state.to_render_state(),
+        test_results: Some(test_suite),
+    }))
 }
 
 async fn get_hint(

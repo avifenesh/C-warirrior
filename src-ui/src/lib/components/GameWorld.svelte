@@ -15,9 +15,10 @@
         children?: Snippet;
         codeSuccess?: boolean;
         xpGained?: number;
+        theme?: string | null;
     }
 
-    let { renderState = null, tileSize = 64, children, codeSuccess = false, xpGained = 0 }: Props = $props();
+    let { renderState = null, tileSize = 64, children, codeSuccess = false, xpGained = 0, theme = null }: Props = $props();
 
     const dispatcher = createEventDispatcher();
     let canvasRef = $state<HTMLCanvasElement | null>(null);
@@ -41,6 +42,19 @@
     // Change detection for render optimization
     let lastRenderState: RenderState | null = null;
     let stateChanged = true; // Track if state changed since last render
+
+    // Theme tracking for level-specific visuals
+    let currentTheme: string | null = null;
+
+    // Apply theme when it changes
+    $effect(() => {
+        if (renderer && assetsLoaded && theme !== currentTheme) {
+            currentTheme = theme;
+            if (theme) {
+                renderer.setTheme(theme);
+            }
+        }
+    });
 
     // Backend uses 32px tile size for positions
     const BACKEND_TILE_SIZE = 32;

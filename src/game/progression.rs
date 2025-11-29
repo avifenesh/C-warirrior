@@ -12,6 +12,12 @@ pub struct ProgressionState {
     pub total_xp: u32,
     /// XP earned per level (for replay detection)
     pub level_xp: HashMap<String, u32>,
+    /// Completed quests per level: level_id -> set of quest_ids
+    #[serde(default)]
+    pub completed_quests: HashMap<String, HashSet<String>>,
+    /// XP earned per quest (for replay detection)
+    #[serde(default)]
+    pub quest_xp: HashMap<String, u32>,
 }
 
 /// Defines what prerequisites a level requires
@@ -109,6 +115,61 @@ impl ProgressionState {
     /// Get list of completed levels
     pub fn get_completed_levels(&self) -> Vec<&String> {
         self.completed_levels.iter().collect()
+    }
+
+    // ========================================================================
+    // Quest-based progression methods
+    // ========================================================================
+
+    /// Mark a quest as completed and award XP
+    /// Returns the XP earned (0 if already completed)
+    pub fn complete_quest(&mut self, level_id: &str, quest_id: &str, xp_reward: u32) -> u32 {
+        let level_quests = self.completed_quests.entry(level_id.to_string()).or_default();
+        let first_time = level_quests.insert(quest_id.to_string());
+
+        if first_time {
+            self.total_xp += xp_reward;
+            self.quest_xp.insert(quest_id.to_string(), xp_reward);
+            xp_reward
+        } else {
+            // Already completed - no XP reward on replay
+            0
+        }
+    }
+
+    /// Check if a specific quest is completed
+    pub fn is_quest_completed(&self, level_id: &str, quest_id: &str) -> bool {
+        self.completed_quests
+            .get(level_id)
+            .map(|quests| quests.contains(quest_id))
+            .unwrap_or(false)
+    }
+
+    /// Get count of completed quests for a level
+    pub fn get_completed_quest_count(&self, level_id: &str) -> usize {
+        self.completed_quests
+            .get(level_id)
+            .map(|quests| quests.len())
+            .unwrap_or(0)
+    }
+
+    /// Get quest progress as (completed, total)
+    pub fn get_quest_progress(&self, level_id: &str, total_quests: usize) -> (usize, usize) {
+        let completed = self.get_completed_quest_count(level_id);
+        (completed, total_quests)
+    }
+
+    /// Check if all quests in a level are completed
+    pub fn is_level_fully_completed(&self, level_id: &str, total_quests: usize) -> bool {
+        self.get_completed_quest_count(level_id) >= total_quests
+    }
+
+    /// Get set of completed quest IDs for a level
+    pub fn get_completed_quests(&self, level_id: &str) -> HashSet<String> {
+        self.completed_quests
+            .get(level_id)
+            .cloned()
+            .unwrap_or_default()
     }
 }
 

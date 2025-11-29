@@ -246,12 +246,34 @@ fn tile_id_to_tile(id: u32) -> Tile {
 
 pub fn load_map_file(map_path: &str) -> Result<MapFormat, String> {
     let json_str = match map_path {
+        // Themed maps (new unique layouts)
         "maps/L01_first_spell.json" => include_str!("../assets/maps/L01_first_spell.json"),
         "maps/L02_empty_backpack.json" => include_str!("../assets/maps/L02_empty_backpack.json"),
         "maps/L03_gatekeeper.json" => include_str!("../assets/maps/L03_gatekeeper.json"),
-        "maps/L04_repeating_strike.json" => {
-            include_str!("../assets/maps/L04_repeating_strike.json")
-        }
+        "maps/L04_forest.json" => include_str!("../assets/maps/L04_forest.json"),
+        "maps/L05_darkwoods.json" => include_str!("../assets/maps/L05_darkwoods.json"),
+        "maps/L06_river.json" => include_str!("../assets/maps/L06_river.json"),
+        "maps/L07_cavern.json" => include_str!("../assets/maps/L07_cavern.json"),
+        "maps/L08_mountain.json" => include_str!("../assets/maps/L08_mountain.json"),
+        "maps/L09_ice.json" => include_str!("../assets/maps/L09_ice.json"),
+        "maps/L10_temple.json" => include_str!("../assets/maps/L10_temple.json"),
+        "maps/L11_library.json" => include_str!("../assets/maps/L11_library.json"),
+        "maps/L12_crypt.json" => include_str!("../assets/maps/L12_crypt.json"),
+        "maps/L13_lake.json" => include_str!("../assets/maps/L13_lake.json"),
+        "maps/L14_forge.json" => include_str!("../assets/maps/L14_forge.json"),
+        "maps/L15_lair.json" => include_str!("../assets/maps/L15_lair.json"),
+        "maps/L16_courtyard.json" => include_str!("../assets/maps/L16_courtyard.json"),
+        "maps/L17_throne.json" => include_str!("../assets/maps/L17_throne.json"),
+        "maps/L18_treasury.json" => include_str!("../assets/maps/L18_treasury.json"),
+        "maps/L19_dungeon.json" => include_str!("../assets/maps/L19_dungeon.json"),
+        "maps/L20_passage.json" => include_str!("../assets/maps/L20_passage.json"),
+        "maps/L21_stairs.json" => include_str!("../assets/maps/L21_stairs.json"),
+        "maps/L22_alchemy.json" => include_str!("../assets/maps/L22_alchemy.json"),
+        "maps/L23_observatory.json" => include_str!("../assets/maps/L23_observatory.json"),
+        "maps/L24_portal.json" => include_str!("../assets/maps/L24_portal.json"),
+        "maps/L25_sanctum.json" => include_str!("../assets/maps/L25_sanctum.json"),
+        // Legacy fallbacks (old challenge-based maps)
+        "maps/L04_repeating_strike.json" => include_str!("../assets/maps/L04_repeating_strike.json"),
         "maps/L05_array_fortress.json" => include_str!("../assets/maps/L05_array_fortress.json"),
         _ => return Err(format!("Unknown map file: {}", map_path)),
     };

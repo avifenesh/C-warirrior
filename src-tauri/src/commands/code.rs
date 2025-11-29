@@ -32,6 +32,15 @@ pub struct LevelCompleteEvent {
     pub newly_unlocked: Vec<String>,
 }
 
+/// Event emitted when a quest is completed
+#[derive(Debug, Clone, Serialize)]
+pub struct QuestCompleteEvent {
+    pub level_id: String,
+    pub quest_id: String,
+    pub xp_earned: u32,
+    pub quests_remaining: usize,
+}
+
 #[tauri::command]
 pub async fn submit_code(
     code: String,
@@ -349,4 +358,209 @@ pub async fn get_hint(
         .get(hint_index)
         .cloned()
         .ok_or_else(|| "No more hints available".to_string())
+}
+
+/// Submit code for a specific quest in a multi-quest level
+#[tauri::command]
+pub async fn submit_quest_code(
+    code: String,
+    quest_id: String,
+    test_only: Option<bool>,
+    state: State<'_, GameStateWrapper>,
+    levels: State<'_, LevelRegistry>,
+    compiler: State<'_, CCompiler>,
+    app: AppHandle,
+) -> Result<CodeResult, String> {
+    let test_only = test_only.unwrap_or(false);
+    debug!("submit_quest_code: quest_id={}, test_only={}", quest_id, test_only);
+
+    // Get level and quest data
+    let (level_id, quest, total_quests) = {
+        let game_state = state.0.lock().map_err(|e| e.to_string())?;
+        let level_id = game_state
+            .current_level_id
+            .as_ref()
+            .ok_or("No level currently loaded")?
+            .clone();
+
+        let level = levels
+            .get_level(&level_id)
+            .ok_or_else(|| format!("Level {} not found", level_id))?;
+
+        let quests = level.get_quests();
+        let total_quests = quests.len();
+        let quest = quests
+            .iter()
+            .find(|q| q.id == quest_id)
+            .cloned()
+            .ok_or_else(|| format!("Quest {} not found in level {}", quest_id, level_id))?;
+
+        (level_id, quest, total_quests)
+    };
+
+    // Filter test cases: sample only for TEST, all for SUBMIT
+    let test_cases: Vec<_> = quest
+        .test_cases
+        .iter()
+        .filter(|tc| !test_only || tc.sample)
+        .collect();
+
+    if test_cases.is_empty() {
+        return Err("No test cases defined for this quest".to_string());
+    }
+
+    let mut results: Vec<TestCaseResult> = Vec::new();
+    let mut total_time_ms = 0u64;
+
+    // Run each test case
+    for test_case in &test_cases {
+        let harness = generate_harness(&code, &quest.function_signature, test_case)
+            .map_err(|e| format!("Failed to generate test harness: {}", e))?;
+
+        let execution_result = compiler.compile_and_run(&harness).await?;
+        total_time_ms += execution_result.execution_time_ms;
+
+        // Check for compilation error
+        if let Some(ref err) = execution_result.compile_error {
+            let test_suite = TestSuiteResult {
+                passed: false,
+                total: test_cases.len(),
+                passed_count: 0,
+                results: vec![],
+                compilation_error: Some(err.clone()),
+            };
+
+            let render_state = {
+                let game_state = state.0.lock().map_err(|e| e.to_string())?;
+                game_state.to_render_state()
+            };
+
+            return Ok(CodeResult {
+                success: false,
+                stdout: String::new(),
+                stderr: execution_result.stderr,
+                compile_error: Some(err.clone()),
+                execution_time_ms: total_time_ms,
+                feedback: "Code failed to compile. Check for syntax errors.".to_string(),
+                hint: quest.hints.first().cloned(),
+                xp_earned: 0,
+                doors_unlocked: false,
+                render_state,
+                test_results: Some(test_suite),
+            });
+        }
+
+        let actual = execution_result.stdout.trim().to_string();
+        let expected = test_case.expected.trim().to_string();
+        let passed = actual == expected;
+
+        results.push(TestCaseResult {
+            input: test_case.input.clone(),
+            expected: expected.clone(),
+            actual,
+            passed,
+        });
+    }
+
+    let passed_count = results.iter().filter(|r| r.passed).count();
+    let all_passed = passed_count == results.len();
+
+    let test_suite = TestSuiteResult {
+        passed: all_passed,
+        total: results.len(),
+        passed_count,
+        results,
+        compilation_error: None,
+    };
+
+    let mut xp_earned = 0;
+    let mut doors_unlocked = false;
+    let mut quests_remaining = total_quests;
+
+    // Only complete quest on SUBMIT (not TEST) and if all passed
+    if all_passed && !test_only {
+        let mut game_state = state.0.lock().map_err(|e| e.to_string())?;
+
+        // Complete the quest (awards XP only if not already completed)
+        xp_earned = game_state.complete_quest(&level_id, &quest_id, quest.xp_reward);
+
+        let completed_count = game_state.get_completed_quest_count(&level_id);
+        quests_remaining = total_quests.saturating_sub(completed_count);
+
+        // Check if all quests completed → level complete
+        if quests_remaining == 0 {
+            // Mark level as complete and unlock doors
+            if let Some(_) = game_state.maybe_complete_level(total_quests) {
+                doors_unlocked = true;
+                game_state.update_unlocked_levels(levels.get_prerequisites());
+
+                // Emit level_complete event
+                let event = LevelCompleteEvent {
+                    level_id: level_id.clone(),
+                    xp_earned: 0, // XP already awarded per-quest
+                    next_level_id: levels.get_next_level(&level_id),
+                    newly_unlocked: vec![],
+                };
+                let _ = app.emit("level_complete", event);
+            }
+        }
+
+        // Emit quest_complete event
+        let quest_event = QuestCompleteEvent {
+            level_id: level_id.clone(),
+            quest_id: quest_id.clone(),
+            xp_earned,
+            quests_remaining,
+        };
+        let _ = app.emit("quest_complete", quest_event);
+
+        info!(
+            quest_id = %quest_id,
+            xp = xp_earned,
+            remaining = quests_remaining,
+            "Quest completed"
+        );
+    }
+
+    let feedback = if all_passed {
+        if test_only {
+            format!("All {} sample tests passed! Click SUBMIT to complete.", passed_count)
+        } else if quests_remaining == 0 {
+            format!(
+                "Quest complete! +{} XP! All quests done - doors unlocked!",
+                xp_earned
+            )
+        } else if xp_earned > 0 {
+            format!(
+                "Quest complete! +{} XP! {} quest(s) remaining.",
+                xp_earned, quests_remaining
+            )
+        } else {
+            "Quest already completed. Try another quest!".to_string()
+        }
+    } else {
+        format!(
+            "{}/{} tests passed. Check your logic and try again!",
+            passed_count, test_suite.total
+        )
+    };
+
+    let render_state = {
+        let game_state = state.0.lock().map_err(|e| e.to_string())?;
+        game_state.to_render_state()
+    };
+
+    Ok(CodeResult {
+        success: all_passed,
+        stdout: String::new(),
+        stderr: String::new(),
+        compile_error: None,
+        execution_time_ms: total_time_ms,
+        feedback,
+        hint: if !all_passed { quest.hints.first().cloned() } else { None },
+        xp_earned,
+        doors_unlocked,
+        render_state,
+        test_results: Some(test_suite),
+    })
 }

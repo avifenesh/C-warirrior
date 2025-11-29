@@ -20,6 +20,7 @@ import type {
     GameError,
     SaveSlot,
     PlayerProgress,
+    QuestInfo,
 } from './types';
 
 export function createTauriBackend(): Backend {
@@ -37,6 +38,12 @@ export function createTauriBackend(): Backend {
         getAvailableLevels: () => invoke<LevelInfo[]>('get_available_levels'),
         loadLevel: (levelId: string) => invoke('load_level', { levelId }),
         getLevelData: () => invoke<LevelData>('get_level_data'),
+
+        // Quests (for multi-quest levels)
+        getLevelQuests: () => invoke<QuestInfo[]>('get_level_quests'),
+        loadQuest: (questId: string) => invoke<QuestInfo>('load_quest', { questId }),
+        submitQuestCode: (code: string, questId: string, testOnly: boolean = false) =>
+            invoke<CodeResult>('submit_quest_code', { code, questId, testOnly }),
 
         // Code
         submitCode: (code: string, testOnly: boolean = false) =>

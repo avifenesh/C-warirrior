@@ -116,6 +116,52 @@ impl GameState {
         self.progression.is_completed(level_id)
     }
 
+    // ========================================================================
+    // Quest-based progression methods
+    // ========================================================================
+
+    /// Complete a quest and award XP
+    /// Returns the XP earned (0 if already completed)
+    pub fn complete_quest(&mut self, level_id: &str, quest_id: &str, xp_reward: u32) -> u32 {
+        let xp_earned = self.progression.complete_quest(level_id, quest_id, xp_reward);
+        self.player.xp += xp_earned;
+        self.total_xp = self.progression.total_xp;
+        xp_earned
+    }
+
+    /// Check if a specific quest is completed
+    pub fn is_quest_completed(&self, level_id: &str, quest_id: &str) -> bool {
+        self.progression.is_quest_completed(level_id, quest_id)
+    }
+
+    /// Get count of completed quests for a level
+    pub fn get_completed_quest_count(&self, level_id: &str) -> usize {
+        self.progression.get_completed_quest_count(level_id)
+    }
+
+    /// Check if all quests in a level are completed
+    pub fn is_level_fully_completed(&self, level_id: &str, total_quests: usize) -> bool {
+        self.progression.is_level_fully_completed(level_id, total_quests)
+    }
+
+    /// Complete level when all quests are done
+    /// Returns XP earned if level wasn't already marked complete
+    pub fn maybe_complete_level(&mut self, total_quests: usize) -> Option<u32> {
+        if let Some(ref level_id) = self.current_level_id {
+            if self.is_level_fully_completed(level_id, total_quests)
+                && !self.is_level_completed(level_id)
+            {
+                // Mark level as complete (but don't double-award XP - quests already awarded it)
+                self.progression.completed_levels.insert(level_id.clone());
+                self.levels_completed = self.progression.completed_levels.iter().cloned().collect();
+                self.world.unlock_all_doors();
+                self.game_phase = GamePhase::LevelComplete;
+                return Some(0); // XP already awarded per-quest
+            }
+        }
+        None
+    }
+
     pub fn enter_coding_mode(&mut self) {
         self.game_phase = GamePhase::Coding;
     }

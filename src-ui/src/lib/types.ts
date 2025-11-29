@@ -33,7 +33,7 @@ export interface Inventory {
     max_slots: number;
 }
 
-export type TileType = 'floor' | 'wall' | 'water' | 'void' | 'door' | 'terminal';
+export type TileType = 'floor' | 'wall' | 'wall_top' | 'water' | 'void' | 'door' | 'terminal' | 'decoration' | 'decoration_alt';
 
 export interface Tile {
     tile_type: TileType;
@@ -127,6 +127,45 @@ export interface Challenge {
 }
 
 // ============================================================================
+// Multi-Quest System Types
+// ============================================================================
+
+export interface Quest {
+    id: string;
+    order: number;
+    title: string;
+    description: string;
+    recommended: boolean;
+    function_signature: FunctionSignature;
+    user_template: string;
+    test_cases: TestCase[];
+    hints: string[];
+    xp_reward: number;
+}
+
+export interface QuestInfo {
+    id: string;
+    order: number;
+    title: string;
+    description: string;
+    recommended: boolean;
+    completed: boolean;
+    xp_reward: number;
+    // Full quest details (included when loading specific quest)
+    user_template: string;
+    function_signature: FunctionSignature;
+    hints: string[];
+    test_cases: TestCase[];
+}
+
+export interface QuestCompleteEvent {
+    level_id: string;
+    quest_id: string;
+    xp_earned: number;
+    quests_remaining: number;
+}
+
+// ============================================================================
 // Function-Based Challenge Types
 // ============================================================================
 
@@ -178,6 +217,7 @@ export interface TestSuiteResult {
 export interface LevelData {
     id: string;
     title: string;
+    theme?: string; // Level visual theme (e.g., "L01_village", "L04_forest")
     concept: string;
     description: string;
     code_template: string;
@@ -186,7 +226,10 @@ export interface LevelData {
     xp_reward: number;
     world_config: WorldConfig;
     challenges: Challenge[];
-    // New function-based challenge fields
+    // Multi-quest system
+    quests?: Quest[];
+    total_xp_reward?: number;
+    // Legacy function-based challenge fields (single quest)
     lesson?: Lesson;
     function_signature?: FunctionSignature;
     user_template?: string;
@@ -200,6 +243,10 @@ export interface LevelInfo {
     completed: boolean;
     locked: boolean;
     xp_reward: number;
+    // Quest progress fields
+    total_quests: number;
+    completed_quests: number;
+    completion_percentage: number;
 }
 
 export interface ExecutionOutput {

@@ -18,6 +18,7 @@ import type {
     GameError,
     SaveSlot,
     PlayerProgress,
+    QuestInfo,
 } from '../types';
 
 export type UnsubscribeFn = () => void;
@@ -33,6 +34,11 @@ export interface Backend {
     getAvailableLevels(): Promise<LevelInfo[]>;
     loadLevel(levelId: string): Promise<void>;
     getLevelData(): Promise<LevelData>;
+
+    // Quests (for multi-quest levels)
+    getLevelQuests(): Promise<QuestInfo[]>;
+    loadQuest(questId: string): Promise<QuestInfo>;
+    submitQuestCode(code: string, questId: string, testOnly?: boolean): Promise<CodeResult>;
 
     // Code
     submitCode(code: string, testOnly?: boolean): Promise<CodeResult>;
@@ -70,4 +76,5 @@ export type {
     GameError,
     SaveSlot,
     PlayerProgress,
+    QuestInfo,
 };

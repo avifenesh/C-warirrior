@@ -1,5 +1,6 @@
 import type { RenderState, Tile } from '$lib/types';
-import type { LoadedAssets, SpriteSheetConfig } from './assets';
+import type { LoadedAssets, SpriteSheetConfig, ThemeTileset } from './assets';
+import { loadThemeTiles } from './assets';
 import type { ParticleSystem } from './particles';
 import { getCurrentFrame, type AnimationState } from './animation';
 
@@ -15,6 +16,11 @@ export class GameRenderer {
     private assets: LoadedAssets | null = null;
     private config: RenderConfig;
     private animationTime: number = 0;
+
+    // Theme system for level-specific visuals
+    private currentTheme: string | null = null;
+    private themeTiles: ThemeTileset | null = null;
+    private themeLoading: boolean = false;
 
     // Tile layer caching for performance
     private tileCacheCanvas: HTMLCanvasElement | null = null;
@@ -43,6 +49,48 @@ export class GameRenderer {
 
     public setAssets(assets: LoadedAssets) {
         this.assets = assets;
+    }
+
+    /**
+     * Set the current theme for level-specific tile rendering.
+     * Loads theme-specific tiles from /tiles/themes/{theme}/.
+     * Falls back to default tiles if theme assets are missing.
+     *
+     * @param theme - Theme identifier (e.g., "L01_village", "L04_forest")
+     */
+    public async setTheme(theme: string | null): Promise<void> {
+        // Skip if same theme or no theme
+        if (theme === this.currentTheme) return;
+        if (!theme) {
+            this.currentTheme = null;
+            this.themeTiles = null;
+            this.tileCacheDirty = true;
+            return;
+        }
+
+        // Prevent concurrent loads
+        if (this.themeLoading) return;
+        this.themeLoading = true;
+
+        try {
+            console.log(`[Renderer] Loading theme: ${theme}`);
+            this.themeTiles = await loadThemeTiles(theme, this.assets?.tiles);
+            this.currentTheme = theme;
+            this.tileCacheDirty = true; // Force tile cache rebuild with new theme
+            console.log(`[Renderer] Theme loaded: ${theme}`);
+        } catch (err) {
+            console.warn(`[Renderer] Failed to load theme ${theme}:`, err);
+            // Keep using existing theme/default tiles
+        } finally {
+            this.themeLoading = false;
+        }
+    }
+
+    /**
+     * Get the currently loaded theme.
+     */
+    public getTheme(): string | null {
+        return this.currentTheme;
     }
 
     public resize(width: number, height: number) {
@@ -389,10 +437,38 @@ export class GameRenderer {
     private getTileSprite(tile: Tile): HTMLImageElement | undefined {
         if (!this.assets) return undefined;
 
+        // Try theme-specific tiles first
+        if (this.themeTiles) {
+            switch (tile.tile_type) {
+                case 'floor':
+                    // Randomly choose between floor and floor_alt based on position
+                    // (we don't have position here, so use floor for now)
+                    return this.themeTiles.floor;
+                case 'wall':
+                    return this.themeTiles.wall;
+                case 'wall_top':
+                    return this.themeTiles.wall_top;
+                case 'terminal':
+                    // Use default animated terminal
+                    return this.themeTiles.terminal ?? this.assets.tiles.get('terminal');
+                case 'door':
+                    return tile.walkable
+                        ? (this.themeTiles.door_open ?? this.assets.tiles.get('door_open'))
+                        : (this.themeTiles.door_locked ?? this.assets.tiles.get('door_locked'));
+                case 'decoration':
+                    // Alternate between decorations
+                    return this.themeTiles.decoration_1;
+                case 'decoration_alt':
+                    return this.themeTiles.decoration_2;
+            }
+        }
+
+        // Fall back to default tiles
         let key = 'grass'; // default
         switch (tile.tile_type) {
             case 'floor': key = 'grass'; break;
             case 'wall': key = 'wall'; break;
+            case 'wall_top': key = 'wall_top'; break;
             case 'water': key = 'water'; break;
             case 'void': key = 'void'; break;
             case 'terminal': key = 'terminal'; break;

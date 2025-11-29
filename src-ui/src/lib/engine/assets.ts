@@ -251,3 +251,114 @@ export async function preloadLevel(_levelId: string): Promise<void> {
     const { getGlobalAssets } = await import('./assets-cache');
     await getGlobalAssets().catch(() => undefined);
 }
+
+// ============================================================================
+// THEME SYSTEM - Dynamic level-specific tile loading
+// ============================================================================
+
+/** Theme tileset containing all tiles for a specific level theme */
+export interface ThemeTileset {
+    floor: HTMLImageElement;
+    floor_alt: HTMLImageElement;
+    wall: HTMLImageElement;
+    wall_top: HTMLImageElement;
+    decoration_1: HTMLImageElement;
+    decoration_2: HTMLImageElement;
+    // Keep references to interactive tiles from default manifest
+    terminal: HTMLImageElement | null;
+    door_locked: HTMLImageElement | null;
+    door_open: HTMLImageElement | null;
+}
+
+/** Cache for loaded theme tilesets to avoid reloading */
+const themeTilesetCache = new Map<string, ThemeTileset>();
+
+/**
+ * Load theme-specific tiles for a level.
+ * Tiles are loaded from /tiles/themes/{theme}/ directory.
+ * Falls back to default tiles if theme-specific ones are missing.
+ *
+ * @param theme - Theme identifier (e.g., "L01_village", "L04_forest")
+ * @param defaultTiles - Default tiles to fall back to for interactive elements
+ * @returns Promise resolving to ThemeTileset
+ */
+export async function loadThemeTiles(
+    theme: string,
+    defaultTiles?: Map<string, HTMLImageElement>
+): Promise<ThemeTileset> {
+    // Check cache first
+    if (themeTilesetCache.has(theme)) {
+        return themeTilesetCache.get(theme)!;
+    }
+
+    const basePath = `/tiles/themes/${theme}/`;
+
+    // Helper to load an image with fallback
+    const loadThemeImage = async (
+        name: string,
+        fallbackKey?: string
+    ): Promise<HTMLImageElement | null> => {
+        try {
+            return await loadImage(`${basePath}${name}.png`);
+        } catch {
+            // Try fallback from default tiles
+            if (fallbackKey && defaultTiles?.has(fallbackKey)) {
+                return defaultTiles.get(fallbackKey) ?? null;
+            }
+            console.warn(`[ThemeTiles] Missing: ${basePath}${name}.png`);
+            return null;
+        }
+    };
+
+    // Load all theme tiles in parallel
+    const [
+        floor,
+        floor_alt,
+        wall,
+        wall_top,
+        decoration_1,
+        decoration_2,
+    ] = await Promise.all([
+        loadThemeImage('floor', 'floor'),
+        loadThemeImage('floor_alt', 'floor'),
+        loadThemeImage('wall', 'wall'),
+        loadThemeImage('wall_top', 'wall_top'),
+        loadThemeImage('decoration_1'),
+        loadThemeImage('decoration_2'),
+    ]);
+
+    // Create tileset with loaded images (use floor as fallback for missing)
+    const tileset: ThemeTileset = {
+        floor: floor ?? (await loadImage('/tiles/terrain/stone.png').catch(() => null) as HTMLImageElement),
+        floor_alt: floor_alt ?? floor ?? (await loadImage('/tiles/terrain/stone.png').catch(() => null) as HTMLImageElement),
+        wall: wall ?? (await loadImage('/tiles/wall.png').catch(() => null) as HTMLImageElement),
+        wall_top: wall_top ?? wall ?? (await loadImage('/tiles/wall_top.png').catch(() => null) as HTMLImageElement),
+        decoration_1: decoration_1 ?? floor ?? (null as unknown as HTMLImageElement),
+        decoration_2: decoration_2 ?? floor ?? (null as unknown as HTMLImageElement),
+        // Interactive tiles always use defaults
+        terminal: defaultTiles?.get('terminal') ?? null,
+        door_locked: defaultTiles?.get('door_locked') ?? null,
+        door_open: defaultTiles?.get('door_open') ?? null,
+    };
+
+    // Cache the loaded tileset
+    themeTilesetCache.set(theme, tileset);
+
+    console.log(`[ThemeTiles] Loaded theme: ${theme}`);
+    return tileset;
+}
+
+/**
+ * Clear the theme tileset cache.
+ * Useful when reloading assets or switching between many levels.
+ */
+export function clearThemeTilesetCache(): void {
+    themeTilesetCache.clear();
+}
+
+/**
+ * Check if a theme's tiles are already cached.
+ */
+export function isThemeCached(theme: string): boolean {
+    return themeTilesetCache.has(theme);
+}

@@ -3,7 +3,7 @@ use tracing::warn;
 
 use crate::GameStateWrapper;
 use code_warrior::game::world::World;
-use code_warrior::levels::{load_map_file, LevelData, LevelInfo, LevelRegistry};
+use code_warrior::levels::{load_map_file, LevelData, LevelInfo, LevelRegistry, Quest, QuestInfo};
 
 #[tauri::command]
 pub async fn get_available_levels(
@@ -17,13 +17,26 @@ pub async fn get_available_levels(
         .get_level_order()
         .iter()
         .filter_map(|id| levels.get_level(id))
-        .map(|level| LevelInfo {
-            id: level.id.clone(),
-            title: level.title.clone(),
-            concept: level.concept.clone(),
-            completed: game_state.is_level_completed(&level.id),
-            locked: !game_state.is_level_unlocked(&level.id),
-            xp_reward: level.xp_reward,
+        .map(|level| {
+            let total_quests = level.quest_count();
+            let completed_quests = game_state.get_completed_quest_count(&level.id);
+            let completion_percentage = if total_quests > 0 {
+                (completed_quests as f32 / total_quests as f32) * 100.0
+            } else {
+                0.0
+            };
+
+            LevelInfo {
+                id: level.id.clone(),
+                title: level.title.clone(),
+                concept: level.concept.clone(),
+                completed: game_state.is_level_completed(&level.id),
+                locked: !game_state.is_level_unlocked(&level.id),
+                xp_reward: level.get_total_xp(),
+                total_quests,
+                completed_quests,
+                completion_percentage,
+            }
         })
         .collect();
 
@@ -81,4 +94,55 @@ pub async fn get_level_data(
         .ok_or_else(|| format!("Level {} not found", level_id))?;
 
     Ok(level.clone())
+}
+
+/// Get all quests for a level with completion status
+#[tauri::command]
+pub async fn get_level_quests(
+    level_id: String,
+    state: State<'_, GameStateWrapper>,
+    levels: State<'_, LevelRegistry>,
+) -> Result<Vec<QuestInfo>, String> {
+    let level = levels
+        .get_level(&level_id)
+        .ok_or_else(|| format!("Level {} not found", level_id))?;
+
+    let game_state = state.0.lock().map_err(|e| e.to_string())?;
+
+    let quests = level.get_quests();
+    let quest_infos: Vec<QuestInfo> = quests
+        .iter()
+        .map(|q| QuestInfo {
+            id: q.id.clone(),
+            order: q.order,
+            title: q.title.clone(),
+            description: q.description.clone(),
+            recommended: q.recommended,
+            completed: game_state.is_quest_completed(&level_id, &q.id),
+            xp_reward: q.xp_reward,
+        })
+        .collect();
+
+    Ok(quest_infos)
+}
+
+/// Load a specific quest's data
+#[tauri::command]
+pub async fn load_quest(
+    level_id: String,
+    quest_id: String,
+    levels: State<'_, LevelRegistry>,
+) -> Result<Quest, String> {
+    let level = levels
+        .get_level(&level_id)
+        .ok_or_else(|| format!("Level {} not found", level_id))?;
+
+    let quests = level.get_quests();
+    let quest = quests
+        .iter()
+        .find(|q| q.id == quest_id)
+        .cloned()
+        .ok_or_else(|| format!("Quest {} not found in level {}", quest_id, level_id))?;
+
+    Ok(quest)
 }

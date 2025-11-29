@@ -4,9 +4,10 @@
     interface Props {
         player: Player | null;
         currentLevelId: string | null;
+        onBackToMap?: () => void;
     }
 
-    let { player, currentLevelId }: Props = $props();
+    let { player, currentLevelId, onBackToMap }: Props = $props();
 
     // Calculate health percentage
     let healthPercent = $derived(
@@ -106,6 +107,17 @@
         </div>
     {/if}
 </div>
+
+<!-- Map Button (top right) -->
+{#if onBackToMap}
+    <button
+        class="pointer-events-auto fixed top-4 right-4 z-40 map-btn"
+        onclick={onBackToMap}
+        title="Return to World Map"
+    >
+        MAP
+    </button>
+{/if}
 
 <!-- Controls hint (bottom left) -->
 <div class="pointer-events-none fixed left-4 bottom-4 z-40">
@@ -211,5 +223,33 @@
     /* Drop shadow for depth */
     .drop-shadow {
         filter: drop-shadow(1px 1px 0 rgba(0, 0, 0, 0.8));
+    }
+
+    /* Map button */
+    .map-btn {
+        background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+        border: 3px solid #3a506b;
+        border-top-color: #5a7090;
+        border-left-color: #5a7090;
+        box-shadow: 4px 4px 0 #0a0a1e;
+        padding: 10px 16px;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 9px;
+        color: #e2e8f0;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .map-btn:hover {
+        border-color: #00fff5;
+        color: #00fff5;
+        box-shadow: 0 0 12px rgba(0, 255, 245, 0.3), 4px 4px 0 #0a0a1e;
+    }
+
+    .map-btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 #0a0a1e;
     }
 </style>

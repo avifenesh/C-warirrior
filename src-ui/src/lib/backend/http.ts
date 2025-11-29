@@ -23,6 +23,7 @@ import type {
     GameError,
     SaveSlot,
     PlayerProgress,
+    QuestInfo,
 } from './types';
 
 // Get API URL from environment or default to localhost
@@ -177,8 +178,9 @@ class EventPoller {
                         }
                     });
                 }
-            } catch {
-                // Silently ignore polling errors (server might not be ready)
+            } catch (err) {
+                // Log polling errors for debugging (server might not be ready)
+                console.warn(`[EventPoller] ${eventType} polling error:`, err);
             }
         };
 
@@ -336,6 +338,30 @@ class HttpBackend implements Backend {
             }
             throw new Error('No level loaded yet');
         }
+    }
+
+    // Quests (for multi-quest levels)
+    async getLevelQuests(): Promise<QuestInfo[]> {
+        return apiRequest<QuestInfo[]>('/api/levels/current/quests');
+    }
+
+    async loadQuest(questId: string): Promise<QuestInfo> {
+        return apiRequest<QuestInfo>(`/api/levels/current/quests/${questId}`);
+    }
+
+    async submitQuestCode(code: string, questId: string, testOnly: boolean = false): Promise<CodeResult> {
+        this.markActivity();
+        const result = await apiRequest<CodeResult & { render_state?: RenderState }>(
+            '/api/code/submit-quest',
+            {
+                method: 'POST',
+                body: JSON.stringify({ code, quest_id: questId, test_only: testOnly }),
+            }
+        );
+        if (result && 'render_state' in result && result.render_state) {
+            this.cacheRenderState(result.render_state);
+        }
+        return result;
     }
 
     // Code

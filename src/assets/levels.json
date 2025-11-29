@@ -2,48 +2,85 @@
   {
     "id": "L01",
     "title": "The First Spell",
-    "concept": "printf",
-    "description": "The door is voice-activated. Master the art of returning values to unlock it.",
-    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    printf(\"%d\\n\", getSecret());\n    return 0;\n}",
-    "hints": [
-      "Functions return values with the 'return' keyword",
-      "The return type goes before the function name",
-      "Example: int myFunc() { return 5; }"
-    ],
-    "xp_reward": 50,
+    "theme": "L01_village",
+    "concept": "return values",
+    "description": "Master the art of returning values to unlock the door ahead. Complete all quests to proceed.",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    // Tests will call your function\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 90,
     "map_file": "maps/L01_first_spell.json",
     "challenges": [],
-    "lesson": {
-      "title": "Functions and Return Values",
-      "content": [
-        "In C, functions can return values to their caller. This is one of the most fundamental concepts in programming.",
-        "A function's return type tells the compiler what kind of value it will send back. The 'int' type means the function returns a whole number.",
-        "Use the 'return' keyword followed by the value you want to send back."
-      ],
-      "examples": [
-        {
-          "code": "int getFive() {\n    return 5;\n}",
-          "explanation": "This function returns the integer 5 whenever it's called."
+    "quests": [
+      {
+        "id": "L01_Q1",
+        "order": 1,
+        "title": "The Secret Number",
+        "description": "Return the secret number 42 to prove your worth.",
+        "recommended": true,
+        "function_signature": {
+          "name": "getSecret",
+          "return_type": "int",
+          "parameters": []
         },
-        {
-          "code": "int getAnswer() {\n    return 42;\n}",
-          "explanation": "Functions can return any integer value."
-        }
-      ]
-    },
-    "function_signature": {
-      "name": "getSecret",
-      "return_type": "int",
-      "parameters": []
-    },
-    "user_template": "int getSecret() {\n    // Return the secret number: 42\n    \n}",
-    "test_cases": [
-      {"input": [], "expected": "42", "sample": true}
+        "user_template": "int getSecret() {\n    // Return the secret number: 42\n    \n}",
+        "test_cases": [
+          {"input": [], "expected": "42", "sample": true}
+        ],
+        "hints": [
+          "Use the 'return' keyword to send a value back",
+          "Example: return 42;"
+        ],
+        "xp_reward": 25
+      },
+      {
+        "id": "L01_Q2",
+        "order": 2,
+        "title": "Double Trouble",
+        "description": "Return a number that is twice the magic constant (21 * 2).",
+        "recommended": false,
+        "function_signature": {
+          "name": "getDouble",
+          "return_type": "int",
+          "parameters": []
+        },
+        "user_template": "int getDouble() {\n    // Return 21 multiplied by 2\n    \n}",
+        "test_cases": [
+          {"input": [], "expected": "42", "sample": true}
+        ],
+        "hints": [
+          "You can use arithmetic in return statements",
+          "Example: return 5 * 2;"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L01_Q3",
+        "order": 3,
+        "title": "The Sum Spell",
+        "description": "Return the sum of three numbers: 10, 20, and 12.",
+        "recommended": false,
+        "function_signature": {
+          "name": "getSum",
+          "return_type": "int",
+          "parameters": []
+        },
+        "user_template": "int getSum() {\n    // Return 10 + 20 + 12\n    \n}",
+        "test_cases": [
+          {"input": [], "expected": "42", "sample": true}
+        ],
+        "hints": [
+          "Add numbers with the + operator",
+          "Example: return 1 + 2 + 3;"
+        ],
+        "xp_reward": 35
+      }
     ]
   },
   {
     "id": "L02",
     "title": "The Empty Backpack",
+    "theme": "L02_market",
     "concept": "variables",
     "description": "The merchant needs to calculate the total weight of items. Help him add them together!",
     "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    printf(\"%d\\n\", addWeight(10, 25));\n    return 0;\n}",
@@ -93,6 +130,7 @@
   {
     "id": "L03",
     "title": "The Gatekeeper",
+    "theme": "L03_tower",
     "concept": "if/else",
     "description": "The guard blocks the path. He only respects warriors who can identify the larger of two numbers.",
     "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    printf(\"%d\\n\", maxValue(3, 7));\n    return 0;\n}",
@@ -143,6 +181,7 @@
   {
     "id": "L04",
     "title": "The Repeating Strike",
+    "theme": "L04_forest",
     "concept": "loops",
     "description": "The training dummy requires repeated strikes. Calculate the sum of all strike damage from 1 to n.",
     "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    printf(\"%d\\n\", sumStrikes(5));\n    return 0;\n}",
@@ -152,7 +191,7 @@
       "Add each number to the sum inside the loop"
     ],
     "xp_reward": 125,
-    "map_file": "maps/L04_repeating_strike.json",
+    "map_file": "maps/L04_forest.json",
     "challenges": [],
     "lesson": {
       "title": "Loops for Repetition",
@@ -191,6 +230,7 @@
   {
     "id": "L05",
     "title": "Array Fortress",
+    "theme": "L05_darkwoods",
     "concept": "arrays",
     "description": "A fortress of many rooms. Return the value stored at a specific room index.",
     "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    printf(\"%d\\n\", getRoom(2));\n    return 0;\n}",
@@ -200,7 +240,7 @@
       "Use arrayName[index] to access a value"
     ],
     "xp_reward": 200,
-    "map_file": "maps/L05_array_fortress.json",
+    "map_file": "maps/L05_darkwoods.json",
     "challenges": [],
     "lesson": {
       "title": "Arrays: Collections of Data",
@@ -239,6 +279,7 @@
   {
     "id": "L06",
     "title": "The Spell Scroll",
+    "theme": "L06_river",
     "concept": "void functions",
     "description": "The ancient scroll contains a spell, but it must be spoken to activate. Create a function that speaks the incantation.",
     "code_template": "#include <stdio.h>\n\n// Define a void function called 'cast_spell' that prints \"Abracadabra!\"\n\nint main() {\n    cast_spell();\n    return 0;\n}",
@@ -252,7 +293,7 @@
       "Don't forget the newline \\n"
     ],
     "xp_reward": 150,
-    "map_file": "maps/L06_spell_scroll.json",
+    "map_file": "maps/L06_river.json",
     "challenges": [
       {
         "id": "cast_spell_void",
@@ -265,6 +306,7 @@
   {
     "id": "L07",
     "title": "The Damage Calculator",
+    "theme": "L07_cavern",
     "concept": "return values",
     "description": "The enchanting table can calculate weapon damage, but only if you create a formula that returns the result.",
     "code_template": "#include <stdio.h>\n\n// Define a function 'calculate_damage' that takes (int base, int multiplier)\n// and returns base * multiplier\n\nint main() {\n    int damage = calculate_damage(10, 3);\n    printf(\"Damage: %d\\n\", damage);\n    return 0;\n}",
@@ -278,7 +320,7 @@
       "return base * multiplier;"
     ],
     "xp_reward": 175,
-    "map_file": "maps/L07_damage_calc.json",
+    "map_file": "maps/L07_cavern.json",
     "challenges": [
       {
         "id": "calc_damage_return",
@@ -291,6 +333,7 @@
   {
     "id": "L08",
     "title": "The Stack Spire",
+    "theme": "L08_mountain",
     "concept": "stack frames",
     "description": "Each floor of the spire is a function call. Climb up through nested calls, then return back down.",
     "code_template": "#include <stdio.h>\n\nvoid floor_3() {\n    printf(\"Floor 3 - Top!\\n\");\n}\n\nvoid floor_2() {\n    printf(\"Floor 2\\n\");\n    // Call floor_3 here\n}\n\nvoid floor_1() {\n    printf(\"Floor 1\\n\");\n    floor_2();\n}\n\nint main() {\n    printf(\"Ground Floor\\n\");\n    floor_1();\n    printf(\"Back to Ground\\n\");\n    return 0;\n}",
@@ -304,7 +347,7 @@
       "Match the exact output order, including newlines."
     ],
     "xp_reward": 200,
-    "map_file": "maps/L08_stack_spire.json",
+    "map_file": "maps/L08_mountain.json",
     "challenges": [
       {
         "id": "stack_spire_calls",
@@ -317,6 +360,7 @@
   {
     "id": "L09",
     "title": "The Global Artifact",
+    "theme": "L09_ice",
     "concept": "scope",
     "description": "The temple's central artifact is visible from all chambers. But each room has its own treasures only accessible within.",
     "code_template": "#include <stdio.h>\n\n// Declare a global variable 'artifact_power' = 100\n\nvoid east_chamber() {\n    int local_gem = 10;\n    printf(\"East: artifact=%d, gem=%d\\n\", artifact_power, local_gem);\n}\n\nvoid west_chamber() {\n    int local_gem = 20;\n    printf(\"West: artifact=%d, gem=%d\\n\", artifact_power, local_gem);\n}\n\nint main() {\n    east_chamber();\n    west_chamber();\n    printf(\"Center: artifact=%d\\n\", artifact_power);\n    return 0;\n}",
@@ -330,7 +374,7 @@
       "Keep each chamber's local_gem variable inside its own function."
     ],
     "xp_reward": 200,
-    "map_file": "maps/L09_global_artifact.json",
+    "map_file": "maps/L09_ice.json",
     "challenges": [
       {
         "id": "global_vs_local_scope",
@@ -343,6 +387,7 @@
   {
     "id": "L10",
     "title": "The Recursive Mirror",
+    "theme": "L10_temple",
     "concept": "recursion",
     "description": "The mirror shows infinite reflections... but there must be a stopping point, or you'll be trapped forever!",
     "code_template": "#include <stdio.h>\n\nvoid reflect(int depth) {\n    if (depth <= 0) {\n        printf(\"Base reflection reached!\\n\");\n        return;\n    }\n    printf(\"Reflection depth: %d\\n\", depth);\n    // Call reflect with depth - 1\n}\n\nint main() {\n    reflect(3);\n    return 0;\n}",
@@ -356,7 +401,7 @@
       "Make sure you print at each depth before the recursive call."
     ],
     "xp_reward": 250,
-    "map_file": "maps/L10_recursive_mirror.json",
+    "map_file": "maps/L10_temple.json",
     "challenges": [
       {
         "id": "recursive_reflection",
@@ -369,6 +414,7 @@
   {
     "id": "L11",
     "title": "The Address Spell",
+    "theme": "L11_library",
     "concept": "address-of operator",
     "description": "To locate the hidden treasure, you must discover its exact address in the memory realm.",
     "code_template": "#include <stdio.h>\n\nint main() {\n    int treasure = 42;\n    // Print the ADDRESS of treasure using &\n    // Format: printf(\"%p\\n\", ...);\n    return 0;\n}",
@@ -381,7 +427,7 @@
       "The exact address changes each run; we only require compilation."
     ],
     "xp_reward": 225,
-    "map_file": "maps/L11_address_spell.json",
+    "map_file": "maps/L11_library.json",
     "challenges": [
       {
         "id": "print_address",
@@ -394,6 +440,7 @@
   {
     "id": "L12",
     "title": "The Grappling Hook",
+    "theme": "L12_crypt",
     "concept": "pointer declaration",
     "description": "Your grappling hook can grab distant ledges, but first you must aim it. Declare where it points!",
     "code_template": "#include <stdio.h>\n\nint main() {\n    int ledge = 100;\n    // Declare a pointer 'hook' and point it to ledge\n    // Then print the value hook points to\n    printf(\"Grabbed: %d\\n\", *hook);\n    return 0;\n}",
@@ -407,7 +454,7 @@
       "Use &ledge to get the address of ledge."
     ],
     "xp_reward": 250,
-    "map_file": "maps/L12_grappling_hook.json",
+    "map_file": "maps/L12_crypt.json",
     "challenges": [
       {
         "id": "pointer_declare_hook",
@@ -420,6 +467,7 @@
   {
     "id": "L13",
     "title": "The Dereference Pull",
+    "theme": "L13_lake",
     "concept": "dereference operator",
     "description": "The treasure is behind a barrier. Use your pointer to pull its value to you!",
     "code_template": "#include <stdio.h>\n\nint main() {\n    int hidden_treasure = 777;\n    int *ptr = &hidden_treasure;\n    \n    // Change the treasure's value to 999 using the pointer\n    // Then print it\n    printf(\"Treasure value: %d\\n\", hidden_treasure);\n    return 0;\n}",
@@ -433,7 +481,7 @@
       "After updating through the pointer, printing hidden_treasure shows the new value."
     ],
     "xp_reward": 275,
-    "map_file": "maps/L13_dereference_pull.json",
+    "map_file": "maps/L13_lake.json",
     "challenges": [
       {
         "id": "dereference_update",
@@ -446,6 +494,7 @@
   {
     "id": "L14",
     "title": "The Array Navigator",
+    "theme": "L14_forge",
     "concept": "pointer arithmetic",
     "description": "The corridor has numbered chambers. Navigate to chamber 3 using pointer arithmetic.",
     "code_template": "#include <stdio.h>\n\nint main() {\n    int chambers[5] = {10, 20, 30, 40, 50};\n    int *ptr = chambers;  // Points to first element\n    \n    // Use pointer arithmetic to print the 4th chamber (index 3)\n    // Hint: *(ptr + 3) or ptr[3]\n    printf(\"Chamber 3 contains: %d\\n\", ???);\n    return 0;\n}",
@@ -459,7 +508,7 @@
       "Index 3 is the 4th chamber in the corridor."
     ],
     "xp_reward": 300,
-    "map_file": "maps/L14_array_navigator.json",
+    "map_file": "maps/L14_forge.json",
     "challenges": [
       {
         "id": "pointer_arithmetic_navigate",
@@ -472,6 +521,7 @@
   {
     "id": "L15",
     "title": "The Null Trap",
+    "theme": "L15_lair",
     "concept": "null pointers",
     "description": "Some paths lead to void. Check before you step, or face a SEGFAULT!",
     "code_template": "#include <stdio.h>\n\nint main() {\n    int treasure = 42;\n    int *safe_ptr = &treasure;\n    int *trap_ptr = NULL;\n    \n    // Safely print values - check for NULL first!\n    // If pointer is NULL, print \"Path is blocked!\"\n    // If pointer is valid, print \"Found: X\"\n    \n    return 0;\n}",
@@ -485,7 +535,7 @@
       "Use if/else to choose which message to print."
     ],
     "xp_reward": 350,
-    "map_file": "maps/L15_null_trap.json",
+    "map_file": "maps/L15_lair.json",
     "challenges": [
       {
         "id": "null_pointer_check",
@@ -498,6 +548,7 @@
   {
     "id": "L16",
     "title": "The Blueprint Scroll",
+    "theme": "L16_courtyard",
     "concept": "struct definition",
     "description": "The ancient scroll contains a blueprint for creating heroes. Define the structure that holds a warrior's attributes.",
     "code_template": "#include <stdio.h>\n\n// Define a struct 'Hero' with:\n// - char name[50]\n// - int hp\n// - int level\n\nint main() {\n    struct Hero warrior = {\"Valor\", 100, 5};\n    printf(\"Hero: %s, HP: %d, Level: %d\\n\", warrior.name, warrior.hp, warrior.level);\n    return 0;\n}",
@@ -511,7 +562,7 @@
       "Initialize with: struct Hero h = {\"name\", 100, 5};"
     ],
     "xp_reward": 300,
-    "map_file": "maps/L16_blueprint_scroll.json",
+    "map_file": "maps/L16_courtyard.json",
     "challenges": [
       {
         "id": "define_hero_struct",
@@ -524,6 +575,7 @@
   {
     "id": "L17",
     "title": "The Chest Contents",
+    "theme": "L17_throne",
     "concept": "struct members",
     "description": "You found a treasure chest! Use dot notation to access and modify its contents.",
     "code_template": "#include <stdio.h>\n\nstruct Chest {\n    int gold;\n    int gems;\n    int keys;\n};\n\nint main() {\n    struct Chest treasure;\n    \n    // Set gold to 500, gems to 10, keys to 3\n    // Then print: \"Chest: X gold, Y gems, Z keys\"\n    \n    return 0;\n}",
@@ -537,7 +589,7 @@
       "Use %d for integers in printf"
     ],
     "xp_reward": 325,
-    "map_file": "maps/L17_chest_contents.json",
+    "map_file": "maps/L17_throne.json",
     "challenges": [
       {
         "id": "access_struct_members",
@@ -550,6 +602,7 @@
   {
     "id": "L18",
     "title": "The Teleport Chest",
+    "theme": "L18_treasury",
     "concept": "struct pointers",
     "description": "The chest is behind a magical barrier. Use a pointer to reach through and modify its contents!",
     "code_template": "#include <stdio.h>\n\nstruct Chest {\n    int gold;\n};\n\nvoid add_gold(struct Chest *c, int amount) {\n    // Use arrow operator to add gold\n}\n\nint main() {\n    struct Chest treasure = {100};\n    add_gold(&treasure, 50);\n    printf(\"Gold: %d\\n\", treasure.gold);\n    return 0;\n}",
@@ -563,7 +616,7 @@
       "Add the amount to the existing gold: c->gold += amount;"
     ],
     "xp_reward": 350,
-    "map_file": "maps/L18_teleport_chest.json",
+    "map_file": "maps/L18_treasury.json",
     "challenges": [
       {
         "id": "struct_pointer_arrow",
@@ -576,6 +629,7 @@
   {
     "id": "L19",
     "title": "The Guild Hierarchy",
+    "theme": "L19_dungeon",
     "concept": "nested structs",
     "description": "The guild has a hierarchy. Each guild has a leader, and the leader is also a hero with their own attributes.",
     "code_template": "#include <stdio.h>\n\nstruct Hero {\n    char name[50];\n    int level;\n};\n\nstruct Guild {\n    char guild_name[50];\n    struct Hero leader;\n    int member_count;\n};\n\nint main() {\n    struct Guild warriors = {\"Iron Fist\", {\"Maximus\", 50}, 100};\n    \n    // Print: \"Guild: X, Leader: Y (Lv.Z), Members: N\"\n    printf(\"Guild: %s, Leader: %s (Lv.%d), Members: %d\\n\",\n           ???);\n    return 0;\n}",
@@ -589,7 +643,7 @@
       "Use warriors.guild_name, warriors.leader.name, etc."
     ],
     "xp_reward": 375,
-    "map_file": "maps/L19_guild_hierarchy.json",
+    "map_file": "maps/L19_dungeon.json",
     "challenges": [
       {
         "id": "nested_struct_access",
@@ -602,6 +656,7 @@
   {
     "id": "L20",
     "title": "The Army Roster",
+    "theme": "L20_passage",
     "concept": "array of structs",
     "description": "The army needs a roster! Create an array of soldiers and iterate through them.",
     "code_template": "#include <stdio.h>\n\nstruct Soldier {\n    char name[20];\n    int strength;\n};\n\nint main() {\n    struct Soldier army[3] = {\n        {\"Grunt\", 10},\n        {\"Knight\", 25},\n        {\"Champion\", 50}\n    };\n    \n    // Loop through and print each soldier\n    // Format: \"Soldier: X, Strength: Y\"\n    \n    return 0;\n}",
@@ -615,7 +670,7 @@
       "Each iteration prints one soldier"
     ],
     "xp_reward": 400,
-    "map_file": "maps/L20_army_roster.json",
+    "map_file": "maps/L20_passage.json",
     "challenges": [
       {
         "id": "array_of_structs_loop",
@@ -628,6 +683,7 @@
   {
     "id": "L21",
     "title": "Summon Land",
+    "theme": "L21_stairs",
     "concept": "malloc basics",
     "description": "The void stretches before you. Use malloc to summon solid ground from nothingness!",
     "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    // Allocate memory for one integer using malloc\n    int *land = ???;\n    \n    *land = 42;\n    printf(\"Land summoned with value: %d\\n\", *land);\n    \n    free(land);\n    return 0;\n}",
@@ -641,7 +697,7 @@
       "sizeof(int) tells malloc how many bytes to allocate"
     ],
     "xp_reward": 425,
-    "map_file": "maps/L21_summon_land.json",
+    "map_file": "maps/L21_stairs.json",
     "challenges": [
       {
         "id": "malloc_single_int",
@@ -654,6 +710,7 @@
   {
     "id": "L22",
     "title": "The Banish Spell",
+    "theme": "L22_alchemy",
     "concept": "free memory",
     "description": "What you summon, you must also banish! Release the memory back to the void.",
     "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    int *summoned = (int*)malloc(sizeof(int));\n    *summoned = 999;\n    printf(\"Value before banish: %d\\n\", *summoned);\n    \n    // Free the memory here\n    \n    printf(\"Memory banished!\\n\");\n    return 0;\n}",
@@ -667,7 +724,7 @@
       "After free, don't use the pointer again"
     ],
     "xp_reward": 450,
-    "map_file": "maps/L22_banish_spell.json",
+    "map_file": "maps/L22_alchemy.json",
     "challenges": [
       {
         "id": "free_memory",
@@ -680,6 +737,7 @@
   {
     "id": "L23",
     "title": "The Cursed Hoarding",
+    "theme": "L23_observatory",
     "concept": "memory leaks",
     "description": "A curse afflicts those who hoard without releasing! Find and fix the memory leak.",
     "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    for(int i = 0; i < 3; i++) {\n        int *treasure = (int*)malloc(sizeof(int));\n        *treasure = (i + 1) * 100;\n        printf(\"Found treasure: %d\\n\", *treasure);\n        // FIX: Free memory inside the loop!\n    }\n    printf(\"All treasures collected properly!\\n\");\n    return 0;\n}",
@@ -693,7 +751,7 @@
       "Add free(treasure) before the loop iteration ends"
     ],
     "xp_reward": 475,
-    "map_file": "maps/L23_cursed_hoarding.json",
+    "map_file": "maps/L23_observatory.json",
     "challenges": [
       {
         "id": "fix_memory_leak",
@@ -706,6 +764,7 @@
   {
     "id": "L24",
     "title": "The Expanding Army",
+    "theme": "L24_portal",
     "concept": "dynamic arrays",
     "description": "Your army grows! Use realloc to expand the barracks when new recruits arrive.",
     "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    int *army = (int*)malloc(2 * sizeof(int));\n    army[0] = 10;\n    army[1] = 20;\n    printf(\"Army size 2: %d, %d\\n\", army[0], army[1]);\n    \n    // Expand to size 4 using realloc\n    army = ???;\n    army[2] = 30;\n    army[3] = 40;\n    printf(\"Army size 4: %d, %d, %d, %d\\n\", army[0], army[1], army[2], army[3]);\n    \n    free(army);\n    return 0;\n}",
@@ -719,7 +778,7 @@
       "realloc preserves existing data"
     ],
     "xp_reward": 500,
-    "map_file": "maps/L24_expanding_army.json",
+    "map_file": "maps/L24_portal.json",
     "challenges": [
       {
         "id": "realloc_expand",
@@ -732,6 +791,7 @@
   {
     "id": "L25",
     "title": "Chain of Portals",
+    "theme": "L25_sanctum",
     "concept": "linked lists",
     "description": "Create a chain of magical portals, each pointing to the next. This is the foundation of linked lists!",
     "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\nstruct Portal {\n    int destination;\n    struct Portal *next;\n};\n\nint main() {\n    // Create 3 portals: 10 -> 20 -> 30 -> NULL\n    struct Portal *first = (struct Portal*)malloc(sizeof(struct Portal));\n    struct Portal *second = (struct Portal*)malloc(sizeof(struct Portal));\n    struct Portal *third = (struct Portal*)malloc(sizeof(struct Portal));\n    \n    first->destination = 10;\n    first->next = second;\n    \n    second->destination = 20;\n    // Link second to third\n    \n    third->destination = 30;\n    third->next = NULL;\n    \n    // Traverse and print\n    struct Portal *current = first;\n    while(current != NULL) {\n        printf(\"Portal to: %d\\n\", current->destination);\n        current = current->next;\n    }\n    \n    free(first); free(second); free(third);\n    return 0;\n}",
@@ -745,7 +805,7 @@
       "Traverse with: while(current != NULL) { ... current = current->next; }"
     ],
     "xp_reward": 550,
-    "map_file": "maps/L25_chain_portals.json",
+    "map_file": "maps/L25_sanctum.json",
     "challenges": [
       {
         "id": "linked_list_basic",

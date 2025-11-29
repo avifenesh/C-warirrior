@@ -1,18 +1,22 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
     import { getBackend, type Backend } from '$lib/backend';
-    import type { Direction, CodeResult, RenderState, LevelInfo, LevelData, PlayerProgress } from '$lib/types';
+    import type { Direction, CodeResult, RenderState, LevelInfo, LevelData, PlayerProgress, QuestInfo, PlayerAction } from '$lib/types';
     import GameWorld from '$lib/components/GameWorld.svelte';
     import CodeTerminal from '$lib/components/CodeTerminal.svelte';
     import GameHUD from '$lib/components/GameHUD.svelte';
     import Toast, { type ToastMessage } from '$lib/components/Toast.svelte';
     import MainMenu from '$lib/components/MainMenu.svelte';
+    import WorldMap from '$lib/components/WorldMap.svelte';
+    import QuestHUD from '$lib/components/QuestHUD.svelte';
     // Agent 2's new components
     import Settings from '$lib/components/Settings.svelte';
     import ErrorBoundary from '$lib/components/ErrorBoundary.svelte';
     import ProgressTracker from '$lib/components/ProgressTracker.svelte';
 
     // Backend + state (Runes, no svelte/store)
+    type GameScreen = 'boot' | 'world_map' | 'playing';
+    let gameScreen = $state<GameScreen>('boot');
     let backend = $state<Backend | null>(null);
     let renderState = $state<RenderState | null>(null);
     let levels = $state<LevelInfo[]>([]);
@@ -33,7 +37,6 @@
 
     let codeDraft = $state('// Write your C spell here...\n#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}');
     let toastMessages = $state<ToastMessage[]>([]);
-    let toastCounter = 0; // Unique counter for toast IDs
     let showSettings = $state(false); // Settings modal state
 
     // Derived values
@@ -52,6 +55,18 @@
 
     // Progress state
     let playerProgress = $state<PlayerProgress | null>(null);
+
+    // Quest selection state (for multi-quest levels)
+    let levelQuests = $state<QuestInfo[]>([]);
+    let selectedQuest = $state<QuestInfo | null>(null);
+    let showQuestSelect = $state(false);
+    let questLoadingInProgress = $state(false);
+    let questSelectionLoading = $state(false);
+
+    // Derived: is this a multi-quest level?
+    let isMultiQuestLevel = $derived((currentLevelData?.quests?.length ?? 0) > 0);
+    // Derive selectedQuestId from selectedQuest (single source of truth)
+    let selectedQuestId = $derived(selectedQuest?.id ?? null);
 
     async function fetchProgress() {
         if (!backend) return;
@@ -74,16 +89,63 @@
     $effect(() => {
         if (showTerminal) {
             hints = [];
+            lastCodeResult = null;
             // Ensure currentLevelData is loaded (handles race condition during level start)
             if (!currentLevelData && backend) {
                 backend.getLevelData().then((data) => {
                     currentLevelData = data;
+                    // Check if multi-quest level
+                    if (data?.quests && data.quests.length > 0) {
+                        loadLevelQuests();
+                    }
                 }).catch(() => {
                     // Silently fail - data may already be loading via startLevel
                 });
+            } else if (currentLevelData?.quests && currentLevelData.quests.length > 0) {
+                // Level data already loaded, check for quests
+                loadLevelQuests();
             }
+        } else {
+            // Terminal closed - reset quest selection
+            showQuestSelect = false;
+            selectedQuest = null;
         }
     });
+
+    // Load quests for current level
+    async function loadLevelQuests() {
+        if (!backend || !currentLevelData?.quests || questLoadingInProgress) return;
+        questLoadingInProgress = true;
+        try {
+            const quests = await backend.getLevelQuests();
+            levelQuests = quests;
+            showQuestSelect = true;
+        } catch (e) {
+            console.error('Failed to load quests:', e);
+            addInfoToast('Failed to load quests');
+            showQuestSelect = false;
+        } finally {
+            questLoadingInProgress = false;
+        }
+    }
+
+    // Handle quest selection from QuestHUD
+    async function handleSelectQuest(questId: string) {
+        if (!backend || questSelectionLoading) return;
+        questSelectionLoading = true;
+        try {
+            const quest = await backend.loadQuest(questId);
+            selectedQuest = quest;
+            showQuestSelect = false;
+            hints = [];
+            lastCodeResult = null;
+        } catch (e) {
+            console.error('Failed to load quest:', e);
+            addInfoToast('Failed to load quest');
+        } finally {
+            questSelectionLoading = false;
+        }
+    }
 
     // Get the next level ID
     function getNextLevelId(): string | null {
@@ -96,18 +158,14 @@
 
     async function handleNextLevel() {
         if (levelTransitioning) return; // Prevent double-click
-
-        const nextId = getNextLevelId();
-        if (nextId) {
-            levelTransitioning = true;
-            try {
-                await startLevel(nextId);
-                addInfoToast(`Starting ${nextId}...`);
-            } finally {
-                levelTransitioning = false;
-            }
-        } else {
-            addInfoToast('Congratulations! You completed all levels!');
+        levelTransitioning = true;
+        try {
+            // Return to world map instead of auto-advancing
+            gameScreen = 'world_map';
+            await fetchProgress(); // Refresh progress
+            addInfoToast('Returning to map...');
+        } finally {
+            levelTransitioning = false;
         }
     }
 
@@ -154,10 +212,28 @@
         }
     }
 
-    async function handleCodeSubmit(event: CustomEvent<{ code: string; testOnly?: boolean }>) {
+    async function handleSelectLevel(levelId: string) {
+        await startLevel(levelId);
+        gameScreen = 'playing';
+    }
+
+    async function handleBackToMap() {
+        gameScreen = 'world_map';
+        await fetchProgress(); // Refresh progress to show updated completion
+    }
+
+    async function handleCodeSubmit(event: CustomEvent<{ code: string; testOnly?: boolean; questId?: string }>) {
         codeDraft = event.detail.code;
         const testOnly = event.detail.testOnly ?? false;
-        await submitCode(codeDraft, testOnly);
+        const questId = event.detail.questId ?? selectedQuestId;
+
+        if (questId) {
+            // Multi-quest level - submit to specific quest
+            await submitQuestCode(codeDraft, questId, testOnly);
+        } else {
+            // Single challenge level
+            await submitCode(codeDraft, testOnly);
+        }
         if (lastCodeResult) addToast(lastCodeResult);
     }
 
@@ -166,9 +242,8 @@
     }
 
     function addToast(result: CodeResult) {
-        toastCounter++;
         const toast: ToastMessage = {
-            id: `toast-${toastCounter}`,
+            id: crypto.randomUUID(),
             type: result.success ? 'success' : 'error',
             message: result.success ? 'Spell cast successfully!' : 'Spell failed',
             details: result.compile_error || result.feedback || result.stdout || undefined,
@@ -177,8 +252,7 @@
     }
 
     function addInfoToast(message: string, details?: string) {
-        toastCounter++;
-        toastMessages = [...toastMessages, { id: `toast-${toastCounter}`, type: 'info', message, details }];
+        toastMessages = [...toastMessages, { id: crypto.randomUUID(), type: 'info', message, details }];
     }
 
     function dismissToast(id: string) {
@@ -196,7 +270,8 @@
             await fetchProgress();
             await bindEvents();
             // Only set loading false after levels are fetched
-            uiStatus = { ...uiStatus, loading: false, status: 'Main Menu', error: null };
+            uiStatus = { ...uiStatus, loading: false, status: 'Ready', error: null };
+            gameScreen = 'world_map'; // Show world map after boot
         } catch (err) {
             console.error('[BOOT] error', err);
             uiStatus = { ...uiStatus, loading: false, error: normalizeError(err), status: 'Error' };
@@ -247,7 +322,7 @@
         }
     }
 
-    async function sendAction(action: any) {
+    async function sendAction(action: PlayerAction) {
         if (!backend) return;
         uiStatus = { ...uiStatus, error: null };
         try {
@@ -269,6 +344,31 @@
                     renderState = result.render_state;
                 } else {
                     renderState = await backend.getRenderState();
+                }
+            }
+        } catch (err) {
+            uiStatus = { ...uiStatus, error: normalizeError(err) };
+        } finally {
+            codeSubmitting = false;
+        }
+    }
+
+    async function submitQuestCode(code: string, questId: string, testOnly: boolean = false) {
+        if (!backend) return;
+        uiStatus = { ...uiStatus, error: null };
+        codeSubmitting = true;
+        try {
+            const result = await backend.submitQuestCode(code, questId, testOnly);
+            lastCodeResult = result;
+            if (result.success) {
+                if (result.render_state) {
+                    renderState = result.render_state;
+                } else {
+                    renderState = await backend.getRenderState();
+                }
+                // Refresh quest list to update completion status
+                if (!testOnly) {
+                    await loadLevelQuests();
                 }
             }
         } catch (err) {
@@ -303,50 +403,107 @@
 {/if}
 
 <ErrorBoundary>
-{#if showMainMenu}
-    <MainMenu
-        onNewGame={handleNewGame}
-        onContinue={handleContinue}
+{#if gameScreen === 'boot'}
+    <!-- Boot screen while loading -->
+    <div class="fixed inset-0 flex items-center justify-center bg-slate-950">
+        <div class="text-center">
+            <h1 class="text-2xl text-amber-400 font-['Press_Start_2P'] mb-4">CODE WARRIOR</h1>
+            <p class="text-slate-400 text-sm">Loading...</p>
+        </div>
+    </div>
+{:else if gameScreen === 'world_map'}
+    <WorldMap
+        {levels}
+        progress={playerProgress}
+        onSelectLevel={handleSelectLevel}
         onSettings={() => showSettings = true}
-        ready={!uiStatus.loading && levels.length > 0}
     />
 {:else}
+    <!-- gameScreen === 'playing' -->
     <GameWorld
         renderState={renderState}
         codeSuccess={lastCodeResult?.success ?? false}
         xpGained={0}
+        theme={currentLevelData?.theme ?? null}
         on:move={handleMove}
         on:interact={handleInteract}
     >
             <!-- HUD Overlay -->
-            <GameHUD player={renderState?.player ?? null} currentLevelId={currentLevelId} />
+            <GameHUD player={renderState?.player ?? null} currentLevelId={currentLevelId} onBackToMap={handleBackToMap} />
 
             <!-- Code Terminal Modal -->
             {#if showTerminal}
-                <CodeTerminal
-                    initialCode={codeTemplate}
-                    submitting={codeSubmitting}
-                    output={lastCodeResult ? {
-                        success: lastCodeResult.success,
-                        stdout: lastCodeResult.stdout,
-                        stderr: lastCodeResult.stderr,
-                        compile_error: lastCodeResult.compile_error ?? undefined,
-                        message: lastCodeResult.feedback,
-                        feedback: lastCodeResult.feedback,
-                        test_results: lastCodeResult.test_results
-                    } : null}
-                    challenge={currentLevelData?.description ?? 'Complete the challenge'}
-                    expectedOutput={currentLevelData?.challenges?.[0]?.expected_output}
-                    {hints}
-                    {loadingHint}
-                    onClose={handleTerminalClose}
-                    onRequestHint={handleRequestHint}
-                    lesson={currentLevelData?.lesson ?? null}
-                    functionSignature={currentLevelData?.function_signature
-                        ? `${currentLevelData.function_signature.return_type} ${currentLevelData.function_signature.name}(${currentLevelData.function_signature.parameters.map(p => `${p.type} ${p.name}`).join(', ')})`
-                        : ''}
-                    on:submit={handleCodeSubmit}
-                />
+                {#if isMultiQuestLevel && showQuestSelect}
+                    <!-- Quest Selection UI for multi-quest levels -->
+                    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90">
+                        <div class="quest-select-container">
+                            <div class="quest-select-header">
+                                <h2 class="quest-select-title">{currentLevelData?.title ?? 'Select Quest'}</h2>
+                                <button onclick={handleTerminalClose} class="quest-select-close">&#10005;</button>
+                            </div>
+                            <p class="quest-select-description">{currentLevelData?.description}</p>
+                            <QuestHUD
+                                quests={levelQuests}
+                                currentQuestId={selectedQuestId}
+                                onSelectQuest={handleSelectQuest}
+                            />
+                        </div>
+                    </div>
+                {:else if isMultiQuestLevel && selectedQuest}
+                    <!-- CodeTerminal with selected quest -->
+                    <CodeTerminal
+                        initialCode={selectedQuest.user_template}
+                        submitting={codeSubmitting}
+                        output={lastCodeResult ? {
+                            success: lastCodeResult.success,
+                            stdout: lastCodeResult.stdout,
+                            stderr: lastCodeResult.stderr,
+                            compile_error: lastCodeResult.compile_error ?? undefined,
+                            message: lastCodeResult.feedback,
+                            feedback: lastCodeResult.feedback,
+                            test_results: lastCodeResult.test_results
+                        } : null}
+                        challenge={selectedQuest.description}
+                        hints={hints}
+                        {loadingHint}
+                        onClose={() => { showQuestSelect = true; selectedQuest = null; lastCodeResult = null; }}
+                        onRequestHint={handleRequestHint}
+                        functionSignature={selectedQuest.function_signature
+                            ? `${selectedQuest.function_signature.return_type} ${selectedQuest.function_signature.name}(${selectedQuest.function_signature.parameters?.map((p: {type: string, name: string}) => `${p.type} ${p.name}`).join(', ') ?? ''})`
+                            : ''}
+                        questId={selectedQuestId}
+                        questTitle={selectedQuest.title}
+                        questDescription={selectedQuest.description}
+                        questXpReward={selectedQuest.xp_reward}
+                        on:submit={handleCodeSubmit}
+                    />
+                {:else}
+                    <!-- Single-challenge level (legacy) -->
+                    <CodeTerminal
+                        initialCode={codeTemplate}
+                        submitting={codeSubmitting}
+                        output={lastCodeResult ? {
+                            success: lastCodeResult.success,
+                            stdout: lastCodeResult.stdout,
+                            stderr: lastCodeResult.stderr,
+                            compile_error: lastCodeResult.compile_error ?? undefined,
+                            message: lastCodeResult.feedback,
+                            feedback: lastCodeResult.feedback,
+                            test_results: lastCodeResult.test_results
+                        } : null}
+                        challenge={currentLevelData?.description ?? 'Complete the challenge'}
+                        expectedOutput={currentLevelData?.challenges?.[0]?.expected_output}
+                        {hints}
+                        {loadingHint}
+                        onClose={handleTerminalClose}
+                        onRequestHint={handleRequestHint}
+                        lesson={currentLevelData?.lesson ?? null}
+                        functionSignature={currentLevelData?.function_signature
+                            ? `${currentLevelData.function_signature.return_type} ${currentLevelData.function_signature.name}(${currentLevelData.function_signature.parameters.map(p => `${p.type} ${p.name}`).join(', ')})`
+                            : ''}
+                        on:submit={handleCodeSubmit}
+                    />
+                {/if}
             {/if}
 
             <!-- Level Complete Modal (Pixel Art Style) -->
@@ -376,7 +533,7 @@
                             disabled={levelTransitioning}
                             class="pixel-button w-full"
                         >
-                            {levelTransitioning ? 'LOADING...' : (getNextLevelId() ? 'CONTINUE QUEST' : 'RETURN TO VILLAGE')}
+                            {levelTransitioning ? 'LOADING...' : 'RETURN TO MAP'}
                         </button>
                     </div>
                 </div>
@@ -397,15 +554,7 @@
             />
         </div>
 
-        <!-- Settings Button (top-right) -->
-        <button
-            class="fixed top-4 right-4 z-40 settings-btn"
-            onclick={() => showSettings = true}
-            title="Settings"
-        >
-            &#9881;
-        </button>
-    </GameWorld>
+            </GameWorld>
 {/if}
 </ErrorBoundary>
 
@@ -507,23 +656,53 @@
         text-shadow: 1px 1px 0 #7f1d1d;
     }
 
-    .settings-btn {
-        background: rgba(26, 26, 46, 0.9);
-        border: 2px solid #888;
-        color: #e0e0e0;
-        width: 44px;
-        height: 44px;
-        font-size: 24px;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    /* Quest Selection Styles */
+    :global(.quest-select-container) {
+        background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+        border: 4px solid #0f3460;
+        border-top-color: #3a506b;
+        border-left-color: #3a506b;
+        box-shadow:
+            inset 0 0 0 2px #0a0a1e,
+            8px 8px 0 #0a0a1e;
+        padding: 16px;
+        min-width: 280px;
+        max-width: 320px;
     }
 
-    .settings-btn:hover {
-        border-color: #00fff5;
-        color: #00fff5;
-        box-shadow: 0 0 10px rgba(0, 255, 245, 0.3);
+    :global(.quest-select-header) {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #0f3460;
+    }
+
+    :global(.quest-select-title) {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 12px;
+        color: #fbbf24;
+        text-shadow: 2px 2px 0 #92400e;
+    }
+
+    :global(.quest-select-close) {
+        font-size: 16px;
+        color: #64748b;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px 8px;
+    }
+
+    :global(.quest-select-close:hover) {
+        color: #f87171;
+    }
+
+    :global(.quest-select-description) {
+        font-size: 12px;
+        color: #94a3b8;
+        margin-bottom: 12px;
+        line-height: 1.5;
     }
 </style>

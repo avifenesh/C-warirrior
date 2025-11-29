@@ -1,6 +1,6 @@
 //! Database CRUD operations for sessions and player progress
 
-use super::models::{NewProgress, NewSession, PlayerProgress, SaveSlot, Session};
+use super::models::{NewProgress, NewQuestProgress, NewSession, PlayerProgress, QuestProgress, SaveSlot, Session};
 use super::DbPool;
 
 use rand::Rng;
@@ -270,4 +270,109 @@ pub async fn delete_save_slot(
     .await?;
 
     Ok(())
+}
+
+// Quest progress operations for multi-quest levels
+
+/// Record quest completion (returns false if already completed)
+pub async fn complete_quest(
+    pool: &DbPool,
+    progress: &NewQuestProgress,
+) -> Result<bool, sqlx::Error> {
+    let result = sqlx::query(
+        r#"
+        INSERT INTO quest_progress (device_id, level_id, quest_id, xp_earned)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (device_id, quest_id) DO NOTHING
+        "#,
+    )
+    .bind(&progress.device_id)
+    .bind(&progress.level_id)
+    .bind(&progress.quest_id)
+    .bind(progress.xp_earned)
+    .execute(pool)
+    .await?;
+
+    // Returns true if a row was inserted (first completion)
+    Ok(result.rows_affected() > 0)
+}
+
+/// Get all completed quests for a device in a specific level
+pub async fn get_completed_quests_for_level(
+    pool: &DbPool,
+    device_id: &str,
+    level_id: &str,
+) -> Result<Vec<QuestProgress>, sqlx::Error> {
+    sqlx::query_as::<_, QuestProgress>(
+        r#"
+        SELECT id, device_id, level_id, quest_id, xp_earned, completed_at
+        FROM quest_progress
+        WHERE device_id = $1 AND level_id = $2
+        ORDER BY completed_at ASC
+        "#,
+    )
+    .bind(device_id)
+    .bind(level_id)
+    .fetch_all(pool)
+    .await
+}
+
+/// Get count of completed quests for a level
+pub async fn get_completed_quest_count(
+    pool: &DbPool,
+    device_id: &str,
+    level_id: &str,
+) -> Result<i64, sqlx::Error> {
+    let row: (i64,) = sqlx::query_as(
+        r#"
+        SELECT COUNT(*)
+        FROM quest_progress
+        WHERE device_id = $1 AND level_id = $2
+        "#,
+    )
+    .bind(device_id)
+    .bind(level_id)
+    .fetch_one(pool)
+    .await?;
+
+    Ok(row.0)
+}
+
+/// Check if a specific quest is completed
+pub async fn is_quest_completed(
+    pool: &DbPool,
+    device_id: &str,
+    quest_id: &str,
+) -> Result<bool, sqlx::Error> {
+    let row: (i64,) = sqlx::query_as(
+        r#"
+        SELECT COUNT(*)
+        FROM quest_progress
+        WHERE device_id = $1 AND quest_id = $2
+        "#,
+    )
+    .bind(device_id)
+    .bind(quest_id)
+    .fetch_one(pool)
+    .await?;
+
+    Ok(row.0 > 0)
+}
+
+/// Get all completed quests for a device (across all levels)
+pub async fn get_all_completed_quests(
+    pool: &DbPool,
+    device_id: &str,
+) -> Result<Vec<QuestProgress>, sqlx::Error> {
+    sqlx::query_as::<_, QuestProgress>(
+        r#"
+        SELECT id, device_id, level_id, quest_id, xp_earned, completed_at
+        FROM quest_progress
+        WHERE device_id = $1
+        ORDER BY completed_at ASC
+        "#,
+    )
+    .bind(device_id)
+    .fetch_all(pool)
+    .await
 }

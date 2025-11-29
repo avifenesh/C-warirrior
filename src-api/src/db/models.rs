@@ -70,3 +70,23 @@ pub struct SaveSlot {
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
+
+/// Quest progress tracking for multi-quest levels
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct QuestProgress {
+    pub id: Uuid,
+    pub device_id: String,
+    pub level_id: String,
+    pub quest_id: String,
+    pub xp_earned: i32,
+    pub completed_at: DateTime<Utc>,
+}
+
+/// Data for recording quest completion
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NewQuestProgress {
+    pub device_id: String,
+    pub level_id: String,
+    pub quest_id: String,
+    pub xp_earned: i32,
+}
