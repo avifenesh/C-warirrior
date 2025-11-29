@@ -16,8 +16,10 @@ export function isTauri(): boolean {
 }
 
 /**
- * Get the appropriate backend instance (Tauri or HTTP)
- * Implements singleton pattern to cache backend
+ * Get the appropriate backend instance (Tauri, WASM, or HTTP)
+ * - Tauri: Desktop app with IPC
+ * - WASM: Web with local game logic + HTTP for compilation/persistence
+ * - HTTP fallback: Legacy, only if WASM fails
  *
  * @returns {Promise<Backend>} Promise resolving to the backend instance
  */
@@ -27,18 +29,28 @@ export async function getBackend(): Promise<Backend> {
         return cachedBackend;
     }
 
-    const tauriDetected = isTauri();
-
-    // Dynamically import the correct backend based on environment
-    if (tauriDetected) {
+    // Desktop: Use Tauri IPC
+    if (isTauri()) {
         const { createTauriBackend } = await import('./tauri');
         cachedBackend = createTauriBackend();
-    } else {
-        const { createHttpBackend } = await import('./http');
-        cachedBackend = createHttpBackend();
+        console.log('[Backend] Using Tauri backend');
+        return cachedBackend;
     }
 
-    return cachedBackend;
+    // Web: Use WASM for local game logic
+    try {
+        const { createWasmBackend } = await import('./wasm');
+        cachedBackend = createWasmBackend();
+        console.log('[Backend] Using WASM backend');
+        return cachedBackend;
+    } catch (error) {
+        // Fallback to HTTP if WASM fails (old browsers, load errors)
+        console.warn('[Backend] WASM failed, falling back to HTTP:', error);
+        const { createHttpBackend } = await import('./http');
+        cachedBackend = createHttpBackend();
+        console.log('[Backend] Using HTTP backend (fallback)');
+        return cachedBackend;
+    }
 }
 
 // Re-export types for convenience

@@ -3,6 +3,7 @@ members = [
     "src",
     "src-tauri",
     "src-api",
+    "src-wasm",
 ]
 resolver = "2"
 

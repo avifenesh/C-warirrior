@@ -1,9 +1,15 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import wasm from 'vite-plugin-wasm';
+import topLevelAwait from 'vite-plugin-top-level-await';
 
 export default defineConfig({
-	plugins: [sveltekit()],
+	plugins: [
+		sveltekit(),
+		wasm(),
+		topLevelAwait()
+	],
 	clearScreen: false,
 	server: {
 		port: 1420,
@@ -19,8 +25,12 @@ export default defineConfig({
 			'$sprites': resolve('./static/sprites'),
 			'$tiles': resolve('./static/tiles'),
 			'$ui': resolve('./static/ui'),
-			'$fonts': resolve('./static/fonts')
+			'$fonts': resolve('./static/fonts'),
+			'code-warrior-wasm': resolve('../src-wasm/pkg')
 		}
 	},
-	assetsInclude: ['**/*.png', '**/*.json']
+	assetsInclude: ['**/*.png', '**/*.json', '**/*.wasm'],
+	optimizeDeps: {
+		exclude: ['code-warrior-wasm']
+	}
 });

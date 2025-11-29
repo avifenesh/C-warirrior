@@ -77,6 +77,8 @@ impl LevelData {
         serde_json::from_value(json.clone()).map_err(|e| format!("Failed to parse level: {}", e))
     }
 
+    /// Validate execution output against level criteria (only with compiler feature)
+    #[cfg(feature = "compiler")]
     pub fn validate_output(&self, output: &crate::compiler::ExecutionOutput) -> bool {
         if !output.compile_success() {
             return false;
