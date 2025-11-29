@@ -1,6 +1,6 @@
 //! Database CRUD operations for sessions and player progress
 
-use super::models::{NewProgress, NewSession, PlayerProgress, Session};
+use super::models::{NewProgress, NewSession, PlayerProgress, SaveSlot, Session};
 use super::DbPool;
 
 use rand::Rng;
@@ -176,6 +176,96 @@ pub async fn complete_level(
     .bind(device_id)
     .bind(level_id)
     .bind(xp_earned)
+    .execute(pool)
+    .await?;
+
+    Ok(())
+}
+
+// Save slot operations for Save/Load feature
+
+/// List all save slots for a device
+pub async fn list_save_slots(pool: &DbPool, device_id: &str) -> Result<Vec<SaveSlot>, sqlx::Error> {
+    sqlx::query_as::<_, SaveSlot>(
+        r#"
+        SELECT id, device_id, slot_name, save_data, total_xp, levels_completed, current_level, created_at, updated_at
+        FROM save_slots
+        WHERE device_id = $1
+        ORDER BY updated_at DESC
+        "#,
+    )
+    .bind(device_id)
+    .fetch_all(pool)
+    .await
+}
+
+/// Get a specific save slot
+pub async fn get_save_slot(
+    pool: &DbPool,
+    device_id: &str,
+    slot_name: &str,
+) -> Result<Option<SaveSlot>, sqlx::Error> {
+    sqlx::query_as::<_, SaveSlot>(
+        r#"
+        SELECT id, device_id, slot_name, save_data, total_xp, levels_completed, current_level, created_at, updated_at
+        FROM save_slots
+        WHERE device_id = $1 AND slot_name = $2
+        "#,
+    )
+    .bind(device_id)
+    .bind(slot_name)
+    .fetch_optional(pool)
+    .await
+}
+
+/// Create or update a save slot
+pub async fn upsert_save_slot(
+    pool: &DbPool,
+    device_id: &str,
+    slot_name: &str,
+    save_data: &Value,
+    total_xp: i32,
+    levels_completed: i32,
+    current_level: Option<&str>,
+) -> Result<SaveSlot, sqlx::Error> {
+    sqlx::query_as::<_, SaveSlot>(
+        r#"
+        INSERT INTO save_slots (device_id, slot_name, save_data, total_xp, levels_completed, current_level)
+        VALUES ($1, $2, $3, $4, $5, $6)
+        ON CONFLICT (device_id, slot_name)
+        DO UPDATE SET
+            save_data = $3,
+            total_xp = $4,
+            levels_completed = $5,
+            current_level = $6,
+            updated_at = NOW()
+        RETURNING id, device_id, slot_name, save_data, total_xp, levels_completed, current_level, created_at, updated_at
+        "#,
+    )
+    .bind(device_id)
+    .bind(slot_name)
+    .bind(save_data)
+    .bind(total_xp)
+    .bind(levels_completed)
+    .bind(current_level)
+    .fetch_one(pool)
+    .await
+}
+
+/// Delete a save slot
+pub async fn delete_save_slot(
+    pool: &DbPool,
+    device_id: &str,
+    slot_name: &str,
+) -> Result<(), sqlx::Error> {
+    sqlx::query(
+        r#"
+        DELETE FROM save_slots
+        WHERE device_id = $1 AND slot_name = $2
+        "#,
+    )
+    .bind(device_id)
+    .bind(slot_name)
     .execute(pool)
     .await?;
 

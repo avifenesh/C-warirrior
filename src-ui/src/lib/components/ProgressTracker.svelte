@@ -5,13 +5,15 @@
     currentLevel: string;
     completedLevels: string[];
     totalLevels: number;
+    nextLevel?: string | null;
   }
 
-  let { currentXP, totalXP, currentLevel, completedLevels, totalLevels }: Props = $props();
+  let { currentXP, totalXP, currentLevel, completedLevels, totalLevels, nextLevel = null }: Props = $props();
 
-  let progressPercent = $derived((completedLevels.length / totalLevels) * 100);
+  // Guard against division by zero
+  let progressPercent = $derived(totalLevels > 0 ? (completedLevels.length / totalLevels) * 100 : 0);
   let xpPercent = $derived(totalXP > 0 ? (currentXP / totalXP) * 100 : 0);
-  
+
   let expanded = $state(false);
 
   function toggleExpand() {
@@ -53,7 +55,7 @@
       </div>
       <div class="detail-row">
         <span>NEXT:</span>
-        <span class="value">MEMORY_ALLOC</span> <!-- Placeholder for next level logic if needed -->
+        <span class="value">{nextLevel ?? 'COMPLETE'}</span>
       </div>
     </div>
   {/if}

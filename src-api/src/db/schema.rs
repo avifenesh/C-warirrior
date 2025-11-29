@@ -54,5 +54,33 @@ pub async fn run_migrations(pool: &Pool<Postgres>) -> Result<(), sqlx::Error> {
     .execute(pool)
     .await?;
 
+    // Create save_slots table for Save/Load feature
+    sqlx::query(
+        r#"
+        CREATE TABLE IF NOT EXISTS save_slots (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            device_id VARCHAR(255) NOT NULL,
+            slot_name VARCHAR(100) NOT NULL,
+            save_data JSONB NOT NULL,
+            total_xp INTEGER DEFAULT 0,
+            levels_completed INTEGER DEFAULT 0,
+            current_level VARCHAR(50),
+            created_at TIMESTAMPTZ DEFAULT NOW(),
+            updated_at TIMESTAMPTZ DEFAULT NOW(),
+            UNIQUE(device_id, slot_name)
+        )
+        "#,
+    )
+    .execute(pool)
+    .await?;
+
+    sqlx::query(
+        r#"
+        CREATE INDEX IF NOT EXISTS idx_save_slots_device_id ON save_slots(device_id)
+        "#,
+    )
+    .execute(pool)
+    .await?;
+
     Ok(())
 }

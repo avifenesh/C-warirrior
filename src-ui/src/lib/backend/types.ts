@@ -13,10 +13,11 @@ import type {
     LevelData,
     LevelInfo,
     CodeResult,
-    LevelCompleteResult,
     CodeOutput,
     LevelCompleteEvent,
     GameError,
+    SaveSlot,
+    PlayerProgress,
 } from '../types';
 
 export type UnsubscribeFn = () => void;
@@ -37,8 +38,14 @@ export interface Backend {
     submitCode(code: string): Promise<CodeResult>;
     getHint(hintIndex: number): Promise<string>;
 
+    // Save/Load
+    listSaves(): Promise<SaveSlot[]>;
+    saveGame(slotId: string): Promise<void>;
+    loadGame(slotId: string): Promise<RenderState>;
+    deleteSave(slotId: string): Promise<void>;
+
     // Progress
-    completeLevel(): Promise<LevelCompleteResult>;
+    getProgress(): Promise<PlayerProgress>;
 
     // Events (returns unsubscribe function)
     onGameTick(cb: (state: RenderState) => void): Promise<UnsubscribeFn>;
@@ -58,8 +65,9 @@ export type {
     LevelData,
     LevelInfo,
     CodeResult,
-    LevelCompleteResult,
     CodeOutput,
     LevelCompleteEvent,
     GameError,
+    SaveSlot,
+    PlayerProgress,
 };

@@ -56,3 +56,17 @@ impl Default for NewProgress {
         }
     }
 }
+
+/// Save slot for Save/Load feature
+#[derive(Debug, Clone, FromRow, Serialize, Deserialize)]
+pub struct SaveSlot {
+    pub id: Uuid,
+    pub device_id: String,
+    pub slot_name: String,
+    pub save_data: serde_json::Value,
+    pub total_xp: i32,
+    pub levels_completed: i32,
+    pub current_level: Option<String>,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}

@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Emitter, State};
+use tracing::{debug, info};
 
 use crate::GameStateWrapper;
 use code_warrior::compiler::CCompiler;
@@ -16,6 +17,7 @@ pub struct CodeResult {
     pub hint: Option<String>,
     pub xp_earned: u32,
     pub doors_unlocked: bool,
+    pub render_state: code_warrior::game::RenderState,
 }
 
 /// Event emitted when a level is completed
@@ -23,6 +25,7 @@ pub struct CodeResult {
 pub struct LevelCompleteEvent {
     pub level_id: String,
     pub xp_earned: u32,
+    pub next_level_id: Option<String>,
     pub newly_unlocked: Vec<String>,
 }
 
@@ -34,7 +37,7 @@ pub async fn submit_code(
     compiler: State<'_, CCompiler>,
     app: AppHandle,
 ) -> Result<CodeResult, String> {
-    println!("[submit_code] Command received");
+    debug!("submit_code command received");
 
     // Get level data before await to avoid holding MutexGuard across await
     let (level_data, level_id) = {
@@ -45,7 +48,7 @@ pub async fn submit_code(
             .ok_or("No level currently loaded")?
             .clone();
 
-        println!("[submit_code] Level ID: {}", level_id);
+        debug!(level_id = %level_id, "Processing submission");
 
         let level = levels
             .get_level(&level_id)
@@ -55,17 +58,15 @@ pub async fn submit_code(
         (level, level_id)
     };
 
-    println!("[submit_code] Calling compiler...");
+    debug!("Calling compiler");
     let execution_result = compiler.compile_and_run(&code).await?;
-    println!(
-        "[submit_code] Compiler returned: success={}",
-        execution_result.run_success()
-    );
+    debug!(success = execution_result.run_success(), "Compiler returned");
     let success = level_data.validate_output(&execution_result);
 
     let mut xp_earned = 0;
     let mut doors_unlocked = false;
     let mut newly_unlocked = Vec::new();
+    let mut next_level_id: Option<String> = None;
 
     // If code is successful, complete the level
     if success {
@@ -91,10 +92,10 @@ pub async fn submit_code(
             .cloned()
             .collect();
 
-        println!(
-            "[submit_code] Level completed! XP earned: {}, newly unlocked: {:?}",
-            xp_earned, newly_unlocked
-        );
+        info!(xp = xp_earned, unlocked = ?newly_unlocked, "Level completed");
+
+        // Determine next level based on registry order
+        next_level_id = levels.get_next_level(&level_id);
     }
 
     let feedback = if execution_result.compile_error.is_some() {
@@ -116,10 +117,17 @@ pub async fn submit_code(
         let event = LevelCompleteEvent {
             level_id: level_id.clone(),
             xp_earned,
+            next_level_id,
             newly_unlocked: newly_unlocked.clone(),
         };
         let _ = app.emit("level_complete", event);
     }
+
+    // Get current render state for response
+    let render_state = {
+        let game_state = state.0.lock().map_err(|e| e.to_string())?;
+        game_state.to_render_state()
+    };
 
     Ok(CodeResult {
         success,
@@ -131,6 +139,7 @@ pub async fn submit_code(
         hint: None,
         xp_earned,
         doors_unlocked,
+        render_state,
     })
 }
 

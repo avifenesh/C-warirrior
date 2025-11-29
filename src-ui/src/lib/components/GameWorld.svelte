@@ -96,10 +96,7 @@
             event.preventDefault();
             event.stopPropagation();
             if (nearTerminal) {
-                console.log('[GameWorld] Dispatching interact event, nearTerminal:', nearTerminal);
                 dispatcher('interact');
-            } else {
-                console.log('[GameWorld] Interact blocked - nothing nearby');
             }
             return;
         }
@@ -110,14 +107,12 @@
         containerRef?.focus();
 
         // Load assets
-        console.log('[GameWorld] Starting asset load...');
         if (canvasRef) {
             renderer = new GameRenderer(canvasRef, { tileSize });
         }
 
         loadAssets(DEFAULT_MANIFEST)
             .then((loadedAssets) => {
-                console.log('[GameWorld] Assets loaded successfully');
                 assets = loadedAssets;
                 assetsLoaded = true;
                 renderer?.setAssets(loadedAssets);

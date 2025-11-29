@@ -270,55 +270,43 @@ export async function getHint(hintIndex: number): Promise<string> {
 
 ### Progress Commands
 
-#### `complete_level`
-Mark the current level as complete and award XP.
+#### `get_progress`
+Fetch aggregate progression information for the current player/session.
 
 ```rust
-#[tauri::command]
-pub async fn complete_level(
-    state: State<'_, GameStateWrapper>,
-    levels: State<'_, LevelRegistry>,
-) -> Result<LevelCompleteResult, String> {
-    let mut game_state = state.0.lock().map_err(|e| e.to_string())?;
-    let level_id = game_state.current_level_id.clone()
-        .ok_or("No level currently loaded")?;
-
-    let level = levels.get_level(&level_id)
-        .ok_or_else(|| format!("Level {} not found", level_id))?;
-
-    let xp_reward = level.xp_reward;
-    game_state.complete_level(xp_reward);
-
-    // Determine next level
-    let next_level_id = levels.get_next_level(&level_id);
-
-    Ok(LevelCompleteResult {
-        xp_earned: xp_reward,
-        total_xp: game_state.total_xp,
-        next_level_id,
-        levels_completed: game_state.levels_completed.len(),
-    })
+#[derive(Debug, Clone, Serialize)]
+pub struct ProgressInfo {
+    pub total_xp: u32,
+    pub completed_levels: Vec<String>,
+    pub current_level: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct LevelCompleteResult {
-    pub xp_earned: u32,
-    pub total_xp: u32,
-    pub next_level_id: Option<String>,
-    pub levels_completed: usize,
+#[tauri::command]
+pub async fn get_progress(state: State<'_, GameStateWrapper>) -> Result<ProgressInfo, String> {
+    let game_state = state.0.lock().map_err(|e| e.to_string())?;
+
+    Ok(ProgressInfo {
+        total_xp: game_state.progression.total_xp,
+        completed_levels: game_state
+            .progression
+            .completed_levels
+            .iter()
+            .cloned()
+            .collect(),
+        current_level: game_state.current_level_id.clone(),
+    })
 }
 ```
 
 ```typescript
-export interface LevelCompleteResult {
-    xp_earned: number;
+export interface PlayerProgress {
     total_xp: number;
-    next_level_id: string | null;
-    levels_completed: number;
+    completed_levels: string[];
+    current_level: string | null;
 }
 
-export async function completeLevel(): Promise<LevelCompleteResult> {
-    return await invoke<LevelCompleteResult>('complete_level');
+export async function getProgress(): Promise<PlayerProgress> {
+    return await invoke<PlayerProgress>('get_progress');
 }
 ```
 
@@ -510,67 +498,21 @@ fn main() {
 
 ---
 
-## Frontend API Module
+## Frontend Backend Abstraction
 
-Create a unified API module in `src-ui/src/lib/api.ts`:
+On the frontend, use the backend abstraction in `src-ui/src/lib/backend` instead of a single `api.ts` file. It selects the correct implementation (Tauri or HTTP) at runtime:
 
 ```typescript
-// src-ui/src/lib/api.ts
-import { invoke } from '@tauri-apps/api/core';
-import { listen } from '@tauri-apps/api/event';
-import type {
-    GameState,
-    RenderState,
-    PlayerAction,
-    LevelData,
-    LevelInfo,
-    CodeResult,
-    LevelCompleteResult,
-    CodeOutput,
-    LevelCompleteEvent,
-    GameError,
-} from './types';
+import { getBackend } from '$lib/backend';
+import type { Backend } from '$lib/backend';
 
-// === Commands ===
+let backend: Backend | null = null;
 
-export const api = {
-    // Game
-    initGame: () => invoke<GameState>('init_game'),
-    getGameState: () => invoke<GameState>('get_game_state'),
-    processAction: (action: PlayerAction) =>
-        invoke<RenderState>('process_action', { action }),
-
-    // Levels
-    getAvailableLevels: () => invoke<LevelInfo[]>('get_available_levels'),
-    loadLevel: (levelId: string) =>
-        invoke<LevelData>('load_level', { levelId }),
-    getLevelData: () => invoke<LevelData>('get_level_data'),
-
-    // Code
-    submitCode: (code: string) =>
-        invoke<CodeResult>('submit_code', { code }),
-    getHint: (hintIndex: number) =>
-        invoke<string>('get_hint', { hintIndex }),
-
-    // Progress
-    completeLevel: () => invoke<LevelCompleteResult>('complete_level'),
-};
-
-// === Events ===
-
-export const events = {
-    onGameTick: (cb: (state: RenderState) => void) =>
-        listen<RenderState>('game_tick', (e) => cb(e.payload)),
-
-    onCodeOutput: (cb: (output: CodeOutput) => void) =>
-        listen<CodeOutput>('code_output', (e) => cb(e.payload)),
-
-    onLevelComplete: (cb: (event: LevelCompleteEvent) => void) =>
-        listen<LevelCompleteEvent>('level_complete', (e) => cb(e.payload)),
-
-    onGameError: (cb: (error: GameError) => void) =>
-        listen<GameError>('game_error', (e) => cb(e.payload)),
-};
+async function boot() {
+    backend = await getBackend();
+    const renderState = await backend.initGame();
+    // ...
+}
 ```
 
 ---
@@ -579,8 +521,8 @@ export const events = {
 
 | Command/Event | Rust File | TypeScript File |
 |---------------|-----------|-----------------|
-| Game commands | `src/commands/game.rs` | `src-ui/src/lib/api.ts` |
-| Level commands | `src/commands/levels.rs` | `src-ui/src/lib/api.ts` |
+| Game commands | `src/commands/game.rs` | `src-ui/src/lib/backend` |
+| Level commands | `src/commands/levels.rs` | `src-ui/src/lib/backend` |
 | Event structs | `src/events.rs` | `src-ui/src/lib/types.ts` |
 | Main setup | `src/main.rs` | N/A |
 

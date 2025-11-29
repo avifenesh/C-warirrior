@@ -145,6 +145,7 @@ export interface LevelInfo {
     concept: string;
     completed: boolean;
     locked: boolean;
+    xp_reward: number;
 }
 
 export interface ExecutionOutput {
@@ -167,17 +168,7 @@ export interface CodeResult {
     hint?: string | null;
     render_state?: RenderState;
     xp_earned?: number;
-}
-
-// ============================================================================
-// Command Result Types (from docs/interfaces/tauri-commands.md)
-// ============================================================================
-
-export interface LevelCompleteResult {
-    xp_earned: number;
-    total_xp: number;
-    next_level_id: string | null;
-    levels_completed: number;
+    doors_unlocked?: boolean;
 }
 
 // ============================================================================
@@ -194,10 +185,33 @@ export interface LevelCompleteEvent {
     level_id: string;
     xp_earned: number;
     next_level_id: string | null;
+    newly_unlocked?: string[];
 }
 
 export interface GameError {
     code: string;
     message: string;
     recoverable: boolean;
+}
+
+// ============================================================================
+// Save/Load Types
+// ============================================================================
+
+export interface SaveSlot {
+    id: string;
+    name: string;
+    timestamp: string;
+    progress: string;
+    empty?: boolean;
+}
+
+// ============================================================================
+// Progress Types
+// ============================================================================
+
+export interface PlayerProgress {
+    total_xp: number;
+    completed_levels: string[];
+    current_level: string | null;
 }

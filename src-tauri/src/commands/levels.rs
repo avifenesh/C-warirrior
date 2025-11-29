@@ -1,4 +1,5 @@
 use tauri::State;
+use tracing::warn;
 
 use crate::GameStateWrapper;
 use code_warrior::game::world::World;
@@ -50,7 +51,7 @@ pub async fn load_level(
         match load_map_file(map_path) {
             Ok(map_data) => map_data.to_world(),
             Err(e) => {
-                eprintln!("Warning: Failed to load map {}: {}", map_path, e);
+                warn!(map = %map_path, error = %e, "Failed to load map, using world_config");
                 World::from_config(&level.world_config)
             }
         }

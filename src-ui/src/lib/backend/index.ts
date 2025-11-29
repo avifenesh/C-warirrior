@@ -28,18 +28,12 @@ export async function getBackend(): Promise<Backend> {
     }
 
     const tauriDetected = isTauri();
-    console.log('[Backend] Tauri detected:', tauriDetected);
-    console.log('[Backend] __TAURI_INTERNALS__:', typeof window !== 'undefined' ? '__TAURI_INTERNALS__' in window : false);
-    console.log('[Backend] __TAURI__:', typeof window !== 'undefined' ? '__TAURI__' in window : false);
 
     // Dynamically import the correct backend based on environment
     if (tauriDetected) {
-        console.log('[Backend] Using Tauri backend');
         const { createTauriBackend } = await import('./tauri');
         cachedBackend = createTauriBackend();
     } else {
-        // Use HTTP backend (Real API)
-        console.log('[Backend] Using HTTP backend (no Tauri context)');
         const { createHttpBackend } = await import('./http');
         cachedBackend = createHttpBackend();
     }

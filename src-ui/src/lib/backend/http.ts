@@ -18,10 +18,11 @@ import type {
     LevelData,
     LevelInfo,
     CodeResult,
-    LevelCompleteResult,
     CodeOutput,
     LevelCompleteEvent,
     GameError,
+    SaveSlot,
+    PlayerProgress,
 } from './types';
 
 // Get API URL from environment or default to localhost
@@ -176,9 +177,8 @@ class EventPoller {
                         }
                     });
                 }
-            } catch (err) {
+            } catch {
                 // Silently ignore polling errors (server might not be ready)
-                console.debug(`Polling error for ${eventType}:`, err);
             }
         };
 
@@ -294,10 +294,18 @@ class HttpBackend implements Backend {
     }
 
     async getLevelData(): Promise<LevelData> {
-        if (!this.currentLevelData) {
+        // Prefer fetching from API for source of truth
+        try {
+            const levelData = await apiRequest<LevelData>('/api/levels/current');
+            this.currentLevelData = levelData;
+            return levelData;
+        } catch {
+            // Fallback to cache if API fails
+            if (this.currentLevelData) {
+                return this.currentLevelData;
+            }
             throw new Error('No level loaded yet');
         }
-        return this.currentLevelData;
     }
 
     // Code
@@ -317,15 +325,43 @@ class HttpBackend implements Backend {
     }
 
     async getHint(hintIndex: number): Promise<string> {
-        if (this.currentLevelData && this.currentLevelData.hints[hintIndex]) {
-            return this.currentLevelData.hints[hintIndex];
+        // Fetch hint from API
+        try {
+            const hint = await apiRequest<string>(`/api/code/hint/${hintIndex}`);
+            return hint;
+        } catch {
+            // Fallback to local cache if API fails
+            if (this.currentLevelData && this.currentLevelData.hints[hintIndex]) {
+                return this.currentLevelData.hints[hintIndex];
+            }
+            throw new Error('No more hints available');
         }
-        throw new Error('No more hints available');
+    }
+
+    // Save/Load
+    async listSaves(): Promise<SaveSlot[]> {
+        return apiRequest<SaveSlot[]>('/api/saves');
+    }
+
+    async saveGame(slotId: string): Promise<void> {
+        await apiRequest(`/api/saves/${slotId}`, { method: 'POST' });
+    }
+
+    async loadGame(slotId: string): Promise<RenderState> {
+        const result = await apiRequest<{ render_state: RenderState }>(`/api/saves/${slotId}`);
+        if (result.render_state) {
+            this.cacheRenderState(result.render_state);
+        }
+        return result.render_state;
+    }
+
+    async deleteSave(slotId: string): Promise<void> {
+        await apiRequest(`/api/saves/${slotId}`, { method: 'DELETE' });
     }
 
     // Progress
-    async completeLevel(): Promise<LevelCompleteResult> {
-        throw new Error('completeLevel is not available on the HTTP backend');
+    async getProgress(): Promise<PlayerProgress> {
+        return apiRequest<PlayerProgress>('/api/player/progress');
     }
 
     // Events (using polling)

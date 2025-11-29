@@ -486,12 +486,14 @@ dependencies = [
 name = "code-warrior-app"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "code-warrior",
  "serde",
  "serde_json",
  "tauri",
  "tauri-build",
  "tokio",
+ "tracing",
 ]
 
 [[package]]

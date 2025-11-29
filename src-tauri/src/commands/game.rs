@@ -1,8 +1,16 @@
+use serde::Serialize;
 use tauri::State;
 
 use crate::GameStateWrapper;
 use code_warrior::game::constants::TILE_SIZE;
 use code_warrior::game::state::{GamePhase, GameState, PlayerAction, RenderState};
+
+#[derive(Debug, Clone, Serialize)]
+pub struct ProgressInfo {
+    pub total_xp: u32,
+    pub completed_levels: Vec<String>,
+    pub current_level: Option<String>,
+}
 
 #[tauri::command]
 pub async fn init_game(state: State<'_, GameStateWrapper>) -> Result<RenderState, String> {
@@ -56,4 +64,15 @@ pub async fn process_action(
     }
 
     Ok(game_state.to_render_state())
+}
+
+#[tauri::command]
+pub async fn get_progress(state: State<'_, GameStateWrapper>) -> Result<ProgressInfo, String> {
+    let game_state = state.0.lock().map_err(|e| e.to_string())?;
+
+    Ok(ProgressInfo {
+        total_xp: game_state.progression.total_xp,
+        completed_levels: game_state.progression.completed_levels.iter().cloned().collect(),
+        current_level: game_state.current_level_id.clone(),
+    })
 }

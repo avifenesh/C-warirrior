@@ -15,10 +15,11 @@ import type {
     LevelData,
     LevelInfo,
     CodeResult,
-    LevelCompleteResult,
     CodeOutput,
     LevelCompleteEvent,
     GameError,
+    SaveSlot,
+    PlayerProgress,
 } from './types';
 
 export function createTauriBackend(): Backend {
@@ -41,8 +42,14 @@ export function createTauriBackend(): Backend {
         submitCode: (code: string) => invoke<CodeResult>('submit_code', { code }),
         getHint: (hintIndex: number) => invoke<string>('get_hint', { hintIndex }),
 
+        // Save/Load
+        listSaves: () => invoke<SaveSlot[]>('list_saves'),
+        saveGame: (slotId: string) => invoke('save_game', { slotId }),
+        loadGame: (slotId: string) => invoke<RenderState>('load_game', { slotId }),
+        deleteSave: (slotId: string) => invoke('delete_save', { slotId }),
+
         // Progress
-        completeLevel: () => invoke<LevelCompleteResult>('complete_level'),
+        getProgress: () => invoke<PlayerProgress>('get_progress'),
 
         // Events
         async onGameTick(cb: (state: RenderState) => void): Promise<UnsubscribeFn> {

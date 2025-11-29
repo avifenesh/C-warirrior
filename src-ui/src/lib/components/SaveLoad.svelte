@@ -1,13 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
-
-    export interface SaveSlot {
-        id: string;
-        name: string;
-        timestamp: string;
-        progress: string;
-        empty?: boolean;
-    }
+    import type { SaveSlot } from '$lib/types';
 
     interface Props {
         slots?: SaveSlot[];
@@ -36,7 +29,7 @@
             <p class="save-load-subtitle">Saves</p>
             <h2 class="save-load-title">Save / Load</h2>
         </div>
-        <span class="save-load-hint">Local only (UI placeholder)</span>
+        <span class="save-load-hint">Cloud synced</span>
     </div>
 
     <div class="save-slots">

@@ -329,10 +329,8 @@
                     bind:value={code}
                     {placeholder}
                     onkeydown={handleTextareaKeydown}
-                    onfocus={() => console.log('[CodeTerminal] textarea focused')}
                     onblur={(e) => {
                         const related = e.relatedTarget as HTMLElement | null;
-                        console.log('[CodeTerminal] textarea blurred, focus went to:', related?.tagName, related?.className);
                         // If focus went to something inside the modal that's not a button/input, refocus textarea
                         if (related && !['BUTTON', 'INPUT', 'A'].includes(related.tagName)) {
                             setTimeout(() => textareaRef?.focus(), 0);

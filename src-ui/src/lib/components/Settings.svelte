@@ -1,15 +1,88 @@
 <script lang="ts">
+  import SaveLoad from './SaveLoad.svelte';
+  import type { SaveSlot, RenderState } from '$lib/types';
+  import type { Backend } from '$lib/backend/types';
+
   interface Props {
     isOpen: boolean;
     onClose: () => void;
+    backend?: Backend | null;
+    onLoadGame?: (renderState: RenderState) => void;
   }
 
-  let { isOpen, onClose }: Props = $props();
+  let { isOpen, onClose, backend = null, onLoadGame }: Props = $props();
 
   let volume = $state(50);
   let musicEnabled = $state(true);
   let sfxEnabled = $state(true);
   let theme = $state<'dark' | 'light' | 'crt'>('dark');
+  let activeTab = $state<'settings' | 'saves'>('settings');
+  let saveSlots = $state<SaveSlot[]>([]);
+  let savesLoading = $state(false);
+
+  async function loadSaveSlots() {
+    if (!backend) return;
+    savesLoading = true;
+    try {
+      saveSlots = await backend.listSaves();
+    } catch (e) {
+      console.error('Failed to load saves:', e);
+      // Provide default empty slots on error
+      saveSlots = [
+        { id: 'slot1', name: 'Slot 1', timestamp: '', progress: '', empty: true },
+        { id: 'slot2', name: 'Slot 2', timestamp: '', progress: '', empty: true },
+        { id: 'slot3', name: 'Slot 3', timestamp: '', progress: '', empty: true },
+      ];
+    } finally {
+      savesLoading = false;
+    }
+  }
+
+  async function handleSave(e: CustomEvent<{ id: string }>) {
+    if (!backend) return;
+    savesLoading = true;
+    try {
+      await backend.saveGame(e.detail.id);
+      await loadSaveSlots();
+    } catch (err) {
+      console.error('Failed to save:', err);
+    } finally {
+      savesLoading = false;
+    }
+  }
+
+  async function handleLoad(e: CustomEvent<{ id: string }>) {
+    if (!backend) return;
+    savesLoading = true;
+    try {
+      const renderState = await backend.loadGame(e.detail.id);
+      onLoadGame?.(renderState);
+      onClose();
+    } catch (err) {
+      console.error('Failed to load:', err);
+    } finally {
+      savesLoading = false;
+    }
+  }
+
+  async function handleDelete(e: CustomEvent<{ id: string }>) {
+    if (!backend) return;
+    savesLoading = true;
+    try {
+      await backend.deleteSave(e.detail.id);
+      await loadSaveSlots();
+    } catch (err) {
+      console.error('Failed to delete:', err);
+    } finally {
+      savesLoading = false;
+    }
+  }
+
+  $effect(() => {
+    if (isOpen && activeTab === 'saves') {
+      loadSaveSlots();
+    }
+  });
 
   function handleBackdropClick(e: MouseEvent) {
     if (e.target === e.currentTarget) {
@@ -32,10 +105,24 @@
   <div class="modal-overlay" onclick={handleBackdropClick}>
     <div class="modal-panel pixel-border">
       <header class="modal-header">
-        <h2>SETTINGS</h2>
+        <h2>{activeTab === 'settings' ? 'SETTINGS' : 'SAVES'}</h2>
         <button class="close-btn" onclick={onClose}>X</button>
       </header>
 
+      <div class="tab-bar">
+        <button class:active={activeTab === 'settings'} onclick={() => activeTab = 'settings'}>SETTINGS</button>
+        <button class:active={activeTab === 'saves'} onclick={() => activeTab = 'saves'}>SAVES</button>
+      </div>
+
+      {#if activeTab === 'saves'}
+        <SaveLoad
+          slots={saveSlots}
+          loading={savesLoading}
+          on:save={handleSave}
+          on:load={handleLoad}
+          on:delete={handleDelete}
+        />
+      {:else}
       <div class="settings-content">
         <section class="setting-group">
           <div class="setting-label">
@@ -100,7 +187,8 @@
           </div>
         </section>
       </div>
-      
+      {/if}
+
       <footer class="modal-footer">
         <button class="action-btn" onclick={onClose}>CLOSE</button>
       </footer>
@@ -157,6 +245,29 @@
     align-items: center;
     border-bottom: 2px solid var(--bg-dark);
     padding-bottom: 10px;
+  }
+
+  .tab-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .tab-bar button {
+    flex: 1;
+    background: var(--bg-dark);
+    border: 2px solid var(--text-secondary);
+    color: var(--text-secondary);
+    padding: 8px;
+    font-family: inherit;
+    font-size: 0.7rem;
+    cursor: pointer;
+  }
+
+  .tab-bar button.active {
+    background: var(--accent-cyan);
+    color: var(--bg-dark);
+    border-color: var(--accent-cyan);
   }
 
   h2 {

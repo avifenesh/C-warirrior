@@ -243,8 +243,7 @@ function loadAudio(src: string): Promise<HTMLAudioElement> {
 }
 
 /** Preload images for a level (placeholder uses default manifest). */
-export async function preloadLevel(levelId: string): Promise<void> {
+export async function preloadLevel(_levelId: string): Promise<void> {
     // For now, reuse the default manifest. Extend when per-level assets are defined.
     await loadAssets(DEFAULT_MANIFEST).catch(() => undefined);
-    console.debug(`[assets] preload complete for level ${levelId}`);
 }

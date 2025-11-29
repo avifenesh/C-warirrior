@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
     import { getBackend, type Backend } from '$lib/backend';
-    import type { Direction, CodeResult, RenderState, LevelInfo, LevelData } from '$lib/types';
+    import type { Direction, CodeResult, RenderState, LevelInfo, LevelData, PlayerProgress } from '$lib/types';
     import GameWorld from '$lib/components/GameWorld.svelte';
     import CodeTerminal from '$lib/components/CodeTerminal.svelte';
     import GameHUD from '$lib/components/GameHUD.svelte';
@@ -13,7 +13,7 @@
     import ProgressTracker from '$lib/components/ProgressTracker.svelte';
 
     // Backend + state (Runes, no svelte/store)
-    let backend: Backend | null = null;
+    let backend = $state<Backend | null>(null);
     let renderState = $state<RenderState | null>(null);
     let levels = $state<LevelInfo[]>([]);
     let currentLevelData = $state<LevelData | null>(null);
@@ -45,6 +45,18 @@
     // Hint state
     let hints = $state<string[]>([]);
     let loadingHint = $state(false);
+
+    // Progress state
+    let playerProgress = $state<PlayerProgress | null>(null);
+
+    async function fetchProgress() {
+        if (!backend) return;
+        try {
+            playerProgress = await backend.getProgress();
+        } catch (e) {
+            console.error('Failed to fetch progress:', e);
+        }
+    }
 
     async function handleRequestHint() {
         loadingHint = true;
@@ -161,6 +173,7 @@
             renderState = await backend.initGame();
             uiStatus = { ...uiStatus, status: 'Loading levels...' };
             await hydrateLevels();
+            await fetchProgress();
             await bindEvents();
             // Only set loading false after levels are fetched
             uiStatus = { ...uiStatus, loading: false, status: 'Main Menu', error: null };
@@ -348,11 +361,12 @@
         <!-- Progress Tracker (bottom-left) -->
         <div class="fixed bottom-4 left-4 z-40">
             <ProgressTracker
-                currentXP={renderState?.player?.xp ?? 0}
-                totalXP={1000}
+                currentXP={playerProgress?.total_xp ?? renderState?.player?.xp ?? 0}
+                totalXP={levels.reduce((sum, l) => sum + l.xp_reward, 0) || 7075}
                 currentLevel={currentLevelId ?? 'L01'}
-                completedLevels={[]}
+                completedLevels={playerProgress?.completed_levels ?? []}
                 totalLevels={levels.length || 15}
+                nextLevel={getNextLevelId()}
             />
         </div>
 
@@ -369,7 +383,12 @@
 </ErrorBoundary>
 
 <!-- Settings Modal -->
-<Settings isOpen={showSettings} onClose={() => showSettings = false} />
+<Settings
+    isOpen={showSettings}
+    onClose={() => showSettings = false}
+    backend={backend}
+    onLoadGame={(state) => { renderState = state; }}
+/>
 
 <style>
     /* Pixel Art Modal Styles */

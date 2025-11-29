@@ -63,7 +63,9 @@ struct SubmitCodeResponse {
     compile_error: Option<String>,
     execution_time_ms: u64,
     feedback: String,
+    hint: Option<String>,
     xp_earned: Option<u32>,
+    doors_unlocked: bool,
     render_state: RenderState,
 }
 
@@ -72,6 +74,22 @@ struct HealthResponse {
     status: String,
     version: String,
     database: String,
+}
+
+#[derive(Debug, Serialize)]
+struct ProgressResponse {
+    total_xp: u32,
+    completed_levels: Vec<String>,
+    current_level: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+struct SaveSlotResponse {
+    id: String,
+    name: String,
+    timestamp: String,
+    progress: String,
+    empty: bool,
 }
 
 // Extension for device ID
@@ -147,6 +165,13 @@ async fn main() {
         .route("/api/levels", get(get_available_levels))
         .route("/api/levels/:id/load", post(load_level))
         .route("/api/code/submit", post(submit_code))
+        .route("/api/levels/current", get(get_current_level))
+        .route("/api/code/hint/:index", get(get_hint))
+        .route("/api/player/progress", get(get_progress))
+        .route("/api/saves", get(list_saves))
+        .route("/api/saves/:slot", post(save_game))
+        .route("/api/saves/:slot", get(load_save))
+        .route("/api/saves/:slot", axum::routing::delete(delete_save))
         .layer(middleware::from_fn(device_id_middleware))
         .layer(cors)
         .with_state(state);
@@ -350,7 +375,9 @@ async fn process_action(
             game_state.game_phase = GamePhase::Paused;
         }
         PlayerAction::Resume => {
-            game_state.game_phase = GamePhase::Playing;
+            if matches!(game_state.game_phase, GamePhase::Paused | GamePhase::Coding) {
+                game_state.game_phase = GamePhase::Playing;
+            }
         }
         PlayerAction::SubmitCode { .. } => {
             return Err((
@@ -526,9 +553,192 @@ async fn submit_code(
         compile_error: execution_result.compile_error,
         execution_time_ms: execution_result.execution_time_ms,
         feedback,
+        hint: None,
         xp_earned,
+        doors_unlocked: success,
         render_state: game_state.to_render_state(),
     }))
+}
+
+async fn get_current_level(
+    State(state): State<Arc<AppState>>,
+    axum::Extension(device_id): axum::Extension<DeviceId>,
+) -> Result<Json<LevelData>, (StatusCode, String)> {
+    let game_state = get_or_create_session(&state, &device_id.0)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
+
+    let level_id = game_state.current_level_id.as_ref().ok_or_else(|| {
+        (
+            StatusCode::BAD_REQUEST,
+            "No level currently loaded".to_string(),
+        )
+    })?;
+
+    let level = state.levels.get_level(level_id).ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            format!("Level '{}' not found", level_id),
+        )
+    })?;
+
+    Ok(Json(level.clone()))
+}
+
+async fn get_hint(
+    State(state): State<Arc<AppState>>,
+    axum::Extension(device_id): axum::Extension<DeviceId>,
+    Path(index): Path<usize>,
+) -> Result<Json<String>, (StatusCode, String)> {
+    let game_state = get_or_create_session(&state, &device_id.0)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
+
+    let level_id = game_state.current_level_id.as_ref().ok_or_else(|| {
+        (
+            StatusCode::BAD_REQUEST,
+            "No level currently loaded".to_string(),
+        )
+    })?;
+
+    let level = state.levels.get_level(level_id).ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            format!("Level '{}' not found", level_id),
+        )
+    })?;
+
+    let hint = level.hints.get(index).ok_or_else(|| {
+        (StatusCode::NOT_FOUND, "No more hints available".to_string())
+    })?;
+
+    Ok(Json(hint.clone()))
+}
+
+async fn get_progress(
+    State(state): State<Arc<AppState>>,
+    axum::Extension(device_id): axum::Extension<DeviceId>,
+) -> Result<Json<ProgressResponse>, (StatusCode, String)> {
+    let game_state = get_or_create_session(&state, &device_id.0)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
+
+    // Use progression struct, not legacy fields (which are #[serde(skip)])
+    Ok(Json(ProgressResponse {
+        total_xp: game_state.progression.total_xp,
+        completed_levels: game_state.progression.completed_levels.iter().cloned().collect(),
+        current_level: game_state.current_level_id.clone(),
+    }))
+}
+
+async fn list_saves(
+    State(state): State<Arc<AppState>>,
+    axum::Extension(device_id): axum::Extension<DeviceId>,
+) -> Result<Json<Vec<SaveSlotResponse>>, (StatusCode, String)> {
+    let saves = db::list_save_slots(&state.db, &device_id.0)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("DB error: {}", e)))?;
+
+    let response: Vec<SaveSlotResponse> = saves
+        .into_iter()
+        .map(|s| {
+            let progress = format!(
+                "Level {} | {} XP | {} levels",
+                s.current_level.as_deref().unwrap_or("None"),
+                s.total_xp,
+                s.levels_completed
+            );
+            SaveSlotResponse {
+                id: s.id.to_string(),
+                name: s.slot_name,
+                timestamp: s.updated_at.to_rfc3339(),
+                progress,
+                empty: false,
+            }
+        })
+        .collect();
+
+    Ok(Json(response))
+}
+
+async fn save_game(
+    State(state): State<Arc<AppState>>,
+    axum::Extension(device_id): axum::Extension<DeviceId>,
+    Path(slot): Path<String>,
+) -> Result<Json<SaveSlotResponse>, (StatusCode, String)> {
+    let game_state = get_or_create_session(&state, &device_id.0)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
+
+    let save_data = serde_json::to_value(&game_state)
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Serialize error: {}", e)))?;
+
+    let saved = db::upsert_save_slot(
+        &state.db,
+        &device_id.0,
+        &slot,
+        &save_data,
+        game_state.progression.total_xp as i32,
+        game_state.progression.completed_levels.len() as i32,
+        game_state.current_level_id.as_deref(),
+    )
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("DB error: {}", e)))?;
+
+    let progress = format!(
+        "Level {} | {} XP | {} levels",
+        saved.current_level.as_deref().unwrap_or("None"),
+        saved.total_xp,
+        saved.levels_completed
+    );
+
+    Ok(Json(SaveSlotResponse {
+        id: saved.id.to_string(),
+        name: saved.slot_name,
+        timestamp: saved.updated_at.to_rfc3339(),
+        progress,
+        empty: false,
+    }))
+}
+
+#[derive(Debug, Serialize)]
+struct LoadSaveResponse {
+    render_state: RenderState,
+}
+
+async fn load_save(
+    State(state): State<Arc<AppState>>,
+    axum::Extension(device_id): axum::Extension<DeviceId>,
+    Path(slot): Path<String>,
+) -> Result<Json<LoadSaveResponse>, (StatusCode, String)> {
+    let save = db::get_save_slot(&state.db, &device_id.0, &slot)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("DB error: {}", e)))?
+        .ok_or_else(|| (StatusCode::NOT_FOUND, format!("Save slot '{}' not found", slot)))?;
+
+    let game_state: GameState = serde_json::from_value(save.save_data)
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Parse error: {}", e)))?;
+
+    // Update session with loaded state
+    persist_session(&state, &device_id.0, &game_state)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
+
+    Ok(Json(LoadSaveResponse {
+        render_state: game_state.to_render_state(),
+    }))
+}
+
+async fn delete_save(
+    State(state): State<Arc<AppState>>,
+    axum::Extension(device_id): axum::Extension<DeviceId>,
+    Path(slot): Path<String>,
+) -> Result<StatusCode, (StatusCode, String)> {
+    db::delete_save_slot(&state.db, &device_id.0, &slot)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("DB error: {}", e)))?;
+
+    Ok(StatusCode::NO_CONTENT)
 }
 
 #[cfg(test)]

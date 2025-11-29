@@ -98,6 +98,7 @@ pub struct LevelInfo {
     pub concept: String,
     pub completed: bool,
     pub locked: bool,
+    pub xp_reward: u32,
 }
 
 impl LevelRegistry {
@@ -144,6 +145,7 @@ impl LevelRegistry {
                 concept: l.concept.clone(),
                 completed: false, // Placeholder, logic for this belongs in GameState
                 locked: false,    // Placeholder
+                xp_reward: l.xp_reward,
             })
             .collect()
     }
