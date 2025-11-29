@@ -66,10 +66,18 @@
         loadingHint = false;
     }
 
-    // Reset hints when terminal opens
+    // Reset hints and ensure level data is loaded when terminal opens
     $effect(() => {
         if (showTerminal) {
             hints = [];
+            // Ensure currentLevelData is loaded (handles race condition during level start)
+            if (!currentLevelData && backend) {
+                backend.getLevelData().then((data) => {
+                    currentLevelData = data;
+                }).catch(() => {
+                    // Silently fail - data may already be loading via startLevel
+                });
+            }
         }
     });
 

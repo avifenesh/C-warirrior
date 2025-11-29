@@ -36,10 +36,23 @@
     const dispatcher = createEventDispatcher();
     let code = $state(initialCode);
     let textareaRef: HTMLTextAreaElement | null = null;
+    let showMissionBriefing = $state(true); // Show mission briefing on first open
 
     onMount(() => {
-        textareaRef?.focus();
+        // Focus textarea after mission briefing is dismissed
+        if (!showMissionBriefing) {
+            textareaRef?.focus();
+        }
     });
+
+    function dismissMissionBriefing() {
+        showMissionBriefing = false;
+        tick().then(() => textareaRef?.focus());
+    }
+
+    function openMissionBriefing() {
+        showMissionBriefing = true;
+    }
 
     function escapeHtml(str: string) {
         return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -253,6 +266,16 @@
                 <h2 class="grimoire-title">SPELL CODEX</h2>
             </div>
             <div class="flex items-center gap-3">
+                {#if challenge}
+                    <button
+                        onclick={openMissionBriefing}
+                        class="mission-btn"
+                        aria-label="View mission"
+                        title="View Mission"
+                    >
+                        &#128220; Mission
+                    </button>
+                {/if}
                 <span class="status-badge {busy ? 'casting' : isSuccess ? 'success' : isFailure ? 'failure' : ''}">
                     {statusLabel}
                 </span>
@@ -268,6 +291,33 @@
 
         <!-- Body -->
         <div class="grimoire-body">
+            <!-- Mission Briefing Modal -->
+            {#if showMissionBriefing && challenge}
+                <div class="mission-briefing-overlay">
+                    <div class="mission-briefing-modal">
+                        <div class="mission-briefing-header">
+                            <span class="mission-icon">&#128220;</span>
+                            <h2 class="mission-briefing-title">MISSION BRIEFING</h2>
+                        </div>
+                        <div class="mission-briefing-content">
+                            <p class="mission-briefing-text">{challenge}</p>
+                            {#if expectedOutput}
+                                <div class="mission-expected">
+                                    <span class="mission-expected-label">Target Output:</span>
+                                    <code class="mission-expected-value">{expectedOutput}</code>
+                                </div>
+                            {/if}
+                        </div>
+                        <div class="mission-briefing-footer">
+                            <p class="mission-tip">Press the <span class="mission-highlight">📜 Mission</span> button anytime to review this objective.</p>
+                            <button onclick={dismissMissionBriefing} class="mission-start-btn">
+                                BEGIN QUEST
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {/if}
+
             <!-- Challenge Scroll -->
             {#if challenge}
                 <div class="quest-scroll">
@@ -566,6 +616,158 @@
     .hint-btn:disabled {
         opacity: 0.5;
         cursor: not-allowed;
+    }
+
+    /* Mission Button in Header */
+    .mission-btn {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 8px;
+        padding: 6px 10px;
+        background: linear-gradient(180deg, #1e3a5f 0%, #0f3460 100%);
+        border: 2px solid #67e8f9;
+        border-bottom-color: #0f3460;
+        border-right-color: #0f3460;
+        color: #67e8f9;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .mission-btn:hover {
+        background: linear-gradient(180deg, #2a4a70 0%, #1a4570 100%);
+        border-color: #a5f3fc;
+        color: #a5f3fc;
+    }
+
+    /* Mission Briefing Modal */
+    .mission-briefing-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(10, 10, 30, 0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        padding: 20px;
+    }
+
+    .mission-briefing-modal {
+        background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
+        border: 4px solid #67e8f9;
+        border-top-color: #a5f3fc;
+        border-left-color: #a5f3fc;
+        box-shadow:
+            inset 0 0 20px rgba(103, 232, 249, 0.1),
+            8px 8px 0 rgba(0, 0, 0, 0.5);
+        max-width: 500px;
+        width: 100%;
+        animation: briefing-appear 0.3s ease-out;
+    }
+
+    @keyframes briefing-appear {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .mission-briefing-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        padding: 16px 20px;
+        background: linear-gradient(180deg, #0f3460 0%, #16213e 100%);
+        border-bottom: 3px solid #0a0a1e;
+    }
+
+    .mission-icon {
+        font-size: 24px;
+    }
+
+    .mission-briefing-title {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 14px;
+        color: #67e8f9;
+        text-shadow: 2px 2px 0 #0a0a1e;
+        letter-spacing: 2px;
+    }
+
+    .mission-briefing-content {
+        padding: 24px;
+    }
+
+    .mission-briefing-text {
+        font-size: 15px;
+        color: #e2e8f0;
+        line-height: 1.7;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .mission-expected {
+        background: #0a0a14;
+        border: 3px solid #1e293b;
+        padding: 12px 16px;
+        text-align: center;
+    }
+
+    .mission-expected-label {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 9px;
+        color: #64748b;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .mission-expected-value {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 16px;
+        color: #4ade80;
+    }
+
+    .mission-briefing-footer {
+        padding: 16px 24px 24px;
+        text-align: center;
+    }
+
+    .mission-tip {
+        font-size: 11px;
+        color: #64748b;
+        margin-bottom: 16px;
+    }
+
+    .mission-highlight {
+        color: #67e8f9;
+        font-weight: bold;
+    }
+
+    .mission-start-btn {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 12px;
+        padding: 14px 28px;
+        background: linear-gradient(180deg, #059669 0%, #047857 100%);
+        border: 3px solid #34d399;
+        border-bottom-color: #047857;
+        border-right-color: #047857;
+        box-shadow: 4px 4px 0 #0a0a1e;
+        color: #d1fae5;
+        cursor: pointer;
+        transition: transform 0.1s;
+    }
+
+    .mission-start-btn:hover {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 #0a0a1e;
+        background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+    }
+
+    .mission-start-btn:active {
+        transform: translate(4px, 4px);
+        box-shadow: none;
     }
 
     /* Hints */
