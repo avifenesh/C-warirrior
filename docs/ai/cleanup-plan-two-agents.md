@@ -18,6 +18,25 @@ Phases below are meant to be bite-sized; agents should complete one sub-batch at
 
 ---
 
+## Current Status Snapshot
+
+This document is now primarily for **context** and **remaining work**, not a history log.
+
+At a high level, desktop and web are already aligned for core gameplay, types, Save/Load, and progress. The remaining joint cleanup items are:
+
+- **Baseline validation**
+  - Backend agent runs `cargo test` + HTTP smoke tests and surfaces any failing cases.
+  - Frontend agent runs full web + Tauri flows and notes any regressions separately.
+- **Events & tick behavior (Tauri)**
+  - Decide whether to implement a `game_tick` loop on desktop or to explicitly document that desktop currently uses request/response only (with level-completion/error events).
+  - Update docs so frontend agents know what events to expect.
+- **Feature placeholders (future feature work)**
+  - Inventory actions and achievements should be treated as backlog features and addressed with fresh, focused specs when they become priority.
+
+Use the per-agent files for concrete task lists:
+- Backend: `docs/ai/cleanup-agent-backend.md`
+- Frontend: `docs/ai/cleanup-agent-frontend.md`
+
 ## Phase 0 – Baseline & Mapping
 
 Goal: Confirm current behavior and ensure both agents understand the existing wiring before edits.
@@ -220,4 +239,3 @@ This plan should give two agents clear, non-overlapping responsibilities while c
 - Logging cleanup
 
 Agents should update this file as they complete tasks or need to adjust ownership for any specific file in a phase.
-

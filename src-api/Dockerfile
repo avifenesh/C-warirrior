@@ -6,7 +6,8 @@ RUN apk add --no-cache musl-dev openssl-dev openssl-libs-static pkgconfig
 WORKDIR /app
 COPY . .
 
-# Build statically linked binary
+# Build with limited parallelism to avoid OOM
+ENV CARGO_BUILD_JOBS=2
 RUN RUSTFLAGS='-C target-feature=-crt-static' cargo build --release -p code-warrior-api
 
 # Runtime - Alpine for small image

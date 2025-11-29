@@ -2,15 +2,39 @@
 
 Scope: Rust core logic (`src/`), HTTP API (`src-api/`), Tauri wrapper (`src-tauri/`), DB schema/operations. Do **not** edit TypeScript files; match TS contracts defined by the frontend agent.
 
-High-level goals:
-- Keep all game rules and state in Rust.
-- Make HTTP API and Tauri behave the same from the UI’s perspective.
-- Implement Save/Load for HTTP in a way that mirrors Tauri’s semantics.
-- Reduce noise from debug logging.
+Context (where things stand now):
+- Core desktop/web parity is in place: shared `CodeResult`/events, HTTP `getLevelData`/`getHint`/progress + Save/Load routes, and matching Tauri commands.
+- Logging has been normalized to `tracing` on backend; frontend no longer uses the old `lib/api.ts` path.
 
-See `docs/ai/cleanup-entry.md` for shared goals and coordination rules.
+What matters for backend cleanup going forward is only the **remaining** items below.
 
 ---
+
+## Remaining Backend Cleanup Tasks
+
+### 1. Baseline tests & health
+
+- [ ] Run `cargo test` in `src/` and `src-api/` and note any failing tests (do not auto-fix unrelated failures; just record them).
+- [ ] Run a small HTTP smoke suite against a dev DB:
+  - `/health`
+  - `/api/game/init`, `/api/game/state`, `/api/game/render-state`
+  - `/api/levels`, `/api/levels/:id/load`
+  - `/api/code/submit` (success + failure)
+  - `/api/saves` and `/api/saves/:slot` (save + load + delete)
+- [ ] Confirm Tauri command registration in `src-tauri/src/main.rs` matches actual command functions in `src-tauri/src/commands/*.rs`.
+
+### 2. Events & tick behavior (optional but recommended to clarify)
+
+- [ ] Decide how desktop (Tauri) should deliver real-time updates:
+  - Option A: implement a simple tick loop that periodically calls `GameState::update` and emits `game_tick` events using helpers in `src/events.rs`.
+  - Option B: explicitly document that desktop currently uses request/response like HTTP, and that only `level_complete`/`game_error` events are emitted.
+- [ ] Whichever option you choose, update `docs/interfaces/tauri-commands.md` and (if necessary) `src/events.rs` to make the behavior clear to frontend agents.
+
+### 3. Feature placeholders (for future work, not immediate cleanup)
+
+These are **not** required for cleanup but worth noting for backlog:
+- Inventory actions (`PlayerAction::OpenInventory` / `UseItem`) are still no-ops in both Tauri and HTTP handlers; they will need real semantics and persistence later.
+- Achievements are stored in DB but not exposed via dedicated APIs or used on Tauri; a future feature pass can define the achievements model and endpoints.
 
 ## Phase 0 – Baseline & Mapping
 
@@ -194,4 +218,3 @@ Objective: remove noisy debug logs from Tauri/backend code.
 - [ ] Ensure HTTP API uses `tracing` exclusively and contains no stray `println!` or `dbg!` calls.
 
 After each phase, run appropriate tests and basic manual flows (see AGENTS.md) before moving on.
-

@@ -228,11 +228,39 @@ class EventPoller {
     }
 }
 
+// Polling configuration
+const POLLING_CONFIG = {
+    /** Polling interval (ms) */
+    INTERVAL: 500,
+    /** Time without activity before stopping polling entirely (ms) */
+    IDLE_STOP_THRESHOLD: 30000,
+};
+
 // HTTP Backend implementation
 class HttpBackend implements Backend {
     private poller = new EventPoller();
     private currentLevelData: LevelData | null = null;
     private renderStateCache: { state: RenderState; timestamp: number } | null = null;
+
+    // Activity tracking for smart polling
+    private lastActivityTime: number = Date.now();
+
+    /** Mark user activity to keep polling active */
+    private markActivity(): void {
+        this.lastActivityTime = Date.now();
+    }
+
+    /** Check if polling should be active */
+    private shouldContinuePolling(): boolean {
+        // Don't poll if no level is loaded
+        if (this.currentLevelData === null) return false;
+
+        // Stop polling after extended idle period to save resources
+        const idleTime = Date.now() - this.lastActivityTime;
+        if (idleTime > POLLING_CONFIG.IDLE_STOP_THRESHOLD) return false;
+
+        return true;
+    }
 
     private cacheRenderState(state: RenderState) {
         this.renderStateCache = { state, timestamp: Date.now() };
@@ -270,6 +298,7 @@ class HttpBackend implements Backend {
     }
 
     async processAction(action: PlayerAction): Promise<RenderState> {
+        this.markActivity(); // User is actively playing
         const state = await apiRequest<RenderState>('/api/game/action', {
             method: 'POST',
             body: JSON.stringify(action),
@@ -284,6 +313,7 @@ class HttpBackend implements Backend {
     }
 
     async loadLevel(levelId: string): Promise<void> {
+        this.markActivity(); // User started a level
         const payload = await apiRequest<{ level_data: LevelData; render_state: RenderState }>(`/api/levels/${levelId}/load`, {
             method: 'POST',
         });
@@ -310,6 +340,7 @@ class HttpBackend implements Backend {
 
     // Code
     async submitCode(code: string): Promise<CodeResult> {
+        this.markActivity(); // User submitted code
         const result = await apiRequest<CodeResult & { render_state?: RenderState; xp_earned?: number }>(
             '/api/code/submit',
             {
@@ -365,13 +396,13 @@ class HttpBackend implements Backend {
     }
 
     // Events (using polling)
-    // Poll at 500ms for smoother UX while reducing API load (~2 req/sec vs ~3)
+    // Polling stops after 30s of inactivity to save resources; resumes on user action
     async onGameTick(cb: (state: RenderState) => void): Promise<UnsubscribeFn> {
         return this.poller.subscribe(
             'game-tick',
             cb,
-            500,
-            () => this.currentLevelData !== null,
+            POLLING_CONFIG.INTERVAL,
+            () => this.shouldContinuePolling(),
             () => this.getRenderState()
         );
     }

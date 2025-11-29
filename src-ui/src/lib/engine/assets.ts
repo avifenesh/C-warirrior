@@ -242,8 +242,12 @@ function loadAudio(src: string): Promise<HTMLAudioElement> {
     });
 }
 
-/** Preload images for a level (placeholder uses default manifest). */
+/**
+ * Preload images for a level.
+ * @deprecated Use preloadLevelAssets from assets-cache.ts instead for cached loading.
+ */
 export async function preloadLevel(_levelId: string): Promise<void> {
-    // For now, reuse the default manifest. Extend when per-level assets are defined.
-    await loadAssets(DEFAULT_MANIFEST).catch(() => undefined);
+    // Import dynamically to avoid circular dependency
+    const { getGlobalAssets } = await import('./assets-cache');
+    await getGlobalAssets().catch(() => undefined);
 }

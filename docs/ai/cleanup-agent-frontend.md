@@ -12,6 +12,39 @@ See `docs/ai/cleanup-entry.md` for shared goals and coordination rules.
 
 ---
 
+Context (where things stand now):
+- Frontend uses `src-ui/src/lib/backend` for all backend calls (no direct `invoke`/`fetch` from components).
+- TS types for `CodeResult`, events, Save/Load, and progress match what the backends expose.
+- Save/Load and progress are visible in UI via `Settings.svelte` and `ProgressTracker.svelte`.
+
+The remaining cleanup for frontend is small; focus on the items below rather than historic steps.
+
+---
+
+## Remaining Frontend Cleanup Tasks
+
+### 1. Full-flow validation (web + Tauri)
+
+- [ ] On **web (HTTP backend)**, verify this full path end-to-end:
+  - Load app → main menu → start first level → move around → open terminal → submit correct and incorrect C code → see level completion → Save and Load via Settings → refresh progress display.
+- [ ] On **desktop (Tauri)**, repeat the same path using the Tauri dev build:
+  - Confirm Save/Load works (slots list, save, load, delete) and that resumed games restore `renderState` correctly.
+- [ ] Capture any regressions (UI glitches, broken flows) as separate, focused tickets; do not hide them behind generic error toasts.
+
+### 2. Events usage sanity check (optional)
+
+- [ ] Ensure that components using `backend.onGameTick`, `onLevelComplete`, `onCodeOutput`, and `onGameError`:
+  - Treat these callbacks as **optional enhancements** (desktop) and not required for correctness on web.
+  - Handle the HTTP backend’s no-op event subscriptions without throwing or leaking resources.
+
+### 3. Feature placeholders (for future work, not immediate cleanup)
+
+These are backlog items rather than cleanup:
+- `Achievements.svelte` is ready but unused; a future feature pass should:
+  - Design the achievements model with the backend agent and add APIs.
+  - Wire the component into the main UI (HUD or Settings) only once real data exists.
+- Inventory UI is not yet implemented; avoid surfacing any inventory controls until backend semantics are defined.
+
 ## Phase 0 – Baseline & Mapping
 
 - [ ] Verify main web flow:
@@ -188,4 +221,3 @@ Objective: remove noisy console logging while keeping meaningful error logs.
   - [ ] Remove `console.debug` for preload completion or guard it behind a debug flag.
 
 After each phase, re-run the main web and Tauri flows to ensure the UI still behaves correctly. Do not add new logging unless it directly supports error diagnosis. 
-

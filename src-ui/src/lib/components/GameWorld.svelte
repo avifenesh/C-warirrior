@@ -2,7 +2,8 @@
     import { onMount, type Snippet } from 'svelte';
     import { createEventDispatcher } from 'svelte';
     import type { RenderState, Direction } from '$lib/types';
-    import { loadAssets, DEFAULT_MANIFEST, type LoadedAssets } from '$lib/engine/assets';
+    import { type LoadedAssets } from '$lib/engine/assets';
+    import { getGlobalAssets } from '$lib/engine/assets-cache';
     import { ANIMATIONS, startAnimation, getCurrentFrame, type AnimationState } from '$lib/engine/animation';
     import { GameRenderer } from '$lib/engine/renderer';
     import { Camera } from '$lib/engine/camera';
@@ -36,9 +37,72 @@
     let terminalAnimState = $state<AnimationState | null>(null);
     let lastPlayerPos = { x: 0, y: 0 }; // NOT reactive - just for comparison
     let lastCodeSuccess = false; // NOT reactive - track code success state
-    
+
+    // Change detection for render optimization
+    let lastRenderState: RenderState | null = null;
+    let stateChanged = true; // Track if state changed since last render
+
     // Backend uses 32px tile size for positions
     const BACKEND_TILE_SIZE = 32;
+
+    /**
+     * Cheap state comparison to detect meaningful changes.
+     * Checks for changes that would require tile cache rebuild.
+     */
+    function hasStateChanged(prev: RenderState | null, next: RenderState | null): boolean {
+        // State went from null to something or vice versa
+        if (!prev && !next) return false;
+        if (!prev || !next) return true;
+
+        // Game phase changed
+        if (prev.game_phase !== next.game_phase) return true;
+
+        // Level changed
+        if (prev.current_level_id !== next.current_level_id) return true;
+
+        // Player moved
+        if (
+            prev.player.position.x !== next.player.position.x ||
+            prev.player.position.y !== next.player.position.y
+        )
+            return true;
+
+        // Player direction changed
+        if (prev.player.facing !== next.player.facing) return true;
+
+        // Viewport changed (scrolling)
+        if (
+            prev.viewport_offset.x !== next.viewport_offset.x ||
+            prev.viewport_offset.y !== next.viewport_offset.y
+        )
+            return true;
+
+        // Tile grid dimensions changed (new level or area)
+        if (
+            prev.visible_tiles.length !== next.visible_tiles.length ||
+            (prev.visible_tiles[0]?.length ?? 0) !== (next.visible_tiles[0]?.length ?? 0)
+        )
+            return true;
+
+        // Check for door state changes (walkable toggles when unlocked)
+        // Only check doors since they're the main dynamic tile type
+        for (let y = 0; y < next.visible_tiles.length; y++) {
+            const prevRow = prev.visible_tiles[y];
+            const nextRow = next.visible_tiles[y];
+            if (!prevRow || !nextRow) continue;
+            for (let x = 0; x < nextRow.length; x++) {
+                const prevTile = prevRow[x];
+                const nextTile = nextRow[x];
+                if (!prevTile || !nextTile) continue;
+                // Door walkability changed = door unlocked/locked
+                if (nextTile.tile_type === 'door' && prevTile.walkable !== nextTile.walkable) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
     // Compute nearTerminal as derived state to avoid infinite loop
     const nearTerminal = $derived.by(() => {
@@ -111,12 +175,12 @@
             renderer = new GameRenderer(canvasRef, { tileSize });
         }
 
-        loadAssets(DEFAULT_MANIFEST)
+        getGlobalAssets()
             .then((loadedAssets) => {
                 assets = loadedAssets;
                 assetsLoaded = true;
                 renderer?.setAssets(loadedAssets);
-                
+
                 // Initialize animations
                 playerAnimState = startAnimation(ANIMATIONS.playerIdle);
                 terminalAnimState = startAnimation(ANIMATIONS.terminalGlow);
@@ -134,6 +198,12 @@
 
             const deltaTime = lastFrameTime > 0 ? currentTime - lastFrameTime : 16.67;
             lastFrameTime = currentTime;
+
+            // Detect state changes for render optimization
+            stateChanged = hasStateChanged(lastRenderState, currentState);
+            if (stateChanged) {
+                lastRenderState = currentState;
+            }
 
             // Track player movement and update animations (non-reactive)
             if (currentState) {
@@ -163,18 +233,19 @@
                 lastCodeSuccess = codeSuccess;
             }
 
-            // Update particles
+            // Always update particles (they animate independently)
             particles.update(deltaTime);
 
-            // Render scene
+            // Render scene - pass stateChanged hint for tile cache invalidation
             if (renderer && canvasRef) {
                 try {
                     renderer.render(
-                        currentState, 
-                        particles, 
+                        currentState,
+                        particles,
                         deltaTime,
                         currentTime,
-                        { player: playerAnimState, terminal: terminalAnimState }
+                        { player: playerAnimState, terminal: terminalAnimState },
+                        stateChanged // Hint: tiles may need redraw
                     );
                 } catch (err) {
                     console.error('[GameWorld] Rendering error:', err);
