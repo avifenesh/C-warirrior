@@ -339,12 +339,19 @@
             inset 0 0 0 3px #1a1a2e,
             8px 8px 0 #050510;
         padding: 4px;
+        max-width: 100%;
+        overflow: hidden;
     }
 
     .game-canvas {
         display: block;
         image-rendering: pixelated;
         image-rendering: crisp-edges;
+        /* Scale canvas to fit viewport while maintaining aspect ratio */
+        max-width: 100%;
+        max-height: calc(100vh - 100px);
+        width: auto;
+        height: auto;
     }
 
     /* Pixel art interaction prompt */
