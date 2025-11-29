@@ -3,131 +3,237 @@
     "id": "L01",
     "title": "The First Spell",
     "concept": "printf",
-    "description": "The door is voice-activated. You must speak the ancient password to enter.",
-    "code_template": "#include <stdio.h>\n\nint main() {\n    // Print 'Hello, World!'\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Hello, World!\n"
-    },
+    "description": "The door is voice-activated. Master the art of returning values to unlock it.",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    printf(\"%d\\n\", getSecret());\n    return 0;\n}",
     "hints": [
-      "Use printf() to print text to the screen",
-      "Don't forget the \\n at the end for a newline",
-      "The syntax is: printf(\"text here\\n\");"
+      "Functions return values with the 'return' keyword",
+      "The return type goes before the function name",
+      "Example: int myFunc() { return 5; }"
     ],
     "xp_reward": 50,
     "map_file": "maps/L01_first_spell.json",
-    "challenges": [
-      {
-        "id": "printf_hello",
-        "prompt": "Cast your first spell by printing 'Hello, World!'",
-        "expected_output": "Hello, World!",
-        "starter_code": "#include <stdio.h>\n\nint main() {\n    // Your spell here\n    return 0;\n}"
-      }
+    "challenges": [],
+    "lesson": {
+      "title": "Functions and Return Values",
+      "content": [
+        "In C, functions can return values to their caller. This is one of the most fundamental concepts in programming.",
+        "A function's return type tells the compiler what kind of value it will send back. The 'int' type means the function returns a whole number.",
+        "Use the 'return' keyword followed by the value you want to send back."
+      ],
+      "examples": [
+        {
+          "code": "int getFive() {\n    return 5;\n}",
+          "explanation": "This function returns the integer 5 whenever it's called."
+        },
+        {
+          "code": "int getAnswer() {\n    return 42;\n}",
+          "explanation": "Functions can return any integer value."
+        }
+      ]
+    },
+    "function_signature": {
+      "name": "getSecret",
+      "return_type": "int",
+      "parameters": []
+    },
+    "user_template": "int getSecret() {\n    // Return the secret number: 42\n    \n}",
+    "test_cases": [
+      {"input": [], "expected": "42", "sample": true}
     ]
   },
   {
     "id": "L02",
     "title": "The Empty Backpack",
     "concept": "variables",
-    "description": "You found a sword, but you cannot carry it. Declare a space in your inventory for it.",
-    "code_template": "#include <stdio.h>\n\nint main() {\n    // Declare 'sword_weight' as an integer and assign it 10\n    \n    printf(\"Sword weight: %d\\n\", sword_weight);\n    return 0;\n}",
-    "success_criteria": {
-      "type": "regex_match",
-      "regex": "Sword weight: 10"
-    },
+    "description": "The merchant needs to calculate the total weight of items. Help him add them together!",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    printf(\"%d\\n\", addWeight(10, 25));\n    return 0;\n}",
     "hints": [
-      "Use 'int' to declare an integer variable",
-      "Assign the value 10 using '='",
-      "Example: int x = 5;"
+      "Use the + operator to add numbers",
+      "Return the sum of both parameters",
+      "Example: return a + b;"
     ],
     "xp_reward": 75,
     "map_file": "maps/L02_empty_backpack.json",
-    "challenges": [
-      {
-        "id": "declare_sword",
-        "prompt": "Declare an integer variable 'sword_weight' and set it to 10.",
-        "expected_output": "Sword weight: 10",
-        "starter_code": "#include <stdio.h>\n\nint main() {\n    // Declare 'sword_weight' as an integer and assign it 10\n    \n    printf(\"Sword weight: %d\\n\", sword_weight);\n    return 0;\n}"
-      }
+    "challenges": [],
+    "lesson": {
+      "title": "Variables and Arithmetic",
+      "content": [
+        "Variables store data that your program can use and modify. In C, you must declare a variable's type before using it.",
+        "Function parameters are special variables that receive values when the function is called.",
+        "Arithmetic operators like + (add), - (subtract), * (multiply), and / (divide) work with numeric variables."
+      ],
+      "examples": [
+        {
+          "code": "int add(int x, int y) {\n    return x + y;\n}",
+          "explanation": "Parameters x and y receive values from the caller, and we return their sum."
+        },
+        {
+          "code": "int double(int n) {\n    return n * 2;\n}",
+          "explanation": "We can perform arithmetic on parameters and return the result."
+        }
+      ]
+    },
+    "function_signature": {
+      "name": "addWeight",
+      "return_type": "int",
+      "parameters": [
+        {"name": "item1", "type": "int"},
+        {"name": "item2", "type": "int"}
+      ]
+    },
+    "user_template": "int addWeight(int item1, int item2) {\n    // Return the sum of item1 and item2\n    \n}",
+    "test_cases": [
+      {"input": [10, 25], "expected": "35", "sample": true},
+      {"input": [5, 5], "expected": "10", "sample": true},
+      {"input": [100, 200], "expected": "300", "sample": false},
+      {"input": [0, 42], "expected": "42", "sample": false},
+      {"input": [999, 1], "expected": "1000", "sample": false}
     ]
   },
   {
     "id": "L03",
     "title": "The Gatekeeper",
     "concept": "if/else",
-    "description": "The guard blocks the path. He only respects warriors of level 5 or higher.",
-    "code_template": "#include <stdio.h>\n\nint main() {\n    int player_level = 6;\n    \n    // Write an if statement to check if player_level >= 5\n    \n    return 0;\n}",
-    "success_criteria": {
-      "type": "regex_match",
-      "regex": "Access granted"
-    },
+    "description": "The guard blocks the path. He only respects warriors who can identify the larger of two numbers.",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    printf(\"%d\\n\", maxValue(3, 7));\n    return 0;\n}",
     "hints": [
-      "Use 'if (condition) { ... }'",
-      "The condition is 'player_level >= 5'",
-      "Print 'Access granted' inside the if block"
+      "Use if/else to compare the two values",
+      "if (a > b) means 'if a is greater than b'",
+      "Return the larger value in each branch"
     ],
     "xp_reward": 100,
     "map_file": "maps/L03_gatekeeper.json",
-    "challenges": [
-      {
-        "id": "check_level",
-        "prompt": "Write an if statement to check if player_level is greater than or equal to 5.",
-        "expected_output": "Access granted",
-        "starter_code": "#include <stdio.h>\n\nint main() {\n    int player_level = 6;\n    \n    // Write an if statement to check if player_level >= 5\n    // Print 'Access granted' if true\n    \n    return 0;\n}"
-      }
+    "challenges": [],
+    "lesson": {
+      "title": "Conditional Logic with if/else",
+      "content": [
+        "Programs often need to make decisions. The if/else statement lets your code choose between different paths based on conditions.",
+        "A condition is an expression that evaluates to true or false. Comparison operators include: > (greater), < (less), >= (greater or equal), <= (less or equal), == (equal), != (not equal).",
+        "The if block runs when the condition is true; the else block runs when it's false."
+      ],
+      "examples": [
+        {
+          "code": "int isPositive(int n) {\n    if (n > 0) {\n        return 1;\n    } else {\n        return 0;\n    }\n}",
+          "explanation": "Returns 1 if n is positive, 0 otherwise."
+        },
+        {
+          "code": "int bigger(int a, int b) {\n    if (a > b) {\n        return a;\n    }\n    return b;\n}",
+          "explanation": "Returns a if it's bigger, otherwise returns b."
+        }
+      ]
+    },
+    "function_signature": {
+      "name": "maxValue",
+      "return_type": "int",
+      "parameters": [
+        {"name": "a", "type": "int"},
+        {"name": "b", "type": "int"}
+      ]
+    },
+    "user_template": "int maxValue(int a, int b) {\n    // Return the larger of a and b\n    \n}",
+    "test_cases": [
+      {"input": [3, 7], "expected": "7", "sample": true},
+      {"input": [10, 2], "expected": "10", "sample": true},
+      {"input": [5, 5], "expected": "5", "sample": false},
+      {"input": [-3, -7], "expected": "-3", "sample": false},
+      {"input": [0, 100], "expected": "100", "sample": false},
+      {"input": [42, 0], "expected": "42", "sample": false}
     ]
   },
   {
     "id": "L04",
     "title": "The Repeating Strike",
     "concept": "loops",
-    "description": "The training dummy requires 5 hits to break. Don't tire yourself out swinging manually.",
-    "code_template": "#include <stdio.h>\n\nint main() {\n    // Use a for loop to print 'Strike!' 5 times\n    \n    return 0;\n}",
-    "success_criteria": {
-      "type": "output_count",
-      "token": "Strike!",
-      "count": 5
-    },
+    "description": "The training dummy requires repeated strikes. Calculate the sum of all strike damage from 1 to n.",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    printf(\"%d\\n\", sumStrikes(5));\n    return 0;\n}",
     "hints": [
-      "Use a for loop: for(int i=0; i<5; i++)",
-      "Put the printf inside the loop curly braces",
-      "Make sure to include \\n"
+      "Use a for loop: for(int i = 1; i <= n; i++)",
+      "Create a variable to accumulate the sum",
+      "Add each number to the sum inside the loop"
     ],
     "xp_reward": 125,
     "map_file": "maps/L04_repeating_strike.json",
-    "challenges": [
-      {
-        "id": "loop_strike",
-        "prompt": "Use a loop to print 'Strike!' 5 times.",
-        "expected_output": "Strike!\nStrike!\nStrike!\nStrike!\nStrike!\n",
-        "starter_code": "#include <stdio.h>\n\nint main() {\n    // Use a for loop to print 'Strike!' 5 times\n    \n    return 0;\n}"
-      }
+    "challenges": [],
+    "lesson": {
+      "title": "Loops for Repetition",
+      "content": [
+        "Loops let you repeat code multiple times. The for loop is perfect when you know how many times to repeat.",
+        "A for loop has three parts: initialization (int i = 1), condition (i <= n), and update (i++).",
+        "The loop body executes repeatedly while the condition is true. Use a variable to accumulate results across iterations."
+      ],
+      "examples": [
+        {
+          "code": "int countTo(int n) {\n    int sum = 0;\n    for (int i = 1; i <= n; i++) {\n        sum = sum + i;\n    }\n    return sum;\n}",
+          "explanation": "This loop adds 1+2+3+...+n by accumulating each value."
+        },
+        {
+          "code": "int multiply(int base, int times) {\n    int result = 0;\n    for (int i = 0; i < times; i++) {\n        result = result + base;\n    }\n    return result;\n}",
+          "explanation": "Multiplication through repeated addition."
+        }
+      ]
+    },
+    "function_signature": {
+      "name": "sumStrikes",
+      "return_type": "int",
+      "parameters": [
+        {"name": "n", "type": "int"}
+      ]
+    },
+    "user_template": "int sumStrikes(int n) {\n    // Return the sum of 1 + 2 + 3 + ... + n\n    \n}",
+    "test_cases": [
+      {"input": [5], "expected": "15", "sample": true},
+      {"input": [10], "expected": "55", "sample": true},
+      {"input": [1], "expected": "1", "sample": false},
+      {"input": [100], "expected": "5050", "sample": false},
+      {"input": [3], "expected": "6", "sample": false}
     ]
   },
   {
     "id": "L05",
     "title": "Array Fortress",
     "concept": "arrays",
-    "description": "A fortress of many rooms. Access each room by its index.",
-    "code_template": "#include <stdio.h>\n\nint main() {\n    int fortress_rooms[5] = {10, 20, 30, 40, 50};\n    \n    // Access the room at index 2\n    \n    return 0;\n}",
-    "success_criteria": {
-      "type": "regex_match",
-      "regex": "Room 2 contains 30"
-    },
+    "description": "A fortress of many rooms. Return the value stored at a specific room index.",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    printf(\"%d\\n\", getRoom(2));\n    return 0;\n}",
     "hints": [
-      "Arrays start at index 0",
-      "The third element is at index 2",
-      "Use fortress_rooms[2]"
+      "Arrays store multiple values at numbered positions",
+      "Array indices start at 0, not 1",
+      "Use arrayName[index] to access a value"
     ],
     "xp_reward": 200,
     "map_file": "maps/L05_array_fortress.json",
-    "challenges": [
-      {
-        "id": "access_index",
-        "prompt": "Print the value in the 3rd room (index 2). Format: 'Room 2 contains X'",
-        "expected_output": "Room 2 contains 30",
-        "starter_code": "#include <stdio.h>\n\nint main() {\n    int fortress_rooms[5] = {10, 20, 30, 40, 50};\n    \n    // Access the room at index 2 and print 'Room 2 contains %d'\n    \n    return 0;\n}"
-      }
+    "challenges": [],
+    "lesson": {
+      "title": "Arrays: Collections of Data",
+      "content": [
+        "Arrays let you store multiple values of the same type in a single variable. Each value has an index (position number).",
+        "IMPORTANT: Array indices start at 0! The first element is at index 0, the second at index 1, and so on.",
+        "Access array elements with square brackets: arr[0] gets the first element, arr[2] gets the third."
+      ],
+      "examples": [
+        {
+          "code": "int getFirst() {\n    int rooms[3] = {10, 20, 30};\n    return rooms[0];\n}",
+          "explanation": "Returns 10 - the element at index 0 (first position)."
+        },
+        {
+          "code": "int getThird() {\n    int data[5] = {5, 10, 15, 20, 25};\n    return data[2];\n}",
+          "explanation": "Returns 15 - the element at index 2 (third position)."
+        }
+      ]
+    },
+    "function_signature": {
+      "name": "getRoom",
+      "return_type": "int",
+      "parameters": [
+        {"name": "index", "type": "int"}
+      ]
+    },
+    "user_template": "int getRoom(int index) {\n    // Create array: {10, 20, 30, 40, 50}\n    // Return the element at 'index'\n    \n}",
+    "test_cases": [
+      {"input": [0], "expected": "10", "sample": true},
+      {"input": [2], "expected": "30", "sample": true},
+      {"input": [4], "expected": "50", "sample": false},
+      {"input": [1], "expected": "20", "sample": false},
+      {"input": [3], "expected": "40", "sample": false}
     ]
   },
   {

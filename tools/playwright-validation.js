@@ -68,6 +68,8 @@ const API_URL = process.env.API_URL || 'https://code-warrior-api-production.up.r
   // Test 4: New Quest
   process.stdout.write('  Testing NEW QUEST... ');
   try {
+    // Wait for NEW QUEST button to appear (not LOADING...)
+    await page.waitForSelector('text=NEW QUEST', { timeout: 15000 });
     await page.click('text=NEW QUEST', { timeout: 5000 });
     await page.waitForTimeout(3000);
     const quest = await page.locator('text=QUEST').first().isVisible();
