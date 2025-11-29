@@ -13,7 +13,7 @@ RUN RUSTFLAGS='-C target-feature=-crt-static' cargo build --release -p code-warr
 # Runtime - Alpine for small image
 FROM alpine:latest
 
-RUN apk add --no-cache gcc libc-dev ca-certificates
+RUN apk add --no-cache libgcc libstdc++ ca-certificates
 
 COPY --from=builder /app/target/release/code-warrior-api /usr/local/bin/
 
