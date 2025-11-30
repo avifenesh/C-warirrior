@@ -68,11 +68,24 @@ fn format_single_arg(param_type: &str, value: &serde_json::Value) -> Result<Stri
                 return Ok("NULL".to_string());
             }
         }
-        // Otherwise, create a pointer to a static variable
+        // Handle array input -> create compound literal array and pass pointer
+        if let Some(arr) = value.as_array() {
+            let elements: Result<Vec<String>, String> = arr
+                .iter()
+                .map(|v| {
+                    v.as_i64()
+                        .map(|n| n.to_string())
+                        .ok_or_else(|| format!("Array element must be integer: {:?}", v))
+                })
+                .collect();
+            let elements = elements?;
+            return Ok(format!("(int[]){{ {} }}", elements.join(", ")));
+        }
+        // Single value -> create compound literal pointer
         let n = value
             .as_i64()
-            .ok_or_else(|| format!("Expected integer or 'NULL', got {:?}", value))?;
-        Ok(format!("&(int){{{}}}",n))
+            .ok_or_else(|| format!("Expected integer, array, or 'NULL', got {:?}", value))?;
+        Ok(format!("&(int){{{}}}", n))
     } else {
         match param_type {
             "int" | "long" | "short" => {
@@ -241,5 +254,33 @@ mod tests {
         };
         let harness_value = generate_harness(user_code, &signature, &test_value).unwrap();
         assert!(harness_value.contains("safeRead(&(int){42})"));
+    }
+
+    #[test]
+    fn test_array_to_pointer_parameter() {
+        let user_code = "int getAt(int *arr, int i) { return *(arr + i); }";
+        let signature = FunctionSignature {
+            name: "getAt".to_string(),
+            return_type: "int".to_string(),
+            parameters: vec![
+                FunctionParameter {
+                    name: "arr".to_string(),
+                    param_type: "int*".to_string(),
+                },
+                FunctionParameter {
+                    name: "i".to_string(),
+                    param_type: "int".to_string(),
+                },
+            ],
+        };
+
+        // Test with array input (creates compound literal array)
+        let test_case = TestCase {
+            input: vec![serde_json::json!([10, 20, 30, 40, 50]), serde_json::json!(2)],
+            expected: "30".to_string(),
+            sample: true,
+        };
+        let harness = generate_harness(user_code, &signature, &test_case).unwrap();
+        assert!(harness.contains("getAt((int[]){ 10, 20, 30, 40, 50 }, 2)"));
     }
 }
