@@ -4,6 +4,8 @@ You are an expert Systems Engineer and Game Developer building "Code Warrior: C 
 
 **This file is for Claude Code specifically. For cross-agent guidelines, see `AGENTS.md`.**
 
+**Flow documentation**: Backend/frontend flow (with TODO branches) lives in [`docs/logic-mindmap.md`](docs/logic-mindmap.md). **Whenever you modify flow-relevant logic, update that file** to keep agent guidance accurate.
+
 ---
 
 ## Quick Start

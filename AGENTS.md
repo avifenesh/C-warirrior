@@ -2,6 +2,8 @@
 
 **These instructions apply to ANY AI agent (Claude, Gemini, GPT, etc.) working on Code Warrior.**
 
+**Flow documentation**: The current backend/frontend flow (including TODO branches) lives in [`docs/logic-mindmap.md`](docs/logic-mindmap.md). **Whenever you modify flow-relevant logic, update that file** so it remains the source of truth for agents.
+
 ---
 
 ## Quick Start (All Agents)
