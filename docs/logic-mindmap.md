@@ -47,3 +47,56 @@
 - Backend player actions: `OpenInventory` should toggle/render inventory state in GameState for UI; `UseItem` should apply inventory effects and update progression/world accordingly. Currently stubs in action handler. 【F:src-api/src/main.rs†L418-L423】
 - WASM bridge: helper comment suggests expanding type checks when bridging JS types. 【F:src-ui/src/lib/wasm/code_warrior_wasm.js†L161-L162】
 - Door interaction placeholder: `interact_with_nearest` notes where door logic should live (e.g., unlock conditions, transitions). 【F:src/game/state.rs†L221-L233】
+
+---
+
+## Implementation Status (Audit: 2025-11-30)
+
+### WORKING Features
+| Feature | Evidence | Location |
+|---------|----------|----------|
+| Player movement | E2E tested, position updates correctly | `state.rs:177-197` |
+| Collision detection | `check_collision()` verified | `physics.rs` |
+| Terminal interaction | Opens coding mode, sets active_quest_id | `state.rs:204-238` |
+| C code compilation | `CCompiler::compile_and_run()` | `compiler.rs` + MCP |
+| Test harness generation | `generate_harness()` wraps user code | `levels/mod.rs` |
+| Level loading | `start_level()` sets world, spawn | `state.rs:78-83` |
+| Level progression | `complete_level()` awards XP, unlocks doors | `state.rs:85-106` |
+| Quest system | `complete_quest()`, per-quest XP | `state.rs:127-167` |
+| XP & rewards | `ProgressionState` tracks total_xp | `progression.rs` |
+| Save/Load | PostgreSQL persistence via SQLx | `src-api/src/db/` |
+| Door unlocking | `unlock_all_doors()` on level complete | `world.rs:128-134` |
+| Viewport rendering | 20x15 viewport centered on player | `state.rs:259-302` |
+| Multi-quest levels | All 25 levels have 2-3 quests each | `levels.json` |
+| Backend parity | Tauri + Axum both implement all endpoints | `main.rs` (both) |
+
+### STUB Features (Data exists, not integrated)
+| Feature | Status | Location |
+|---------|--------|----------|
+| Inventory data | `Item`, `ItemType`, `Inventory` structs exist | `inventory.rs` |
+| OpenInventory action | Handler is TODO stub | `src-api/main.rs:423-425` |
+| UseItem action | Handler is TODO stub | `src-api/main.rs:426-428` |
+
+### PLANNED (Not Implemented)
+| Feature | Source |
+|---------|--------|
+| Inventory UI | mechanics.md |
+| Combat system | mechanics.md |
+| HP/MP system | mechanics.md |
+| Memory Marsh metaphor | mechanics.md |
+| Stack Spire metaphor | mechanics.md |
+| Pointer Grappling Hook | mechanics.md |
+| malloc = Summon Land (visual) | mechanics.md |
+| Memory Leak Slimes | mechanics.md |
+| Debug/Ghost Mode | mechanics.md |
+
+### Level Validation Status
+24/25 levels pass automated validation. See `docs/AUDIT_FINDINGS.md` for:
+- Complete level matrix with pass/fail status
+- ISSUE-001: L06_Q1 test case bug (expected output mismatch)
+- Known limitations for NULL pointer tests (L11, L15)
+- Known limitations for array input tests (L14)
+
+### Known Issues
+1. **L06_Q1 Test Case Bug**: Test expects "1" but void function outputs "Abracadabra!\n1"
+2. **Inventory System**: Data structures exist but no game integration

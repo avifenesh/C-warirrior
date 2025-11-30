@@ -5,6 +5,36 @@
 - When proposing new gameplay, ensure every mechanic maps to a concrete C concept defined here.
 - Do not invent mechanics that contradict the metaphor rules in this document.
 
+---
+
+## Implementation Status (Audit: 2025-11-30)
+
+> **IMPORTANT**: Many features in this document are design goals, not current implementation.
+> Features marked **[WORKING]** are implemented and tested. Features marked **[PLANNED]** are design specs for future development.
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Core gameplay loop | **[WORKING]** | Explore → Code → Execute → Progress |
+| Player movement | **[WORKING]** | WASD/Arrows with collision |
+| Code submission | **[WORKING]** | C compilation via MCP tool |
+| Quest system | **[WORKING]** | Multi-quest levels with test harness |
+| XP & progression | **[WORKING]** | Level completion awards XP |
+| Level unlocking | **[WORKING]** | Complete L01 to unlock L02, etc. |
+| Save/Load | **[WORKING]** | PostgreSQL persistence |
+| Terminal interaction | **[WORKING]** | Approach terminal → code editor |
+| HP/MP Stats | **[PLANNED]** | Not implemented |
+| Inventory UI | **[PLANNED]** | Data structures exist, no UI |
+| Combat system | **[PLANNED]** | Not implemented |
+| Memory Marsh visuals | **[PLANNED]** | Metaphor only, no special visuals |
+| Stack Spire tower | **[PLANNED]** | Metaphor only, no special visuals |
+| Grappling Hook pointers | **[PLANNED]** | Metaphor only, not interactive |
+| malloc visual effects | **[PLANNED]** | No land-rising animation |
+| Memory Leak Slimes | **[PLANNED]** | No enemy spawning |
+| Debug/Ghost Mode | **[PLANNED]** | Not implemented |
+| WFC procedural generation | **[PLANNED]** | Levels are handcrafted JSON |
+
+---
+
 ## Table of Contents
 1. [Design Philosophy](#design-philosophy)
 2. [Core Metaphor System](#core-metaphor-system)
@@ -83,7 +113,7 @@ Memory leaks spawn enemies, segfaults cause damage. The game world reacts to cod
 
 ## World Design
 
-### The Memory Marsh (Heap)
+### The Memory Marsh (Heap) [PLANNED - Visual metaphor only]
 
 **Concept**: The heap is dynamic, fragmented, and unmanaged. The Marsh reflects this chaos.
 
@@ -151,7 +181,7 @@ impl WFCGenerator {
 
 ---
 
-### The Stack Spire (Stack)
+### The Stack Spire (Stack) [PLANNED - Visual metaphor only]
 
 **Concept**: The stack is ordered, strict, and follows LIFO. The Spire is a vertical tower representing this structure.
 
@@ -266,14 +296,14 @@ Visual Feedback in Game World
 
 ### Player Stats
 
-| Stat | Meaning | C Concept Link |
-|------|---------|----------------|
-| **HP (Health)** | Player vitality | Represents code quality (errors reduce HP) |
-| **MP (Memory Points)** | Available heap memory | Represents malloc budget |
-| **XP (Experience)** | Programming skill | Earned by solving challenges |
-| **Level** | Proficiency tier | Unlocks advanced concepts |
+| Stat | Meaning | C Concept Link | Status |
+|------|---------|----------------|--------|
+| **HP (Health)** | Player vitality | Represents code quality (errors reduce HP) | [PLANNED] |
+| **MP (Memory Points)** | Available heap memory | Represents malloc budget | [PLANNED] |
+| **XP (Experience)** | Programming skill | Earned by solving challenges | [WORKING] |
+| **Level** | Proficiency tier | Unlocks advanced concepts | [WORKING] |
 
-### Inventory System
+### Inventory System [PLANNED - Data structures only]
 
 **Implementation**: Backend-authoritative
 
@@ -333,7 +363,7 @@ slot1 = pick_up_key();
 }
 ```
 
-### Combat System (Optional)
+### Combat System (Optional) [PLANNED]
 
 **Concept**: Debugging as combat
 
@@ -387,7 +417,7 @@ for (int i = 0; i < 10; i++) {  // Correct bound
 - **Rust emits**: Updated position to Svelte
 - **Svelte animates**: Smooth interpolation between positions
 
-### Pointer Mechanics
+### Pointer Mechanics [PLANNED - Visual metaphor only]
 
 **The Grappling Hook**:
 
@@ -411,7 +441,7 @@ int *lever_ptr = &lever;  // Aim grappling hook
 *lever_ptr = 1;           // Pull lever remotely
 ```
 
-### Debugging Mode (Ghost Mode)
+### Debugging Mode (Ghost Mode) [PLANNED]
 
 **Activation**: Use "Debugger Scroll" item
 

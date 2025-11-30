@@ -323,8 +323,6 @@ pub enum PlayerAction {
     Move { direction: Direction },
     Interact,
     SubmitCode { code: String },
-    OpenInventory,
-    UseItem { item_id: String },
     Pause,
     Resume,
 }

@@ -59,8 +59,6 @@ pub async fn process_action(
                 game_state.game_phase = GamePhase::Playing;
             }
         }
-        PlayerAction::OpenInventory => {}
-        PlayerAction::UseItem { .. } => {}
     }
 
     Ok(game_state.to_render_state())

@@ -1070,7 +1070,7 @@
         "test_cases": [
           {
             "input": [],
-            "expected": "1",
+            "expected": "Abracadabra!\n1",
             "sample": true
           }
         ],

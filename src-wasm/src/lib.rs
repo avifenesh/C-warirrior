@@ -62,12 +62,6 @@ impl WasmGame {
                     "Code submission must go through HTTP backend",
                 ));
             }
-            PlayerAction::OpenInventory => {
-                // Toggle inventory view
-            }
-            PlayerAction::UseItem { .. } => {
-                // Handle item usage
-            }
         }
 
         to_value(&self.state.to_render_state())

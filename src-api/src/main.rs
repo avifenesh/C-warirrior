@@ -439,12 +439,6 @@ async fn process_action(
                 "Use /api/code/submit for code submission".to_string(),
             ));
         }
-        PlayerAction::OpenInventory => {
-            // TODO: Implement inventory UI state
-        }
-        PlayerAction::UseItem { .. } => {
-            // TODO: Implement item usage
-        }
     }
 
     // Cache updated session in memory; persistence happens on level load / code submit
