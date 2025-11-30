@@ -32,26 +32,25 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
+      "spawn_x": 32,
       "spawn_y": 224,
       "terminals": [
         {
-          "x": 192,
-          "y": 224,
+          "x": 160,
+          "y": 192,
           "quest_id": "L01_Q1"
         },
         {
-          "x": 320,
-          "y": 224,
+          "x": 352,
+          "y": 192,
           "quest_id": "L01_Q2"
         },
         {
-          "x": 448,
-          "y": 224,
+          "x": 544,
+          "y": 192,
           "quest_id": "L01_Q3"
         }
-      ],
-      "preset": "tutorial"
+      ]
     },
     "quests": [
       {
@@ -77,7 +76,12 @@
           "Use the 'return' keyword to send a value back",
           "Example: return 42;"
         ],
-        "xp_reward": 25
+        "xp_reward": 25,
+        "teaching": {
+          "concept": "The return Statement",
+          "explanation": "The 'return' keyword sends a value back from a function. When C executes 'return 42;', the function immediately stops and the value 42 is given to whoever called the function.",
+          "tip": "Every function with a return type (like 'int') MUST return a value. Forgetting 'return' is a common bug!"
+        }
       },
       {
         "id": "L01_Q2",
@@ -102,7 +106,12 @@
           "You can use arithmetic in return statements",
           "Example: return 50 * 2;"
         ],
-        "xp_reward": 30
+        "xp_reward": 30,
+        "teaching": {
+          "concept": "Expressions in Return",
+          "explanation": "You don't have to return just a simple value - you can return the result of a calculation! 'return 50 * 2;' computes 100 and returns it in one step.",
+          "tip": "C evaluates the expression FIRST, then returns the result. So 'return 2 + 3;' returns 5, not '2 + 3'."
+        }
       },
       {
         "id": "L01_Q3",
@@ -127,7 +136,12 @@
           "Add numbers with the + operator",
           "Example: return 25 + 35 + 15;"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "Chaining Operators",
+          "explanation": "C lets you chain multiple operators in one expression. 'return 25 + 35 + 15;' adds all three numbers left-to-right: first 25+35=60, then 60+15=75.",
+          "tip": "For readability, you can use parentheses to make order explicit: (25 + 35) + 15. Same result, clearer intent!"
+        }
       }
     ]
   },
@@ -164,26 +178,177 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
+      "spawn_x": 32,
       "spawn_y": 224,
       "terminals": [
         {
-          "x": 160,
-          "y": 224,
+          "x": 128,
+          "y": 192,
           "quest_id": "L02_Q1"
         },
         {
-          "x": 288,
-          "y": 224,
+          "x": 320,
+          "y": 192,
           "quest_id": "L02_Q2"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 512,
+          "y": 192,
           "quest_id": "L02_Q3"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 3,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 10,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 11,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 10,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 11,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 10,
+          "type": "water"
+        }
+      ]
     },
     "quests": [
       {
@@ -245,7 +410,12 @@
           "Use the + operator to add numbers",
           "Return the sum: return item1 + item2;"
         ],
-        "xp_reward": 25
+        "xp_reward": 25,
+        "teaching": {
+          "concept": "Function Parameters",
+          "explanation": "Parameters are variables that receive values from outside the function. In 'int addWeight(int item1, int item2)', item1 and item2 are parameters - they get filled in when someone calls addWeight(10, 25).",
+          "tip": "Parameters work just like regular variables inside your function. You can add them, compare them, or use them in any expression!"
+        }
       },
       {
         "id": "L02_Q2",
@@ -306,7 +476,12 @@
           "Use the * operator to multiply",
           "Area = width * height"
         ],
-        "xp_reward": 30
+        "xp_reward": 30,
+        "teaching": {
+          "concept": "The Multiplication Operator",
+          "explanation": "The * operator multiplies two values. Just like addition, you can use it with parameters: 'return width * height;' computes the product.",
+          "tip": "C follows standard math order: multiplication and division happen before addition and subtraction. Use parentheses if you need different order!"
+        }
       },
       {
         "id": "L02_Q3",
@@ -375,7 +550,12 @@
           "Chain additions: a + b + c",
           "Example: return a + b + c;"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "Multiple Parameters",
+          "explanation": "Functions can take any number of parameters. Each one is separated by a comma in the declaration: 'int tripleSum(int a, int b, int c)' takes three integers.",
+          "tip": "When calling a function with multiple parameters, order matters! tripleSum(1, 2, 3) assigns a=1, b=2, c=3 in that exact order."
+        }
       }
     ]
   },
@@ -412,26 +592,152 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 352,
       "terminals": [
         {
-          "x": 160,
-          "y": 224,
+          "x": 512,
+          "y": 64,
           "quest_id": "L03_Q1"
         },
         {
-          "x": 288,
+          "x": 320,
           "y": 224,
           "quest_id": "L03_Q2"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 192,
+          "y": 320,
           "quest_id": "L03_Q3"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 15,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 11,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
@@ -493,7 +799,12 @@
           "Use if (a > b) to compare",
           "Return the larger value in each branch"
         ],
-        "xp_reward": 30
+        "xp_reward": 30,
+        "teaching": {
+          "concept": "The if Statement",
+          "explanation": "The 'if' statement lets your code make decisions. When the condition in parentheses is true, the code inside the braces runs. 'if (a > b) { return a; }' returns a only when a is larger.",
+          "tip": "Comparison operators: > (greater), < (less), >= (greater or equal), <= (less or equal), == (equal), != (not equal)."
+        }
       },
       {
         "id": "L03_Q2",
@@ -546,7 +857,12 @@
           "Use the modulo operator: n % 2",
           "Even numbers have n % 2 == 0"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "The Modulo Operator",
+          "explanation": "The % operator gives the remainder after division. 7 % 2 equals 1 (7 divided by 2 leaves remainder 1). Even numbers always have n % 2 == 0 because they divide evenly by 2.",
+          "tip": "Modulo is perfect for checking divisibility! n % 3 == 0 means n is divisible by 3. n % 10 gives the last digit of n."
+        }
       },
       {
         "id": "L03_Q3",
@@ -616,7 +932,12 @@
           "Then check if value > max",
           "Otherwise return value unchanged"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "Chaining if/else",
+          "explanation": "You can chain multiple conditions with 'else if'. The code checks each condition in order and runs only the first matching block. This lets you handle multiple cases cleanly.",
+          "tip": "Think of else if as a series of gates: C checks each one until it finds a match, then skips the rest. Order matters!"
+        }
       }
     ]
   },
@@ -653,26 +974,327 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 352,
       "terminals": [
         {
-          "x": 160,
-          "y": 224,
+          "x": 192,
+          "y": 64,
           "quest_id": "L04_Q1"
         },
         {
-          "x": 288,
-          "y": 224,
+          "x": 416,
+          "y": 160,
           "quest_id": "L04_Q2"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 128,
+          "y": 288,
           "quest_id": "L04_Q3"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 5,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 13,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
@@ -726,7 +1348,12 @@
           "Use a for loop: for(int i = 1; i <= n; i++)",
           "Accumulate: sum = sum + i"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "The for Loop",
+          "explanation": "A for loop repeats code a specific number of times. It has three parts: initialization (int i = 1), condition (i <= n), and increment (i++). The loop runs as long as the condition is true.",
+          "tip": "Use a 'sum' variable initialized to 0, then add each value inside the loop: sum = sum + i; or shorter: sum += i;"
+        }
       },
       {
         "id": "L04_Q2",
@@ -779,7 +1406,12 @@
           "Start with result = 1",
           "Multiply: result = result * i"
         ],
-        "xp_reward": 40
+        "xp_reward": 40,
+        "teaching": {
+          "concept": "Accumulating with Multiplication",
+          "explanation": "Just like summing, you can multiply in a loop. Start with result = 1 (not 0!), then multiply: result = result * i. For factorial, loop from 1 to n.",
+          "tip": "Always initialize multiplication accumulators to 1, not 0. Anything times 0 stays 0!"
+        }
       },
       {
         "id": "L04_Q3",
@@ -840,7 +1472,12 @@
           "Use if inside the loop",
           "Check: if (i % d == 0) count++"
         ],
-        "xp_reward": 45
+        "xp_reward": 45,
+        "teaching": {
+          "concept": "Combining Loops and Conditions",
+          "explanation": "Loops and if statements work great together. Loop through all numbers and use an if to check each one. When the condition is true, increment your counter.",
+          "tip": "The pattern 'count++' is shorthand for 'count = count + 1'. It's commonly used inside loops to count matching items."
+        }
       }
     ]
   },
@@ -877,26 +1514,247 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 320,
       "terminals": [
         {
-          "x": 160,
-          "y": 224,
+          "x": 64,
+          "y": 64,
           "quest_id": "L05_Q1"
         },
         {
           "x": 288,
-          "y": 224,
+          "y": 160,
           "quest_id": "L05_Q2"
         },
         {
           "x": 416,
-          "y": 224,
+          "y": 256,
           "quest_id": "L05_Q3"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 1,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 9,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
@@ -950,7 +1808,12 @@
           "Use rooms[index] to access the element",
           "Array indices start at 0"
         ],
-        "xp_reward": 30
+        "xp_reward": 30,
+        "teaching": {
+          "concept": "Array Indexing",
+          "explanation": "Access array elements using square brackets: arr[index]. In C, indices start at 0, so arr[0] is the first element, arr[1] is the second, and so on.",
+          "tip": "CRITICAL: An array of size 5 has valid indices 0-4. Accessing arr[5] is a bug (out of bounds) that can crash your program!"
+        }
       },
       {
         "id": "L05_Q2",
@@ -975,7 +1838,12 @@
           "Use a for loop to iterate through the array",
           "for (int i = 0; i < 5; i++) sum += rooms[i]"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "Iterating Over Arrays",
+          "explanation": "Use a for loop to visit every element: for(int i = 0; i < size; i++). Access each element with arr[i]. This is the most common pattern in C!",
+          "tip": "Use i < size (not i <= size) in your condition. This ensures you stay within bounds: 0, 1, 2, ..., size-1."
+        }
       },
       {
         "id": "L05_Q3",
@@ -1000,7 +1868,12 @@
           "Start with max = values[0]",
           "Compare each element: if (values[i] > max) max = values[i]"
         ],
-        "xp_reward": 45
+        "xp_reward": 45,
+        "teaching": {
+          "concept": "Finding Maximum/Minimum",
+          "explanation": "To find the max, start with the first element as your 'best guess'. Then check each element: if it's bigger, update your max. This pattern works for any 'best' search.",
+          "tip": "Initialize max with arr[0], not 0. Why? If all values are negative, 0 would be wrong! Same logic for minimum."
+        }
       }
     ]
   },
@@ -1039,20 +1912,451 @@
       "width": 20,
       "height": 15,
       "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_y": 416,
       "terminals": [
         {
-          "x": 192,
+          "x": 256,
           "y": 224,
           "quest_id": "L06_Q1"
         },
         {
-          "x": 384,
+          "x": 352,
           "y": 224,
           "quest_id": "L06_Q2"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 2,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 11,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 13,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 14,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 11,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 13,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 14,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 8,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 11,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 13,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 14,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 6,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 7,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 8,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 11,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 13,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 14,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 6,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 7,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 13,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 14,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 6,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 7,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 13,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 14,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 6,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 7,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 13,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 14,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 6,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 7,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 13,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 7,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 10,
+          "type": "water"
+        }
+      ]
     },
     "quests": [
       {
@@ -1079,7 +2383,12 @@
           "In castSpell(): call printSpell(); then return 1;",
           "The void function does the work, the int function confirms it happened"
         ],
-        "xp_reward": 30
+        "xp_reward": 30,
+        "teaching": {
+          "concept": "Void Functions",
+          "explanation": "A void function performs an action but doesn't return a value. The keyword 'void' means 'nothing'. Use void for actions like printing, modifying data, or triggering events.",
+          "tip": "You can still use 'return;' (with no value) in a void function to exit early, but you cannot 'return' an actual value."
+        }
       },
       {
         "id": "L06_Q2",
@@ -1142,7 +2451,12 @@
           "The & operator gets the address of baseDamage so addDamage can modify it",
           "After calling addDamage, baseDamage will have the new value - return it!"
         ],
-        "xp_reward": 40
+        "xp_reward": 40,
+        "teaching": {
+          "concept": "Modifying Variables via Pointers",
+          "explanation": "Void functions often modify data through pointers. The caller passes a memory address (&var), and the function uses *ptr to read/write the value at that address.",
+          "tip": "Think of & as 'address of' and * as 'value at'. &baseDamage gives the address; *damage accesses what's stored there."
+        }
       }
     ]
   },
@@ -1179,26 +2493,257 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 416,
       "terminals": [
         {
-          "x": 160,
-          "y": 224,
+          "x": 256,
+          "y": 128,
           "quest_id": "L07_Q1"
         },
         {
-          "x": 288,
-          "y": 224,
+          "x": 320,
+          "y": 128,
           "quest_id": "L07_Q2"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 512,
+          "y": 320,
           "quest_id": "L07_Q3"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 8,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 9,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
@@ -1269,7 +2814,12 @@
           "Then check: if (raw > armor) return raw - armor;",
           "Don't forget to return 0 for the else case"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "Multi-Step Calculations",
+          "explanation": "Complex problems often need multiple steps. Calculate intermediate results, store them in variables, then combine them. This makes code clearer and easier to debug.",
+          "tip": "Breaking down 'damage = max(0, base*mult - armor)' into steps helps you see each part. Use temp variables like 'raw' freely!"
+        }
       },
       {
         "id": "L07_Q2",
@@ -1330,7 +2880,12 @@
           "Use if (isCrit != 0) to check for critical",
           "return damage * 3; for critical, damage for normal"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "Boolean Logic in C",
+          "explanation": "In C, 0 means false and ANY non-zero value means true. So 'if (isCrit)' is the same as 'if (isCrit != 0)'. This is why functions often return 1 for success/true.",
+          "tip": "You can simplify 'if (x != 0)' to just 'if (x)'. Both check if x is 'truthy' (non-zero)."
+        }
       },
       {
         "id": "L07_Q3",
@@ -1400,7 +2955,12 @@
           "Multiply by 11, then divide by 10 for 10% bonus",
           "Order matters: * before / due to integer division"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "Integer Division",
+          "explanation": "In C, dividing integers drops the decimal: 7/2 = 3, not 3.5. To add 10% bonus, multiply by 11 FIRST, then divide by 10. The order matters!",
+          "tip": "When multiplying before dividing (like sum*11/10), you preserve more precision than dividing first (sum/10*11)."
+        }
       }
     ]
   },
@@ -1438,26 +2998,292 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 416,
       "terminals": [
         {
-          "x": 160,
-          "y": 224,
+          "x": 384,
+          "y": 160,
           "quest_id": "L08_Q1"
         },
         {
           "x": 288,
-          "y": 224,
+          "y": 256,
           "quest_id": "L08_Q2"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 192,
+          "y": 352,
           "quest_id": "L08_Q3"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 15,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 13,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
@@ -1503,7 +3329,12 @@
         "hints": [
           "Simply return n + 1"
         ],
-        "xp_reward": 30
+        "xp_reward": 30,
+        "teaching": {
+          "concept": "Simple Helper Functions",
+          "explanation": "Small helper functions that do one thing well are building blocks of larger programs. addOne(n) just adds 1 - simple, but powerful when combined.",
+          "tip": "Good functions have one clear purpose. A function called 'addOne' should ONLY add one - no surprises!"
+        }
       },
       {
         "id": "L08_Q2",
@@ -1549,7 +3380,12 @@
           "Chain the calls: addOne(addOne(n))",
           "This adds 1, then adds 1 again"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "Function Composition",
+          "explanation": "Functions can call other functions! addOne(addOne(n)) first calls the inner addOne(n), gets a result, then passes it to the outer addOne. Each call creates a new stack frame.",
+          "tip": "Read nested calls inside-out: addOne(addOne(5)) → addOne(6) → 7. The inner call completes first!"
+        }
       },
       {
         "id": "L08_Q3",
@@ -1603,7 +3439,12 @@
           "Call trackDepth(n) to build the stack",
           "Return maxDepth to show how deep the stack went"
         ],
-        "xp_reward": 40
+        "xp_reward": 40,
+        "teaching": {
+          "concept": "Recursion and Stack Depth",
+          "explanation": "Recursive functions call themselves, adding a new stack frame each time. The 'depth' variable tracks how many frames are stacked. When a function returns, its frame is removed.",
+          "tip": "Every recursive function needs a base case (when to stop) or it will overflow the stack! Here n > 1 is the check - when n reaches 1, no more recursive calls happen."
+        }
       }
     ]
   },
@@ -1642,26 +3483,532 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 416,
       "terminals": [
         {
-          "x": 160,
-          "y": 224,
+          "x": 192,
+          "y": 32,
           "quest_id": "L09_Q1"
         },
         {
-          "x": 288,
-          "y": 224,
+          "x": 352,
+          "y": 32,
           "quest_id": "L09_Q2"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 192,
+          "y": 352,
           "quest_id": "L09_Q3"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 1,
+          "y": 1,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 1,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 1,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 1,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 1,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 1,
+          "type": "water"
+        },
+        {
+          "x": 1,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 1,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 1,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 1,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 1,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 9,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 18,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 1,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 18,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 1,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 18,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 18,
+          "y": 13,
+          "type": "water"
+        }
+      ]
     },
     "quests": [
       {
@@ -1822,8 +4169,8 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 416,
       "terminals": [
         {
           "x": 160,
@@ -1831,17 +4178,278 @@
           "quest_id": "L10_Q1"
         },
         {
-          "x": 288,
+          "x": 416,
           "y": 224,
           "quest_id": "L10_Q2"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 288,
+          "y": 320,
           "quest_id": "L10_Q3"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 6,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 13,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
@@ -2056,17 +4664,398 @@
       "spawn_y": 224,
       "terminals": [
         {
-          "x": 224,
+          "x": 96,
           "y": 224,
           "quest_id": "L11_Q1"
         },
         {
-          "x": 416,
+          "x": 512,
           "y": 224,
           "quest_id": "L11_Q2"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 2,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 11,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
@@ -2220,26 +5209,352 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 32,
       "terminals": [
         {
-          "x": 160,
-          "y": 224,
+          "x": 64,
+          "y": 96,
           "quest_id": "L12_Q1"
-        },
-        {
-          "x": 288,
-          "y": 224,
-          "quest_id": "L12_Q2"
         },
         {
           "x": 416,
           "y": 224,
+          "quest_id": "L12_Q2"
+        },
+        {
+          "x": 512,
+          "y": 352,
           "quest_id": "L12_Q3"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 1,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 6,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 6,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 7,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 6,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 7,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 8,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 7,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 8,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 6,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 7,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 8,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 9,
+          "y": 13,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
@@ -2426,26 +5741,207 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 32,
       "terminals": [
         {
-          "x": 160,
-          "y": 224,
+          "x": 96,
+          "y": 128,
           "quest_id": "L13_Q1"
         },
         {
           "x": 288,
-          "y": 224,
+          "y": 256,
           "quest_id": "L13_Q2"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 512,
+          "y": 384,
           "quest_id": "L13_Q3"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 2,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 9,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 10,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 11,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 10,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 11,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 9,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 10,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 11,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 18,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 18,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 18,
+          "y": 13,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
@@ -2642,12 +6138,12 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 32,
       "terminals": [
         {
-          "x": 160,
-          "y": 224,
+          "x": 224,
+          "y": 96,
           "quest_id": "L14_Q1"
         },
         {
@@ -2656,12 +6152,133 @@
           "quest_id": "L14_Q2"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 352,
+          "y": 352,
           "quest_id": "L14_Q3"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 5,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 12,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
@@ -2934,26 +6551,217 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 32,
       "terminals": [
         {
-          "x": 160,
-          "y": 224,
+          "x": 480,
+          "y": 128,
           "quest_id": "L15_Q1"
         },
         {
-          "x": 288,
-          "y": 224,
+          "x": 64,
+          "y": 192,
           "quest_id": "L15_Q2"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 64,
+          "y": 288,
           "quest_id": "L15_Q3"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 2,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 11,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
@@ -3152,26 +6960,227 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 32,
       "terminals": [
         {
-          "x": 160,
-          "y": 224,
+          "x": 96,
+          "y": 96,
           "quest_id": "L16_Q1"
         },
         {
-          "x": 288,
-          "y": 224,
+          "x": 480,
+          "y": 288,
           "quest_id": "L16_Q2"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 320,
+          "y": 352,
           "quest_id": "L16_Q3"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 2,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 14,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 14,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 14,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 8,
+          "type": "door"
+        },
+        {
+          "x": 14,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 8,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
@@ -3389,26 +7398,337 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 128,
       "terminals": [
         {
-          "x": 160,
-          "y": 224,
+          "x": 224,
+          "y": 160,
           "quest_id": "L17_Q1"
         },
         {
-          "x": 288,
-          "y": 224,
+          "x": 512,
+          "y": 160,
           "quest_id": "L17_Q2"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 256,
+          "y": 384,
           "quest_id": "L17_Q3"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 6,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "type": "door"
+        },
+        {
+          "x": 9,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 4,
+          "type": "door"
+        },
+        {
+          "x": 17,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 9,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 13,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 13,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
@@ -3644,26 +7964,272 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 32,
       "terminals": [
         {
           "x": 160,
-          "y": 224,
+          "y": 96,
           "quest_id": "L18_Q1"
         },
         {
-          "x": 288,
-          "y": 224,
+          "x": 448,
+          "y": 256,
           "quest_id": "L18_Q2"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 192,
+          "y": 416,
           "quest_id": "L18_Q3"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 2,
+          "y": 1,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 5,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 13,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 14,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 6,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 7,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 8,
+          "type": "water"
+        },
+        {
+          "x": 1,
+          "y": 9,
+          "type": "door"
+        },
+        {
+          "x": 2,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 13,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 14,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 10,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 13,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
@@ -3859,21 +8425,307 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 32,
       "terminals": [
         {
           "x": 224,
-          "y": 224,
+          "y": 192,
           "quest_id": "L19_Q1"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 288,
+          "y": 384,
           "quest_id": "L19_Q2"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 2,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 13,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 13,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
@@ -4038,8 +8890,8 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 32,
       "terminals": [
         {
           "x": 160,
@@ -4047,17 +8899,273 @@
           "quest_id": "L20_Q1"
         },
         {
-          "x": 288,
+          "x": 320,
           "y": 224,
           "quest_id": "L20_Q2"
         },
         {
-          "x": 416,
+          "x": 480,
           "y": 224,
           "quest_id": "L20_Q3"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 2,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 6,
+          "type": "door"
+        },
+        {
+          "x": 2,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 2,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 11,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
@@ -4292,21 +9400,312 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 96,
+      "spawn_y": 160,
       "terminals": [
         {
-          "x": 224,
+          "x": 128,
           "y": 224,
           "quest_id": "L21_Q1"
         },
         {
-          "x": 416,
+          "x": 480,
           "y": 224,
           "quest_id": "L21_Q2"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 4,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 18,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 1,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 18,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 1,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 6,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 13,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 14,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 18,
+          "y": 13,
+          "type": "water"
+        }
+      ]
     },
     "quests": [
       {
@@ -4458,21 +9857,357 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 128,
       "terminals": [
         {
-          "x": 224,
-          "y": 224,
+          "x": 96,
+          "y": 128,
           "quest_id": "L22_Q1"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 512,
+          "y": 352,
           "quest_id": "L22_Q2"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 3,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 4,
+          "type": "door"
+        },
+        {
+          "x": 16,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 11,
+          "type": "door"
+        },
+        {
+          "x": 11,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 13,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
@@ -4625,20 +10360,351 @@
       "width": 20,
       "height": 15,
       "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_y": 32,
       "terminals": [
         {
-          "x": 224,
-          "y": 224,
+          "x": 96,
+          "y": 96,
           "quest_id": "L23_Q1"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 512,
+          "y": 352,
           "quest_id": "L23_Q2"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 3,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 5,
+          "type": "door"
+        },
+        {
+          "x": 6,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 5,
+          "type": "door"
+        },
+        {
+          "x": 13,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 7,
+          "type": "door"
+        },
+        {
+          "x": 12,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 10,
+          "type": "door"
+        },
+        {
+          "x": 3,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 12,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
@@ -4791,21 +10857,312 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 192,
       "terminals": [
         {
-          "x": 224,
+          "x": 96,
           "y": 224,
           "quest_id": "L24_Q1"
         },
         {
-          "x": 416,
+          "x": 544,
           "y": 224,
           "quest_id": "L24_Q2"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 3,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 7,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 7,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 8,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 9,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 10,
+          "y": 10,
+          "type": "door"
+        },
+        {
+          "x": 11,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 1,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 6,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 8,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 14,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 12,
+          "type": "water"
+        },
+        {
+          "x": 1,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 5,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 7,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 8,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 12,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 13,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 18,
+          "y": 13,
+          "type": "water"
+        },
+        {
+          "x": 19,
+          "y": 13,
+          "type": "water"
+        }
+      ]
     },
     "quests": [
       {
@@ -4972,26 +11329,202 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 224,
+      "spawn_x": 32,
+      "spawn_y": 64,
       "terminals": [
         {
-          "x": 160,
-          "y": 224,
+          "x": 96,
+          "y": 64,
           "quest_id": "L25_Q1"
         },
         {
-          "x": 288,
+          "x": 352,
           "y": 224,
           "quest_id": "L25_Q2"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 480,
+          "y": 352,
           "quest_id": "L25_Q3"
         }
       ],
-      "preset": "tutorial"
+      "tiles": [
+        {
+          "x": 3,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "type": "door"
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "type": "wall"
+        },
+        {
+          "x": 3,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 4,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 5,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 6,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 5,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 6,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 7,
+          "type": "door"
+        },
+        {
+          "x": 11,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 8,
+          "type": "wall"
+        },
+        {
+          "x": 11,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 12,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 13,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 14,
+          "y": 9,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 16,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 17,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 10,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 11,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 18,
+          "y": 12,
+          "type": "wall"
+        },
+        {
+          "x": 15,
+          "y": 13,
+          "type": "door"
+        },
+        {
+          "x": 18,
+          "y": 13,
+          "type": "wall"
+        }
+      ]
     },
     "quests": [
       {
