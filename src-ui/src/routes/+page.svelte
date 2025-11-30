@@ -8,10 +8,8 @@
     import Toast, { type ToastMessage } from '$lib/components/Toast.svelte';
     import MainMenu from '$lib/components/MainMenu.svelte';
     import WorldMap from '$lib/components/WorldMap.svelte';
-    // Agent 2's new components
     import Settings from '$lib/components/Settings.svelte';
     import ErrorBoundary from '$lib/components/ErrorBoundary.svelte';
-    import ProgressTracker from '$lib/components/ProgressTracker.svelte';
 
     // Backend + state (Runes, no svelte/store)
     type GameScreen = 'boot' | 'world_map' | 'playing';
@@ -498,18 +496,6 @@
 
         <!-- Toast Notifications -->
         <Toast messages={toastMessages} onDismiss={dismissToast} />
-
-        <!-- Progress Tracker (bottom-left) -->
-        <div class="fixed bottom-4 left-4 z-40">
-            <ProgressTracker
-                currentXP={playerProgress?.total_xp ?? renderState?.player?.xp ?? 0}
-                totalXP={levels.reduce((sum, l) => sum + l.xp_reward, 0) || 7075}
-                currentLevel={currentLevelId ?? 'L01'}
-                completedLevels={playerProgress?.completed_levels ?? []}
-                totalLevels={levels.length || 15}
-                nextLevel={getNextLevelId()}
-            />
-        </div>
 
             </GameWorld>
 {/if}
