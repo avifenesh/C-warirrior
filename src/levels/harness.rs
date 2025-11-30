@@ -60,41 +60,56 @@ fn format_call_args(
 
 /// Format a single argument value based on its type
 fn format_single_arg(param_type: &str, value: &serde_json::Value) -> Result<String, String> {
-    match param_type {
-        "int" | "long" | "short" => {
-            let n = value
-                .as_i64()
-                .ok_or_else(|| format!("Expected integer, got {:?}", value))?;
-            Ok(n.to_string())
-        }
-        "unsigned int" | "unsigned long" | "size_t" => {
-            let n = value
-                .as_u64()
-                .ok_or_else(|| format!("Expected unsigned integer, got {:?}", value))?;
-            Ok(n.to_string())
-        }
-        "float" | "double" => {
-            let n = value
-                .as_f64()
-                .ok_or_else(|| format!("Expected float, got {:?}", value))?;
-            Ok(format!("{:.6}", n))
-        }
-        "char" => {
-            let s = value
-                .as_str()
-                .ok_or_else(|| format!("Expected char string, got {:?}", value))?;
-            if s.len() != 1 {
-                return Err(format!("Expected single char, got '{}'", s));
+    // Check for pointer types first
+    if param_type.contains("int*") || param_type.contains("int *") {
+        // Special handling for NULL
+        if let Some(s) = value.as_str() {
+            if s == "NULL" {
+                return Ok("NULL".to_string());
             }
-            Ok(format!("'{}'", s.chars().next().unwrap()))
         }
-        t if t.contains("char*") || t.contains("char *") || t == "string" => {
-            let s = value
-                .as_str()
-                .ok_or_else(|| format!("Expected string, got {:?}", value))?;
-            Ok(format!("\"{}\"", escape_c_string(s)))
+        // Otherwise, create a pointer to a static variable
+        let n = value
+            .as_i64()
+            .ok_or_else(|| format!("Expected integer or 'NULL', got {:?}", value))?;
+        Ok(format!("&(int){{{}}}",n))
+    } else {
+        match param_type {
+            "int" | "long" | "short" => {
+                let n = value
+                    .as_i64()
+                    .ok_or_else(|| format!("Expected integer, got {:?}", value))?;
+                Ok(n.to_string())
+            }
+            "unsigned int" | "unsigned long" | "size_t" => {
+                let n = value
+                    .as_u64()
+                    .ok_or_else(|| format!("Expected unsigned integer, got {:?}", value))?;
+                Ok(n.to_string())
+            }
+            "float" | "double" => {
+                let n = value
+                    .as_f64()
+                    .ok_or_else(|| format!("Expected float, got {:?}", value))?;
+                Ok(format!("{:.6}", n))
+            }
+            "char" => {
+                let s = value
+                    .as_str()
+                    .ok_or_else(|| format!("Expected char string, got {:?}", value))?;
+                if s.len() != 1 {
+                    return Err(format!("Expected single char, got '{}'", s));
+                }
+                Ok(format!("'{}'", s.chars().next().unwrap()))
+            }
+            t if t.contains("char*") || t.contains("char *") || t == "string" => {
+                let s = value
+                    .as_str()
+                    .ok_or_else(|| format!("Expected string, got {:?}", value))?;
+                Ok(format!("\"{}\"", escape_c_string(s)))
+            }
+            _ => Err(format!("Unsupported parameter type: {}", param_type)),
         }
-        _ => Err(format!("Unsupported parameter type: {}", param_type)),
     }
 }
 
@@ -193,5 +208,38 @@ mod tests {
         let harness = generate_harness("void hello() { printf(\"Hello, World!\\n\"); }", &signature, &test_case).unwrap();
         assert!(harness.contains("hello();"));
         assert!(harness.contains("printf(\"done\\n\");"));
+    }
+
+    #[test]
+    fn test_pointer_parameters() {
+        let user_code = "int safeRead(int *ptr) { if (ptr == NULL) return -1; return *ptr; }";
+        let signature = FunctionSignature {
+            name: "safeRead".to_string(),
+            return_type: "int".to_string(),
+            parameters: vec![
+                FunctionParameter {
+                    name: "ptr".to_string(),
+                    param_type: "int*".to_string(),
+                },
+            ],
+        };
+
+        // Test with NULL string
+        let test_null = TestCase {
+            input: vec![serde_json::json!("NULL")],
+            expected: "-1".to_string(),
+            sample: true,
+        };
+        let harness_null = generate_harness(user_code, &signature, &test_null).unwrap();
+        assert!(harness_null.contains("safeRead(NULL)"));
+
+        // Test with integer value (creates compound literal pointer)
+        let test_value = TestCase {
+            input: vec![serde_json::json!(42)],
+            expected: "42".to_string(),
+            sample: true,
+        };
+        let harness_value = generate_harness(user_code, &signature, &test_value).unwrap();
+        assert!(harness_value.contains("safeRead(&(int){42})"));
     }
 }

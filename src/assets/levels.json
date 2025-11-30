@@ -11,6 +11,24 @@
     "total_xp_reward": 90,
     "map_file": "maps/L01_first_spell.json",
     "challenges": [],
+    "lesson": {
+      "title": "Return Values: Your First Spell",
+      "content": [
+        "In C, functions can send values back to their caller using the 'return' statement.",
+        "The return type (like 'int') tells C what kind of value your function will send back.",
+        "Think of return as casting a spell that produces a specific result - the value you return is the spell's effect!"
+      ],
+      "examples": [
+        {
+          "code": "int getMagicNumber() {\n    return 42;\n}",
+          "explanation": "This function returns the integer 42. Simple and direct!"
+        },
+        {
+          "code": "int addSpells(int a, int b) {\n    return a + b;\n}",
+          "explanation": "You can return the result of calculations. This returns the sum of a and b."
+        }
+      ]
+    },
     "world_config": {
       "width": 20,
       "height": 15,
@@ -65,24 +83,24 @@
         "id": "L01_Q2",
         "order": 2,
         "title": "Double Trouble",
-        "description": "Return a number that is twice the magic constant (21 * 2).",
+        "description": "The merchant wants twice his stock of 50 items. Return the doubled amount!",
         "recommended": false,
         "function_signature": {
           "name": "getDouble",
           "return_type": "int",
           "parameters": []
         },
-        "user_template": "int getDouble() {\n    // Return 21 multiplied by 2\n    \n}",
+        "user_template": "int getDouble() {\n    // Return 50 multiplied by 2\n    \n}",
         "test_cases": [
           {
             "input": [],
-            "expected": "42",
+            "expected": "100",
             "sample": true
           }
         ],
         "hints": [
           "You can use arithmetic in return statements",
-          "Example: return 5 * 2;"
+          "Example: return 50 * 2;"
         ],
         "xp_reward": 30
       },
@@ -90,24 +108,24 @@
         "id": "L01_Q3",
         "order": 3,
         "title": "The Sum Spell",
-        "description": "Return the sum of three numbers: 10, 20, and 12.",
+        "description": "Combine three power crystals: 25, 35, and 15 energy units. Return their combined power!",
         "recommended": false,
         "function_signature": {
           "name": "getSum",
           "return_type": "int",
           "parameters": []
         },
-        "user_template": "int getSum() {\n    // Return 10 + 20 + 12\n    \n}",
+        "user_template": "int getSum() {\n    // Return 25 + 35 + 15\n    \n}",
         "test_cases": [
           {
             "input": [],
-            "expected": "42",
+            "expected": "75",
             "sample": true
           }
         ],
         "hints": [
           "Add numbers with the + operator",
-          "Example: return 1 + 2 + 3;"
+          "Example: return 25 + 35 + 15;"
         ],
         "xp_reward": 35
       }
@@ -2016,16 +2034,18 @@
       "content": [
         "Every variable in C has a memory address where its value is stored.",
         "A pointer is a variable that holds a memory address. Declare with: int *ptr;",
-        "When a function receives a pointer parameter, it can read the value at that address using the * operator."
+        "In these quests, you RECEIVE pointers as parameters. In real programs, you also CREATE pointers using the & (address-of) operator.",
+        "The & operator gets a variable's address: int val = 42; int *ptr = &val;",
+        "When a function receives a pointer parameter, it can read the value at that address using the * (dereference) operator."
       ],
       "examples": [
         {
           "code": "int readValue(int *ptr) {\n    return *ptr;\n}",
-          "explanation": "The function receives an address and returns the value stored there."
+          "explanation": "The function receives an address and returns the value stored there using *."
         },
         {
-          "code": "int sum(int *a, int *b) {\n    return *a + *b;\n}",
-          "explanation": "Reads values at two addresses and returns their sum."
+          "code": "int useAddress(int val) {\n    int *ptr = &val;  // Get address with &\n    return *ptr;      // Read value with *\n}",
+          "explanation": "Real-world example: Get a variable's address with &, then read through the pointer with *."
         }
       ]
     },
@@ -2182,16 +2202,18 @@
       "content": [
         "Declare a pointer with: int *ptr; (a pointer to an integer)",
         "The * in declarations means 'pointer to'. In expressions, * means 'dereference'.",
+        "To make a pointer point to a variable, use the & operator: int *ptr = &variable;",
+        "This is the FULL pattern: declare pointer, assign address, then use the value.",
         "Functions can modify values through pointers, allowing changes to persist outside the function."
       ],
       "examples": [
         {
           "code": "int getValue(int *ptr) {\n    return *ptr;  // Read value at address\n}",
-          "explanation": "Reading a value through a pointer."
+          "explanation": "Reading a value through a pointer parameter."
         },
         {
-          "code": "int doubled(int *ptr) {\n    return *ptr * 2;\n}",
-          "explanation": "Use the dereferenced value in calculations."
+          "code": "int useLocalPointer(int val) {\n    int *ptr = &val;  // DECLARE pointer and ASSIGN address\n    return *ptr * 2;  // Use dereferenced value\n}",
+          "explanation": "Complete pattern: declare pointer, get address with &, use value with *."
         }
       ]
     },
@@ -2315,44 +2337,37 @@
       {
         "id": "L12_Q3",
         "order": 3,
-        "title": "Add to Pointer Value",
-        "description": "Return the value at ptr plus an additional amount.",
+        "title": "Declare Local Pointer",
+        "description": "DECLARE a local pointer to val, ASSIGN its address, then return the value doubled.",
         "recommended": false,
         "function_signature": {
-          "name": "addToValue",
+          "name": "useLocalPointer",
           "return_type": "int",
           "parameters": [
             {
-              "name": "ptr",
-              "type": "int*"
-            },
-            {
-              "name": "add",
+              "name": "val",
               "type": "int"
             }
           ]
         },
-        "user_template": "int addToValue(int *ptr, int add) {\n    // Return the value at ptr plus the add amount\n    \n}",
+        "user_template": "int useLocalPointer(int val) {\n    // DECLARE a pointer: int *ptr\n    // ASSIGN address: ptr = &val;\n    // Or combine: int *ptr = &val;\n    // Return *ptr doubled\n    \n}",
         "test_cases": [
           {
             "input": [
-              10,
-              5
+              10
             ],
-            "expected": "15",
+            "expected": "20",
             "sample": true
           },
           {
             "input": [
-              100,
-              50
+              7
             ],
-            "expected": "150",
+            "expected": "14",
             "sample": true
           },
           {
             "input": [
-              0,
               0
             ],
             "expected": "0",
@@ -2360,16 +2375,17 @@
           },
           {
             "input": [
-              10,
-              -3
+              -5
             ],
-            "expected": "7",
+            "expected": "-10",
             "sample": false
           }
         ],
         "hints": [
-          "Mix pointer dereference with regular parameter",
-          "return *ptr + add;"
+          "This quest requires DECLARING your own pointer!",
+          "int *ptr = &val; creates pointer and gets address",
+          "Then use: return *ptr * 2;",
+          "Full pattern: declare pointer, assign address with &, use value with *"
         ],
         "xp_reward": 35
       }
@@ -2392,7 +2408,9 @@
       "content": [
         "The dereference operator (*) lets you both read AND write values at an address.",
         "Writing: *ptr = value; changes what ptr points to.",
-        "This is how functions can modify variables from their caller - by receiving pointers."
+        "Changes through *ptr persist because you are modifying the ORIGINAL variable at that address.",
+        "This is how functions can \"return\" multiple values - by modifying variables through pointers.",
+        "This is how functions can modify variables from their caller - by receiving pointers to those variables."
       ],
       "examples": [
         {
@@ -3116,17 +3134,18 @@
       "title": "Structs: Custom Data Types",
       "content": [
         "A struct groups related variables together into a single unit.",
-        "Define with: struct Hero { int hp; int level; };",
-        "Access members with dot notation: hero.hp, hero.level"
+        "Define with: struct Name { type field; };",
+        "Create: struct Name variable;",
+        "Access members with dot notation: variable.field"
       ],
       "examples": [
         {
-          "code": "struct Hero {\n    int hp;\n    int level;\n};",
-          "explanation": "Defines a Hero type with hp and level fields."
+          "code": "struct Hero {\n    int hp;\n    int level;\n};\n\nstruct Hero h;\nh.hp = 100;\nh.level = 5;",
+          "explanation": "Define struct, create variable, and set fields using dot notation."
         },
         {
-          "code": "int getHP(struct Hero h) {\n    return h.hp;\n}",
-          "explanation": "Functions can receive structs and access their members."
+          "code": "int getHP(int hp_val, int level_val) {\n    struct Hero h;\n    h.hp = hp_val;\n    h.level = level_val;\n    return h.hp;\n}",
+          "explanation": "Create struct inside function and access its members."
         }
       ]
     },
@@ -3159,23 +3178,23 @@
         "id": "L16_Q1",
         "order": 1,
         "title": "Get Hero HP",
-        "description": "Return the hp field from the Hero struct.",
+        "description": "Create a Hero struct, populate it, and return its hp field.",
         "recommended": true,
         "function_signature": {
           "name": "getHP",
           "return_type": "int",
           "parameters": [
             {
-              "name": "hp",
+              "name": "hp_val",
               "type": "int"
             },
             {
-              "name": "level",
+              "name": "level_val",
               "type": "int"
             }
           ]
         },
-        "user_template": "// struct Hero { int hp; int level; }; is provided\n\nint getHP(int hp, int level) {\n    // Simply return the hp value\n    \n}",
+        "user_template": "struct Hero {\n    int hp;\n    int level;\n};\n\nint getHP(int hp_val, int level_val) {\n    // Create a Hero struct and return its hp field\n    // 1. Declare: struct Hero h;\n    // 2. Set fields: h.hp = hp_val; h.level = level_val;\n    // 3. Return: return h.hp;\n    \n}",
         "test_cases": [
           {
             "input": [
@@ -3203,8 +3222,10 @@
           }
         ],
         "hints": [
-          "Just return the hp parameter",
-          "return hp;"
+          "Define struct Hero { int hp; int level; };",
+          "Create variable: struct Hero h;",
+          "Set fields: h.hp = hp_val; h.level = level_val;",
+          "Access member: return h.hp;"
         ],
         "xp_reward": 25
       },
@@ -3212,52 +3233,61 @@
         "id": "L16_Q2",
         "order": 2,
         "title": "Is Hero Alive",
-        "description": "Return 1 if hp > 0, otherwise return 0.",
+        "description": "Create a Hero struct and return 1 if its hp > 0, else 0.",
         "recommended": false,
         "function_signature": {
           "name": "isAlive",
           "return_type": "int",
           "parameters": [
             {
-              "name": "hp",
+              "name": "hp_val",
+              "type": "int"
+            },
+            {
+              "name": "level_val",
               "type": "int"
             }
           ]
         },
-        "user_template": "int isAlive(int hp) {\n    // Return 1 if hp > 0, else 0\n    \n}",
+        "user_template": "struct Hero {\n    int hp;\n    int level;\n};\n\nint isAlive(int hp_val, int level_val) {\n    // Create Hero struct with given values\n    // Return 1 if h.hp > 0, else 0\n    \n}",
         "test_cases": [
           {
             "input": [
-              100
+              100,
+              5
             ],
             "expected": "1",
             "sample": true
           },
           {
             "input": [
-              0
+              0,
+              1
             ],
             "expected": "0",
             "sample": true
           },
           {
             "input": [
-              1
+              1,
+              10
             ],
             "expected": "1",
             "sample": false
           },
           {
             "input": [
-              -5
+              -5,
+              1
             ],
             "expected": "0",
             "sample": false
           }
         ],
         "hints": [
-          "Compare hp to 0",
-          "return hp > 0;"
+          "Create struct Hero h and populate it",
+          "Check h.hp > 0",
+          "return h.hp > 0;"
         ],
         "xp_reward": 30
       },
@@ -3265,23 +3295,23 @@
         "id": "L16_Q3",
         "order": 3,
         "title": "Calculate Power Level",
-        "description": "Return hp + (level \u00d7 10) as the hero's power level.",
+        "description": "Create a Hero struct and compute its power: hp + (level \u00d7 10).",
         "recommended": false,
         "function_signature": {
           "name": "powerLevel",
           "return_type": "int",
           "parameters": [
             {
-              "name": "hp",
+              "name": "hp_val",
               "type": "int"
             },
             {
-              "name": "level",
+              "name": "level_val",
               "type": "int"
             }
           ]
         },
-        "user_template": "int powerLevel(int hp, int level) {\n    // Return hp + level * 10\n    \n}",
+        "user_template": "struct Hero {\n    int hp;\n    int level;\n};\n\nint powerLevel(int hp_val, int level_val) {\n    // Create Hero struct with given values\n    // Return h.hp + h.level * 10\n    \n}",
         "test_cases": [
           {
             "input": [
@@ -3317,8 +3347,9 @@
           }
         ],
         "hints": [
-          "Multiply level by 10 and add hp",
-          "return hp + level * 10;"
+          "Create struct Hero h and populate it",
+          "Access both fields: h.hp and h.level",
+          "return h.hp + h.level * 10;"
         ],
         "xp_reward": 40
       }
@@ -3340,17 +3371,18 @@
       "title": "Working with Struct Members",
       "content": [
         "Use dot notation to access struct members: chest.gold",
+        "Create struct variables and populate their fields",
         "Members can be read, modified, and used in calculations",
         "Each field acts like a regular variable of its type"
       ],
       "examples": [
         {
-          "code": "int getGold(int gold, int gems, int keys) {\n    return gold;\n}",
-          "explanation": "Access and return a single field value."
+          "code": "struct Chest {\n    int gold;\n    int gems;\n    int keys;\n};\n\nstruct Chest c;\nc.gold = 100;\nc.gems = 50;\nc.keys = 3;",
+          "explanation": "Define struct, create variable, and populate fields."
         },
         {
-          "code": "int totalValue(int gold, int gems, int keys) {\n    return gold + gems * 10 + keys * 5;\n}",
-          "explanation": "Compute a value from multiple fields."
+          "code": "int getGold(int gold_val, int gems_val, int keys_val) {\n    struct Chest c;\n    c.gold = gold_val;\n    c.gems = gems_val;\n    c.keys = keys_val;\n    return c.gold;\n}",
+          "explanation": "Create and access struct members using dot notation."
         }
       ]
     },
@@ -3383,27 +3415,27 @@
         "id": "L17_Q1",
         "order": 1,
         "title": "Get Gold Count",
-        "description": "Return the gold amount from the chest.",
+        "description": "Create a Chest struct, populate it, and return the gold field.",
         "recommended": true,
         "function_signature": {
           "name": "getGold",
           "return_type": "int",
           "parameters": [
             {
-              "name": "gold",
+              "name": "gold_val",
               "type": "int"
             },
             {
-              "name": "gems",
+              "name": "gems_val",
               "type": "int"
             },
             {
-              "name": "keys",
+              "name": "keys_val",
               "type": "int"
             }
           ]
         },
-        "user_template": "// Chest has: gold, gems, keys\n\nint getGold(int gold, int gems, int keys) {\n    // Return the gold amount\n    \n}",
+        "user_template": "struct Chest {\n    int gold;\n    int gems;\n    int keys;\n};\n\nint getGold(int gold_val, int gems_val, int keys_val) {\n    // Create a Chest struct and return its gold field\n    // struct Chest c;\n    // c.gold = gold_val; c.gems = gems_val; c.keys = keys_val;\n    // return c.gold;\n    \n}",
         "test_cases": [
           {
             "input": [
@@ -3434,8 +3466,10 @@
           }
         ],
         "hints": [
-          "Simply return the gold parameter",
-          "return gold;"
+          "Define struct Chest { int gold; int gems; int keys; };",
+          "Create variable: struct Chest c;",
+          "Set all fields: c.gold = gold_val; etc.",
+          "return c.gold;"
         ],
         "xp_reward": 30
       },
@@ -3443,27 +3477,27 @@
         "id": "L17_Q2",
         "order": 2,
         "title": "Total Chest Value",
-        "description": "Calculate total value: gold + gems\u00d710 + keys\u00d75.",
+        "description": "Create a Chest struct, populate it, and compute the total value.",
         "recommended": false,
         "function_signature": {
           "name": "totalValue",
           "return_type": "int",
           "parameters": [
             {
-              "name": "gold",
+              "name": "gold_val",
               "type": "int"
             },
             {
-              "name": "gems",
+              "name": "gems_val",
               "type": "int"
             },
             {
-              "name": "keys",
+              "name": "keys_val",
               "type": "int"
             }
           ]
         },
-        "user_template": "int totalValue(int gold, int gems, int keys) {\n    // Return gold + gems*10 + keys*5\n    \n}",
+        "user_template": "struct Chest {\n    int gold;\n    int gems;\n    int keys;\n};\n\nint totalValue(int gold_val, int gems_val, int keys_val) {\n    // Create Chest struct with given values\n    // Return c.gold + c.gems*10 + c.keys*5\n    \n}",
         "test_cases": [
           {
             "input": [
@@ -3503,8 +3537,9 @@
           }
         ],
         "hints": [
-          "Multiply gems by 10, keys by 5",
-          "return gold + gems * 10 + keys * 5;"
+          "Create and populate struct Chest c",
+          "Access all fields: c.gold, c.gems, c.keys",
+          "return c.gold + c.gems * 10 + c.keys * 5;"
         ],
         "xp_reward": 35
       },
@@ -3512,27 +3547,27 @@
         "id": "L17_Q3",
         "order": 3,
         "title": "Is Chest Empty",
-        "description": "Return 1 if all fields are 0, otherwise 0.",
+        "description": "Create a Chest struct, populate it, and return 1 if all fields are 0.",
         "recommended": false,
         "function_signature": {
           "name": "isEmpty",
           "return_type": "int",
           "parameters": [
             {
-              "name": "gold",
+              "name": "gold_val",
               "type": "int"
             },
             {
-              "name": "gems",
+              "name": "gems_val",
               "type": "int"
             },
             {
-              "name": "keys",
+              "name": "keys_val",
               "type": "int"
             }
           ]
         },
-        "user_template": "int isEmpty(int gold, int gems, int keys) {\n    // Return 1 if all are 0, else 0\n    \n}",
+        "user_template": "struct Chest {\n    int gold;\n    int gems;\n    int keys;\n};\n\nint isEmpty(int gold_val, int gems_val, int keys_val) {\n    // Create Chest struct with given values\n    // Return 1 if all fields are 0, else 0\n    \n}",
         "test_cases": [
           {
             "input": [
@@ -3572,7 +3607,8 @@
           }
         ],
         "hints": [
-          "Check all three: gold == 0 && gems == 0 && keys == 0",
+          "Create and populate struct Chest c",
+          "Check: c.gold == 0 && c.gems == 0 && c.keys == 0",
           "Use && to combine conditions"
         ],
         "xp_reward": 35
@@ -4741,10 +4777,9 @@
       "title": "Growing Arrays with Realloc",
       "content": [
         "realloc resizes allocated memory, preserving existing data.",
-        "DANGER: realloc can fail and return NULL!",
-        "SAFE PATTERN: Use a temp pointer to avoid losing original memory:",
-        "int *temp = realloc(arr, new_size); if (temp) arr = temp;",
-        "Always assign realloc result - memory may move to new location."
+        "DANGER: realloc can fail and return NULL, losing your original pointer!",
+        "SAFE PATTERN: int *temp = realloc(arr, newSize); if(temp) arr = temp;",
+        "Always check realloc result before assigning back to original pointer."
       ],
       "examples": [
         {
@@ -4793,7 +4828,7 @@
             }
           ]
         },
-        "user_template": "int growSum(int a, int b) {\n    // 1. Malloc space for 1 int, store a\n    // 2. Realloc to 2 ints, store b in [1]\n    // 3. Sum arr[0] + arr[1]\n    // 4. Free and return sum\n    \n}",
+        "user_template": "int growSum(int a, int b) {\n    // 1. Malloc space for 1 int, store a\n    // 2. Realloc to 2 ints - USE TEMP POINTER!\n    // 3. Check if realloc succeeded before using\n    // 4. Store b in [1], sum, free, return\n    \n}",
         "test_cases": [
           {
             "input": [
@@ -4829,8 +4864,9 @@
           }
         ],
         "hints": [
+          "SAFE realloc: int *temp = realloc(arr, size); if(temp) arr = temp;",
           "int *arr = malloc(sizeof(int)); arr[0] = a;",
-          "arr = realloc(arr, 2 * sizeof(int)); arr[1] = b;",
+          "int *temp = realloc(arr, 2 * sizeof(int)); if (temp) arr = temp; arr[1] = b;",
           "Don't forget to free(arr) before returning!"
         ],
         "xp_reward": 35
@@ -5015,11 +5051,11 @@
       {
         "id": "L25_Q2",
         "order": 2,
-        "title": "Count Nodes",
-        "description": "Given a head pointer to a 3-node list, count and return the number of nodes.",
+        "title": "Sum Node Values",
+        "description": "Sum all values by traversing the linked list.",
         "recommended": false,
         "function_signature": {
-          "name": "countList",
+          "name": "sumList",
           "return_type": "int",
           "parameters": [
             {
@@ -5036,7 +5072,7 @@
             }
           ]
         },
-        "user_template": "struct Node {\n    int value;\n    struct Node *next;\n};\n\nint countList(int a, int b, int c) {\n    // Create 3 nodes: a -> b -> c -> NULL\n    // Count nodes by traversing, free all, return count\n    \n}",
+        "user_template": "struct Node {\n    int value;\n    struct Node *next;\n};\n\nint sumList(int a, int b, int c) {\n    // Create list: a -> b -> c -> NULL\n    // Traverse and SUM all values (not count!)\n    // Free all nodes, return sum\n    \n}",
         "test_cases": [
           {
             "input": [
@@ -5044,7 +5080,7 @@
               2,
               3
             ],
-            "expected": "3",
+            "expected": "6",
             "sample": true
           },
           {
@@ -5053,7 +5089,7 @@
               20,
               30
             ],
-            "expected": "3",
+            "expected": "60",
             "sample": true
           },
           {
@@ -5062,13 +5098,13 @@
               0,
               0
             ],
-            "expected": "3",
+            "expected": "0",
             "sample": false
           }
         ],
         "hints": [
           "Create 3 nodes and link them: n1->next = n2; n2->next = n3; n3->next = NULL;",
-          "Traverse: while(curr != NULL) { count++; curr = curr->next; }",
+          "Traverse and sum: while(curr != NULL) { sum += curr->value; curr = curr->next; }",
           "Free all 3 nodes before returning"
         ],
         "xp_reward": 35
