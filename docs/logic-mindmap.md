@@ -15,7 +15,7 @@
   - Quest/hint APIs: `/api/levels/current/quests` and `/api/levels/current/quests/:quest_id` surface quest metadata + completion flags; `/api/code/hint/:index` streams hints in order. 【F:src-api/src/main.rs†L870-L950】【F:src-api/src/main.rs†L1018-L1048】
   - Progress & saves: `/api/player/progress` derives totals from `ProgressionState`; save slots list/upsert/load using serialized `GameState`; delete endpoint removes slots. 【F:src-api/src/main.rs†L1050-L1160】
 - Game core (`src/game/state.rs`)
-  - GameState structure: tracks player/world/inventory/progression/active quest and phase; default spawns a 20x15 world with starter inventory. 【F:src/game/state.rs†L39-L76】
+  - GameState structure: tracks player/world/inventory/progression/active quest and phase; default spawns a 20×15 world with starter inventory. 【F:src/game/state.rs†L39-L76】
   - Level lifecycle: `start_level` sets world + player spawn and enters Playing; `complete_level` awards XP, syncs legacy totals, unlocks doors, flips to LevelComplete; `update_unlocked_levels`/`is_level_unlocked`/`is_level_completed` delegate to progression. 【F:src/game/state.rs†L78-L122】
   - Quest lifecycle: `complete_quest`, `is_quest_completed`, `get_completed_quest_count`, `is_level_fully_completed`, `maybe_complete_level` handle per-quest XP and mark level complete when all quests done. 【F:src/game/state.rs†L123-L167】
   - Mode switches: `enter_coding_mode` / `exit_coding_mode` gate movement vs terminal interaction. 【F:src/game/state.rs†L169-L175】
