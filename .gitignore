@@ -28,6 +28,9 @@ Thumbs.db
 __pycache__/
 *.pyc
 
+# Backup files
+*.bak
+
 # Rust / Cargo
 target/
 **/*.rs.bk
