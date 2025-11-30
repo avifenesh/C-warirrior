@@ -2358,24 +2358,92 @@
     "theme": "L22_alchemy",
     "concept": "free memory",
     "description": "What you summon, you must also banish! Release the memory back to the void.",
-    "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    int *summoned = (int*)malloc(sizeof(int));\n    *summoned = 999;\n    printf(\"Value before banish: %d\\n\", *summoned);\n    \n    // Free the memory here\n    \n    printf(\"Memory banished!\\n\");\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Value before banish: 999\nMemory banished!\n"
-    },
-    "hints": [
-      "Use free(pointer) to release allocated memory",
-      "Always free memory that was malloc'd",
-      "After free, don't use the pointer again"
-    ],
-    "xp_reward": 450,
+    "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 70,
     "map_file": "maps/L22_alchemy.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Releasing Memory with Free",
+      "content": [
+        "Every malloc must have a matching free, or you create a memory leak.",
+        "Call free(ptr) to release memory. After freeing, the pointer is dangling - don't use it!",
+        "Good pattern: allocate, use, free, return result (not the pointer)."
+      ],
+      "examples": [
+        {
+          "code": "int computeAndFree(int a, int b) {\n    int *p = (int*)malloc(sizeof(int));\n    *p = a * b;\n    int result = *p;\n    free(p);\n    return result;\n}",
+          "explanation": "Allocate, compute, save result, free, then return the saved result."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 224, "y": 224, "quest_id": "L22_Q1"},
+        {"x": 416, "y": 224, "quest_id": "L22_Q2"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "free_memory",
-        "prompt": "Free the allocated memory using the free function.",
-        "expected_output": "Value before banish: 999\nMemory banished!",
-        "starter_code": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    int *summoned = (int*)malloc(sizeof(int));\n    *summoned = 999;\n    printf(\"Value before banish: %d\\n\", *summoned);\n    // Free the memory\n    printf(\"Memory banished!\\n\");\n    return 0;\n}"
+        "id": "L22_Q1",
+        "order": 1,
+        "title": "Square and Free",
+        "description": "Allocate memory, compute n squared, save result, free memory, return result.",
+        "recommended": true,
+        "function_signature": {
+          "name": "squareAndFree",
+          "return_type": "int",
+          "parameters": [
+            {"name": "n", "type": "int"}
+          ]
+        },
+        "user_template": "int squareAndFree(int n) {\n    // 1. Allocate an int\n    // 2. Compute n * n and store it\n    // 3. Save the result to a local variable\n    // 4. Free the memory\n    // 5. Return the saved result\n    \n}",
+        "test_cases": [
+          {"input": [5], "expected": "25", "sample": true},
+          {"input": [3], "expected": "9", "sample": true},
+          {"input": [0], "expected": "0", "sample": false},
+          {"input": [10], "expected": "100", "sample": false}
+        ],
+        "hints": [
+          "Save result before freeing: int result = *p;",
+          "Then free(p); and return result;",
+          "Never return a freed pointer!"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L22_Q2",
+        "order": 2,
+        "title": "Double Allocation",
+        "description": "Allocate TWO integers, store a and b, compute sum, free both, return sum.",
+        "recommended": false,
+        "function_signature": {
+          "name": "allocTwoSum",
+          "return_type": "int",
+          "parameters": [
+            {"name": "a", "type": "int"},
+            {"name": "b", "type": "int"}
+          ]
+        },
+        "user_template": "int allocTwoSum(int a, int b) {\n    // Allocate two ints, store a and b, sum them\n    // Free both allocations, return the sum\n    \n}",
+        "test_cases": [
+          {"input": [10, 20], "expected": "30", "sample": true},
+          {"input": [5, 5], "expected": "10", "sample": true},
+          {"input": [0, 0], "expected": "0", "sample": false},
+          {"input": [100, -50], "expected": "50", "sample": false}
+        ],
+        "hints": [
+          "int *p1 = malloc(...); int *p2 = malloc(...);",
+          "Compute sum: int sum = *p1 + *p2;",
+          "Free both: free(p1); free(p2);"
+        ],
+        "xp_reward": 40
       }
     ]
   },
@@ -2384,25 +2452,93 @@
     "title": "The Cursed Hoarding",
     "theme": "L23_observatory",
     "concept": "memory leaks",
-    "description": "A curse afflicts those who hoard without releasing! Find and fix the memory leak.",
-    "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    for(int i = 0; i < 3; i++) {\n        int *treasure = (int*)malloc(sizeof(int));\n        *treasure = (i + 1) * 100;\n        printf(\"Found treasure: %d\\n\", *treasure);\n        // FIX: Free memory inside the loop!\n    }\n    printf(\"All treasures collected properly!\\n\");\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Found treasure: 100\nFound treasure: 200\nFound treasure: 300\nAll treasures collected properly!\n"
-    },
-    "hints": [
-      "Memory allocated inside a loop should be freed inside the loop",
-      "Each malloc needs a matching free",
-      "Add free(treasure) before the loop iteration ends"
-    ],
-    "xp_reward": 475,
+    "description": "A curse afflicts those who hoard without releasing! Learn proper cleanup patterns.",
+    "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 70,
     "map_file": "maps/L23_observatory.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Avoiding Memory Leaks",
+      "content": [
+        "A memory leak occurs when allocated memory is never freed - it stays 'lost' forever.",
+        "In loops: allocate and free within each iteration, OR allocate once before the loop.",
+        "In conditionals: ensure ALL branches free memory before returning."
+      ],
+      "examples": [
+        {
+          "code": "int loopNoLeak(int n) {\n    int sum = 0;\n    for(int i = 0; i < n; i++) {\n        int *p = malloc(sizeof(int));\n        *p = i;\n        sum += *p;\n        free(p);  // Free each iteration!\n    }\n    return sum;\n}",
+          "explanation": "Each allocation is freed within its iteration - no leaks."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 224, "y": 224, "quest_id": "L23_Q1"},
+        {"x": 416, "y": 224, "quest_id": "L23_Q2"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "fix_memory_leak",
-        "prompt": "Add the missing free() call to prevent the memory leak.",
-        "expected_output": "Found treasure: 100\nFound treasure: 200\nFound treasure: 300\nAll treasures collected properly!",
-        "starter_code": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    for(int i = 0; i < 3; i++) {\n        int *treasure = (int*)malloc(sizeof(int));\n        *treasure = (i + 1) * 100;\n        printf(\"Found treasure: %d\\n\", *treasure);\n        // Add free here\n    }\n    printf(\"All treasures collected properly!\\n\");\n    return 0;\n}"
+        "id": "L23_Q1",
+        "order": 1,
+        "title": "Loop Cleanup",
+        "description": "Sum values 0 to n-1 using malloc in a loop. Free properly each iteration!",
+        "recommended": true,
+        "function_signature": {
+          "name": "loopSum",
+          "return_type": "int",
+          "parameters": [
+            {"name": "n", "type": "int"}
+          ]
+        },
+        "user_template": "int loopSum(int n) {\n    int sum = 0;\n    for(int i = 0; i < n; i++) {\n        // Allocate, add i to sum, free\n        \n    }\n    return sum;\n}",
+        "test_cases": [
+          {"input": [5], "expected": "10", "sample": true},
+          {"input": [3], "expected": "3", "sample": true},
+          {"input": [1], "expected": "0", "sample": false},
+          {"input": [10], "expected": "45", "sample": false}
+        ],
+        "hints": [
+          "int *p = malloc(sizeof(int)); *p = i;",
+          "sum += *p; then free(p);",
+          "Free inside the loop, not after!"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L23_Q2",
+        "order": 2,
+        "title": "Branch Cleanup",
+        "description": "Allocate memory, return different values based on condition, but always free!",
+        "recommended": false,
+        "function_signature": {
+          "name": "branchClean",
+          "return_type": "int",
+          "parameters": [
+            {"name": "val", "type": "int"},
+            {"name": "flag", "type": "int"}
+          ]
+        },
+        "user_template": "int branchClean(int val, int flag) {\n    int *p = (int*)malloc(sizeof(int));\n    *p = val;\n    // If flag != 0, return *p doubled\n    // Otherwise return *p as-is\n    // IMPORTANT: Free memory on ALL paths!\n    \n}",
+        "test_cases": [
+          {"input": [5, 1], "expected": "10", "sample": true},
+          {"input": [5, 0], "expected": "5", "sample": true},
+          {"input": [10, 1], "expected": "20", "sample": false},
+          {"input": [10, 0], "expected": "10", "sample": false}
+        ],
+        "hints": [
+          "Save result before freeing: int result = ...;",
+          "free(p); must happen before EVERY return",
+          "Or: compute result first, free, then return"
+        ],
+        "xp_reward": 40
       }
     ]
   },
@@ -2411,25 +2547,95 @@
     "title": "The Expanding Army",
     "theme": "L24_portal",
     "concept": "dynamic arrays",
-    "description": "Your army grows! Use realloc to expand the barracks when new recruits arrive.",
-    "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    int *army = (int*)malloc(2 * sizeof(int));\n    army[0] = 10;\n    army[1] = 20;\n    printf(\"Army size 2: %d, %d\\n\", army[0], army[1]);\n    \n    // Expand to size 4 using realloc\n    army = ???;\n    army[2] = 30;\n    army[3] = 40;\n    printf(\"Army size 4: %d, %d, %d, %d\\n\", army[0], army[1], army[2], army[3]);\n    \n    free(army);\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Army size 2: 10, 20\nArmy size 4: 10, 20, 30, 40\n"
-    },
-    "hints": [
-      "realloc can grow or shrink allocated memory",
-      "Use: ptr = (int*)realloc(ptr, new_size);",
-      "realloc preserves existing data"
-    ],
-    "xp_reward": 500,
+    "description": "Your army grows! Use realloc to expand arrays when needed.",
+    "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 75,
     "map_file": "maps/L24_portal.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Growing Arrays with Realloc",
+      "content": [
+        "realloc resizes allocated memory: ptr = realloc(ptr, new_size);",
+        "It preserves existing data and may move the block to a new location.",
+        "Always assign realloc's result back to the pointer (it may return a new address)."
+      ],
+      "examples": [
+        {
+          "code": "int growAndSum(int a, int b) {\n    int *arr = malloc(sizeof(int));\n    arr[0] = a;\n    arr = realloc(arr, 2 * sizeof(int));\n    arr[1] = b;\n    int sum = arr[0] + arr[1];\n    free(arr);\n    return sum;\n}",
+          "explanation": "Start with 1 element, grow to 2, compute sum, free."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 224, "y": 224, "quest_id": "L24_Q1"},
+        {"x": 416, "y": 224, "quest_id": "L24_Q2"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "realloc_expand",
-        "prompt": "Use realloc to expand the army array from 2 to 4 elements.",
-        "expected_output": "Army size 2: 10, 20\nArmy size 4: 10, 20, 30, 40",
-        "starter_code": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    int *army = (int*)malloc(2 * sizeof(int));\n    army[0] = 10;\n    army[1] = 20;\n    printf(\"Army size 2: %d, %d\\n\", army[0], army[1]);\n    // Expand to size 4\n    army[2] = 30;\n    army[3] = 40;\n    printf(\"Army size 4: %d, %d, %d, %d\\n\", army[0], army[1], army[2], army[3]);\n    free(army);\n    return 0;\n}"
+        "id": "L24_Q1",
+        "order": 1,
+        "title": "Grow and Sum",
+        "description": "Malloc for 1 int, store a, realloc to 2 ints, store b, return sum.",
+        "recommended": true,
+        "function_signature": {
+          "name": "growSum",
+          "return_type": "int",
+          "parameters": [
+            {"name": "a", "type": "int"},
+            {"name": "b", "type": "int"}
+          ]
+        },
+        "user_template": "int growSum(int a, int b) {\n    // 1. Malloc space for 1 int, store a\n    // 2. Realloc to 2 ints, store b in [1]\n    // 3. Sum arr[0] + arr[1]\n    // 4. Free and return sum\n    \n}",
+        "test_cases": [
+          {"input": [10, 20], "expected": "30", "sample": true},
+          {"input": [5, 5], "expected": "10", "sample": true},
+          {"input": [0, 0], "expected": "0", "sample": false},
+          {"input": [100, -50], "expected": "50", "sample": false}
+        ],
+        "hints": [
+          "int *arr = malloc(sizeof(int)); arr[0] = a;",
+          "arr = realloc(arr, 2 * sizeof(int)); arr[1] = b;",
+          "Don't forget to free(arr) before returning!"
+        ],
+        "xp_reward": 35
+      },
+      {
+        "id": "L24_Q2",
+        "order": 2,
+        "title": "Triple Grow",
+        "description": "Start with malloc(1), realloc twice to reach size 3, store a,b,c, return sum.",
+        "recommended": false,
+        "function_signature": {
+          "name": "tripleGrow",
+          "return_type": "int",
+          "parameters": [
+            {"name": "a", "type": "int"},
+            {"name": "b", "type": "int"},
+            {"name": "c", "type": "int"}
+          ]
+        },
+        "user_template": "int tripleGrow(int a, int b, int c) {\n    // Malloc(1), store a\n    // Realloc(2), store b\n    // Realloc(3), store c\n    // Sum all three, free, return\n    \n}",
+        "test_cases": [
+          {"input": [1, 2, 3], "expected": "6", "sample": true},
+          {"input": [10, 20, 30], "expected": "60", "sample": true},
+          {"input": [0, 0, 0], "expected": "0", "sample": false},
+          {"input": [100, 200, 300], "expected": "600", "sample": false}
+        ],
+        "hints": [
+          "Each realloc grows by one element",
+          "arr = realloc(arr, 2*sizeof(int)); then arr = realloc(arr, 3*sizeof(int));",
+          "Sum: arr[0] + arr[1] + arr[2]"
+        ],
+        "xp_reward": 40
       }
     ]
   },
@@ -2438,25 +2644,123 @@
     "title": "Chain of Portals",
     "theme": "L25_sanctum",
     "concept": "linked lists",
-    "description": "Create a chain of magical portals, each pointing to the next. This is the foundation of linked lists!",
-    "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\nstruct Portal {\n    int destination;\n    struct Portal *next;\n};\n\nint main() {\n    // Create 3 portals: 10 -> 20 -> 30 -> NULL\n    struct Portal *first = (struct Portal*)malloc(sizeof(struct Portal));\n    struct Portal *second = (struct Portal*)malloc(sizeof(struct Portal));\n    struct Portal *third = (struct Portal*)malloc(sizeof(struct Portal));\n    \n    first->destination = 10;\n    first->next = second;\n    \n    second->destination = 20;\n    // Link second to third\n    \n    third->destination = 30;\n    third->next = NULL;\n    \n    // Traverse and print\n    struct Portal *current = first;\n    while(current != NULL) {\n        printf(\"Portal to: %d\\n\", current->destination);\n        current = current->next;\n    }\n    \n    free(first); free(second); free(third);\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Portal to: 10\nPortal to: 20\nPortal to: 30\n"
-    },
-    "hints": [
-      "Link nodes with: node->next = another_node;",
-      "The last node's next should be NULL",
-      "Traverse with: while(current != NULL) { ... current = current->next; }"
-    ],
-    "xp_reward": 550,
+    "description": "Create chains of nodes that point to each other - the foundation of linked lists!",
+    "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\nstruct Node {\n    int value;\n    struct Node *next;\n};\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 110,
     "map_file": "maps/L25_sanctum.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Linked Lists",
+      "content": [
+        "A linked list is a chain of nodes, each containing data and a pointer to the next node.",
+        "struct Node { int value; struct Node *next; }; defines a self-referential struct.",
+        "Traverse by following next pointers until you hit NULL (end of list)."
+      ],
+      "examples": [
+        {
+          "code": "int countNodes(struct Node *head) {\n    int count = 0;\n    struct Node *curr = head;\n    while(curr != NULL) {\n        count++;\n        curr = curr->next;\n    }\n    return count;\n}",
+          "explanation": "Traverse from head to end, counting nodes."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 160, "y": 224, "quest_id": "L25_Q1"},
+        {"x": 288, "y": 224, "quest_id": "L25_Q2"},
+        {"x": 416, "y": 224, "quest_id": "L25_Q3"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "linked_list_basic",
-        "prompt": "Complete the portal chain by linking second to third.",
-        "expected_output": "Portal to: 10\nPortal to: 20\nPortal to: 30",
-        "starter_code": "#include <stdio.h>\n#include <stdlib.h>\n\nstruct Portal {\n    int destination;\n    struct Portal *next;\n};\n\nint main() {\n    struct Portal *first = (struct Portal*)malloc(sizeof(struct Portal));\n    struct Portal *second = (struct Portal*)malloc(sizeof(struct Portal));\n    struct Portal *third = (struct Portal*)malloc(sizeof(struct Portal));\n    \n    first->destination = 10;\n    first->next = second;\n    \n    second->destination = 20;\n    // Link second to third\n    \n    third->destination = 30;\n    third->next = NULL;\n    \n    struct Portal *current = first;\n    while(current != NULL) {\n        printf(\"Portal to: %d\\n\", current->destination);\n        current = current->next;\n    }\n    \n    free(first); free(second); free(third);\n    return 0;\n}"
+        "id": "L25_Q1",
+        "order": 1,
+        "title": "Create a Node",
+        "description": "Allocate a Node, set its value, set next to NULL, return the value.",
+        "recommended": true,
+        "function_signature": {
+          "name": "createNode",
+          "return_type": "int",
+          "parameters": [
+            {"name": "val", "type": "int"}
+          ]
+        },
+        "user_template": "struct Node {\n    int value;\n    struct Node *next;\n};\n\nint createNode(int val) {\n    // Allocate a Node, set value=val, next=NULL\n    // Return the stored value, then free\n    \n}",
+        "test_cases": [
+          {"input": [42], "expected": "42", "sample": true},
+          {"input": [100], "expected": "100", "sample": true},
+          {"input": [0], "expected": "0", "sample": false},
+          {"input": [-5], "expected": "-5", "sample": false}
+        ],
+        "hints": [
+          "struct Node *n = malloc(sizeof(struct Node));",
+          "n->value = val; n->next = NULL;",
+          "int result = n->value; free(n); return result;"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L25_Q2",
+        "order": 2,
+        "title": "Count Nodes",
+        "description": "Given a head pointer to a 3-node list, count and return the number of nodes.",
+        "recommended": false,
+        "function_signature": {
+          "name": "countList",
+          "return_type": "int",
+          "parameters": [
+            {"name": "a", "type": "int"},
+            {"name": "b", "type": "int"},
+            {"name": "c", "type": "int"}
+          ]
+        },
+        "user_template": "struct Node {\n    int value;\n    struct Node *next;\n};\n\nint countList(int a, int b, int c) {\n    // Create 3 nodes: a -> b -> c -> NULL\n    // Count nodes by traversing, free all, return count\n    \n}",
+        "test_cases": [
+          {"input": [1, 2, 3], "expected": "3", "sample": true},
+          {"input": [10, 20, 30], "expected": "3", "sample": true},
+          {"input": [0, 0, 0], "expected": "3", "sample": false}
+        ],
+        "hints": [
+          "Create 3 nodes and link them: n1->next = n2; n2->next = n3; n3->next = NULL;",
+          "Traverse: while(curr != NULL) { count++; curr = curr->next; }",
+          "Free all 3 nodes before returning"
+        ],
+        "xp_reward": 35
+      },
+      {
+        "id": "L25_Q3",
+        "order": 3,
+        "title": "Last Value",
+        "description": "Create a 3-node list (a->b->c), traverse to find the last value, return it.",
+        "recommended": false,
+        "function_signature": {
+          "name": "lastValue",
+          "return_type": "int",
+          "parameters": [
+            {"name": "a", "type": "int"},
+            {"name": "b", "type": "int"},
+            {"name": "c", "type": "int"}
+          ]
+        },
+        "user_template": "struct Node {\n    int value;\n    struct Node *next;\n};\n\nint lastValue(int a, int b, int c) {\n    // Create list: a -> b -> c -> NULL\n    // Traverse to find last node (where next == NULL)\n    // Return its value, free all nodes\n    \n}",
+        "test_cases": [
+          {"input": [1, 2, 3], "expected": "3", "sample": true},
+          {"input": [10, 20, 30], "expected": "30", "sample": true},
+          {"input": [100, 200, 300], "expected": "300", "sample": false},
+          {"input": [5, 5, 5], "expected": "5", "sample": false}
+        ],
+        "hints": [
+          "Traverse: while(curr->next != NULL) curr = curr->next;",
+          "When curr->next is NULL, curr is the last node",
+          "Return curr->value after saving it, then free all nodes"
+        ],
+        "xp_reward": 45
       }
     ]
   }
