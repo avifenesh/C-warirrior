@@ -1,29 +1,26 @@
-//! Sandbox execution using nsjail for secure C code compilation and execution.
+//! Sandbox execution using bubblewrap (bwrap) for secure C code compilation and execution.
 //!
-//! Provides OS-level isolation via Linux namespaces (PID, NET, IPC, mount)
-//! and seccomp-bpf syscall filtering.
+//! Provides OS-level isolation via Linux namespaces (PID, NET, IPC, mount).
+//! Bubblewrap is simpler than nsjail and available in Alpine repos.
 
 use std::path::Path;
 use std::process::Command;
 use std::time::Instant;
 use tokio::time::{timeout, Duration};
 
-/// Configuration for the nsjail sandbox.
+/// Configuration for the bubblewrap sandbox.
 pub struct SandboxConfig {
-    /// Path to nsjail binary
-    pub nsjail_path: String,
-    /// Path to nsjail configuration file
-    pub config_path: String,
     /// Execution timeout in seconds
     pub timeout_secs: u64,
+    /// Memory limit in bytes (0 = unlimited)
+    pub memory_limit: u64,
 }
 
 impl Default for SandboxConfig {
     fn default() -> Self {
         Self {
-            nsjail_path: "nsjail".to_string(),
-            config_path: "/app/nsjail.cfg".to_string(),
             timeout_secs: 5,
+            memory_limit: 64 * 1024 * 1024, // 64MB
         }
     }
 }
@@ -37,22 +34,27 @@ pub struct SandboxResult {
     pub execution_time_ms: u64,
 }
 
-/// Check if nsjail is available on the system.
-pub fn is_nsjail_available() -> bool {
+/// Check if bubblewrap (bwrap) is available on the system.
+pub fn is_bwrap_available() -> bool {
     Command::new("which")
-        .arg("nsjail")
+        .arg("bwrap")
         .output()
         .map(|o| o.status.success())
         .unwrap_or(false)
 }
 
-/// Execute a command inside nsjail sandbox.
+/// Legacy alias for compatibility
+pub fn is_nsjail_available() -> bool {
+    is_bwrap_available()
+}
+
+/// Execute a command inside bubblewrap sandbox.
 ///
 /// # Arguments
 /// * `config` - Sandbox configuration
 /// * `command` - Command to execute (e.g., "gcc" or path to binary)
 /// * `args` - Arguments to pass to the command
-/// * `working_dir` - Working directory inside the sandbox
+/// * `working_dir` - Working directory containing source/binary
 ///
 /// # Returns
 /// * `Ok(SandboxResult)` - Execution completed (may have failed)
@@ -65,9 +67,6 @@ pub async fn sandbox_execute(
 ) -> Result<SandboxResult, String> {
     let start = Instant::now();
 
-    // Build nsjail command
-    let nsjail_path = config.nsjail_path.clone();
-    let config_path = config.config_path.clone();
     let cwd = working_dir.to_string_lossy().to_string();
     let cmd_str = command.to_string();
     let args_vec: Vec<String> = args.iter().map(|s| s.to_string()).collect();
@@ -77,16 +76,48 @@ pub async fn sandbox_execute(
     let result = timeout(
         Duration::from_secs(timeout_secs),
         tokio::task::spawn_blocking(move || {
-            let mut cmd = Command::new(&nsjail_path);
-            cmd.arg("--config")
-                .arg(&config_path)
-                .arg("--cwd")
-                .arg(&cwd)
-                .arg("--")
-                .arg(&cmd_str);
+            let mut cmd = Command::new("bwrap");
+
+            // Namespace isolation
+            cmd.arg("--unshare-net") // No network access
+                .arg("--unshare-pid") // Isolated PID namespace
+                .arg("--unshare-ipc") // Isolated IPC
+                .arg("--die-with-parent"); // Kill child if parent dies
+
+            // Read-only bind mounts for system directories
+            cmd.arg("--ro-bind").arg("/usr").arg("/usr")
+                .arg("--ro-bind").arg("/lib").arg("/lib")
+                .arg("--ro-bind").arg("/bin").arg("/bin");
+
+            // /lib64 may not exist on all systems
+            if Path::new("/lib64").exists() {
+                cmd.arg("--ro-bind").arg("/lib64").arg("/lib64");
+            }
+
+            // Bind /etc for timezone, resolv.conf etc (read-only)
+            cmd.arg("--ro-bind").arg("/etc").arg("/etc");
+
+            // Writable temp directory
+            cmd.arg("--tmpfs").arg("/tmp");
+
+            // Bind working directory read-write for compilation
+            cmd.arg("--bind").arg(&cwd).arg(&cwd);
+
+            // Set working directory
+            cmd.arg("--chdir").arg(&cwd);
+
+            // Device access (minimal)
+            cmd.arg("--dev").arg("/dev");
+            cmd.arg("--proc").arg("/proc");
+
+            // The command to run
+            cmd.arg("--").arg(&cmd_str);
+
+            // Add command arguments
             for arg in &args_vec {
                 cmd.arg(arg);
             }
+
             cmd.output()
         }),
     )

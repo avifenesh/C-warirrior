@@ -46,9 +46,9 @@ impl Default for CCompiler {
 
 impl CCompiler {
     pub fn new() -> Self {
-        let use_sandbox = is_nsjail_available();
+        let use_sandbox = is_nsjail_available(); // Actually checks for bwrap now
         if !use_sandbox {
-            eprintln!("WARNING: nsjail not available, using fallback execution (NOT SECURE)");
+            eprintln!("WARNING: bubblewrap (bwrap) not available, using fallback execution (NOT SECURE)");
         }
         Self {
             temp_dir: std::env::temp_dir().to_string_lossy().to_string(),
