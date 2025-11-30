@@ -18,7 +18,7 @@ RUN apk add --no-cache gcc musl-dev libgcc libstdc++ ca-certificates \
     protobuf libnl3 libcap
 
 # Build nsjail from source (not in Alpine repos)
-RUN apk add --no-cache --virtual .build-deps git make g++ protobuf-dev libnl3-dev libcap-dev linux-headers flex bison && \
+RUN apk add --no-cache --virtual .build-deps git make g++ protobuf-dev libnl3-dev libcap-dev linux-headers flex bison bsd-compat-headers && \
     cd /tmp && \
     git clone --depth 1 https://github.com/google/nsjail.git && \
     cd nsjail && \
