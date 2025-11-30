@@ -182,169 +182,59 @@
       "spawn_y": 224,
       "terminals": [
         {
-          "x": 128,
+          "x": 160,
           "y": 192,
           "quest_id": "L02_Q1"
         },
         {
-          "x": 320,
+          "x": 352,
           "y": 192,
           "quest_id": "L02_Q2"
         },
         {
-          "x": 512,
+          "x": 544,
           "y": 192,
           "quest_id": "L02_Q3"
         }
       ],
       "tiles": [
         {
-          "x": 3,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 3,
+          "x": 6,
           "y": 9,
           "type": "water"
         },
         {
-          "x": 4,
+          "x": 7,
           "y": 9,
           "type": "water"
         },
         {
-          "x": 5,
+          "x": 13,
           "y": 9,
           "type": "water"
         },
         {
-          "x": 10,
+          "x": 14,
           "y": 9,
           "type": "water"
         },
         {
-          "x": 11,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 3,
+          "x": 6,
           "y": 10,
           "type": "water"
         },
         {
-          "x": 4,
+          "x": 7,
           "y": 10,
           "type": "water"
         },
         {
-          "x": 5,
+          "x": 13,
           "y": 10,
           "type": "water"
         },
         {
-          "x": 10,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 11,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 12,
+          "x": 14,
           "y": 10,
           "type": "water"
         }
@@ -593,149 +483,22 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 352,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 512,
+          "x": 320,
           "y": 64,
           "quest_id": "L03_Q1"
         },
         {
-          "x": 320,
-          "y": 224,
+          "x": 160,
+          "y": 192,
           "quest_id": "L03_Q2"
         },
         {
-          "x": 192,
-          "y": 320,
+          "x": 480,
+          "y": 288,
           "quest_id": "L03_Q3"
-        }
-      ],
-      "tiles": [
-        {
-          "x": 15,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 11,
-          "type": "wall"
         }
       ]
     },
@@ -975,324 +738,22 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 352,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 192,
+          "x": 320,
           "y": 64,
           "quest_id": "L04_Q1"
         },
         {
-          "x": 416,
+          "x": 160,
           "y": 160,
           "quest_id": "L04_Q2"
         },
         {
-          "x": 128,
+          "x": 480,
           "y": 288,
           "quest_id": "L04_Q3"
-        }
-      ],
-      "tiles": [
-        {
-          "x": 5,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 13,
-          "type": "wall"
         }
       ]
     },
@@ -1515,244 +976,22 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 320,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 64,
+          "x": 160,
           "y": 64,
           "quest_id": "L05_Q1"
         },
         {
-          "x": 288,
+          "x": 320,
           "y": 160,
           "quest_id": "L05_Q2"
         },
         {
-          "x": 416,
-          "y": 256,
+          "x": 480,
+          "y": 288,
           "quest_id": "L05_Q3"
-        }
-      ],
-      "tiles": [
-        {
-          "x": 1,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 9,
-          "type": "wall"
         }
       ]
     },
@@ -1911,17 +1150,17 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 416,
+      "spawn_x": 32,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 256,
-          "y": 224,
+          "x": 224,
+          "y": 160,
           "quest_id": "L06_Q1"
         },
         {
           "x": 352,
-          "y": 224,
+          "y": 160,
           "quest_id": "L06_Q2"
         }
       ],
@@ -1937,62 +1176,12 @@
           "type": "water"
         },
         {
-          "x": 4,
-          "y": 2,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 2,
-          "type": "water"
-        },
-        {
-          "x": 6,
-          "y": 2,
-          "type": "water"
-        },
-        {
-          "x": 7,
-          "y": 2,
-          "type": "water"
-        },
-        {
-          "x": 8,
-          "y": 2,
-          "type": "water"
-        },
-        {
-          "x": 11,
-          "y": 2,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 2,
-          "type": "water"
-        },
-        {
-          "x": 13,
-          "y": 2,
-          "type": "water"
-        },
-        {
-          "x": 14,
-          "y": 2,
-          "type": "water"
-        },
-        {
           "x": 15,
           "y": 2,
           "type": "water"
         },
         {
           "x": 16,
-          "y": 2,
-          "type": "water"
-        },
-        {
-          "x": 17,
           "y": 2,
           "type": "water"
         },
@@ -2007,352 +1196,52 @@
           "type": "water"
         },
         {
-          "x": 4,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 6,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 7,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 8,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 11,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 13,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 14,
-          "y": 3,
-          "type": "water"
-        },
-        {
           "x": 15,
           "y": 3,
           "type": "water"
         },
         {
           "x": 16,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 17,
           "y": 3,
           "type": "water"
         },
         {
           "x": 2,
-          "y": 4,
+          "y": 9,
           "type": "water"
         },
         {
           "x": 3,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 6,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 7,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 8,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 11,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 13,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 14,
-          "y": 4,
+          "y": 9,
           "type": "water"
         },
         {
           "x": 15,
-          "y": 4,
+          "y": 9,
           "type": "water"
         },
         {
           "x": 16,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 4,
+          "y": 9,
           "type": "water"
         },
         {
           "x": 2,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 6,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 7,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 8,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 11,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 13,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 14,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 15,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 16,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 6,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 7,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 13,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 14,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 15,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 16,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 6,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 7,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 13,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 14,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 15,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 6,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 7,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 13,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 14,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 6,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 7,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 13,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 7,
           "y": 10,
           "type": "water"
         },
         {
-          "x": 12,
+          "x": 3,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 16,
           "y": 10,
           "type": "water"
         }
@@ -2494,254 +1383,22 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 416,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 256,
-          "y": 128,
+          "x": 320,
+          "y": 64,
           "quest_id": "L07_Q1"
         },
         {
-          "x": 320,
-          "y": 128,
+          "x": 160,
+          "y": 160,
           "quest_id": "L07_Q2"
         },
         {
-          "x": 512,
-          "y": 320,
+          "x": 480,
+          "y": 288,
           "quest_id": "L07_Q3"
-        }
-      ],
-      "tiles": [
-        {
-          "x": 8,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 9,
-          "type": "wall"
         }
       ]
     },
@@ -2999,289 +1656,22 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 416,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 384,
-          "y": 160,
+          "x": 480,
+          "y": 64,
           "quest_id": "L08_Q1"
         },
         {
-          "x": 288,
-          "y": 256,
+          "x": 320,
+          "y": 160,
           "quest_id": "L08_Q2"
         },
         {
-          "x": 192,
-          "y": 352,
+          "x": 160,
+          "y": 288,
           "quest_id": "L08_Q3"
-        }
-      ],
-      "tiles": [
-        {
-          "x": 15,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 13,
-          "type": "wall"
         }
       ]
     },
@@ -3384,7 +1774,7 @@
         "teaching": {
           "concept": "Function Composition",
           "explanation": "Functions can call other functions! addOne(addOne(n)) first calls the inner addOne(n), gets a result, then passes it to the outer addOne. Each call creates a new stack frame.",
-          "tip": "Read nested calls inside-out: addOne(addOne(5)) → addOne(6) → 7. The inner call completes first!"
+          "tip": "Read nested calls inside-out: addOne(addOne(5)) \u2192 addOne(6) \u2192 7. The inner call completes first!"
         }
       },
       {
@@ -3484,31 +1874,26 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 416,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 192,
-          "y": 32,
+          "x": 160,
+          "y": 128,
           "quest_id": "L09_Q1"
         },
         {
-          "x": 352,
-          "y": 32,
+          "x": 480,
+          "y": 128,
           "quest_id": "L09_Q2"
         },
         {
-          "x": 192,
-          "y": 352,
+          "x": 320,
+          "y": 288,
           "quest_id": "L09_Q3"
         }
       ],
       "tiles": [
         {
-          "x": 1,
-          "y": 1,
-          "type": "water"
-        },
-        {
           "x": 2,
           "y": 1,
           "type": "water"
@@ -3521,46 +1906,6 @@
         {
           "x": 4,
           "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 1,
           "type": "water"
         },
         {
@@ -3571,376 +1916,41 @@
         {
           "x": 16,
           "y": 1,
-          "type": "water"
-        },
-        {
-          "x": 1,
-          "y": 2,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 2,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 2,
-          "type": "water"
-        },
-        {
-          "x": 15,
-          "y": 2,
-          "type": "water"
-        },
-        {
-          "x": 16,
-          "y": 2,
-          "type": "water"
-        },
-        {
-          "x": 1,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 15,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 16,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 1,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 15,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 16,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 1,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 15,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 16,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 1,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 15,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 16,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 9,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 10,
           "type": "water"
         },
         {
           "x": 17,
-          "y": 10,
+          "y": 1,
           "type": "water"
         },
         {
-          "x": 18,
-          "y": 10,
+          "x": 2,
+          "y": 2,
           "type": "water"
         },
         {
-          "x": 1,
-          "y": 11,
+          "x": 3,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 2,
+          "type": "water"
+        },
+        {
+          "x": 17,
+          "y": 2,
           "type": "water"
         },
         {
@@ -3950,6 +1960,21 @@
         },
         {
           "x": 3,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 4,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 11,
+          "type": "water"
+        },
+        {
+          "x": 16,
           "y": 11,
           "type": "water"
         },
@@ -3959,16 +1984,6 @@
           "type": "water"
         },
         {
-          "x": 18,
-          "y": 11,
-          "type": "water"
-        },
-        {
-          "x": 1,
-          "y": 12,
-          "type": "water"
-        },
-        {
           "x": 2,
           "y": 12,
           "type": "water"
@@ -3979,33 +1994,23 @@
           "type": "water"
         },
         {
-          "x": 17,
+          "x": 4,
           "y": 12,
           "type": "water"
         },
         {
-          "x": 18,
+          "x": 15,
           "y": 12,
           "type": "water"
         },
         {
-          "x": 2,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 13,
+          "x": 16,
+          "y": 12,
           "type": "water"
         },
         {
           "x": 17,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 18,
-          "y": 13,
+          "y": 12,
           "type": "water"
         }
       ]
@@ -4034,7 +2039,12 @@
           "Simply return artifact;",
           "Global variables are accessible from any function"
         ],
-        "xp_reward": 30
+        "xp_reward": 30,
+        "teaching": {
+          "concept": "Global Variables",
+          "explanation": "Variables declared outside all functions are 'global' - visible everywhere in the file. Any function can read or modify them. Global 'artifact' is accessible from readGlobal().",
+          "tip": "Globals are convenient but dangerous in large programs. Multiple functions can change them, making bugs hard to track. Use sparingly!"
+        }
       },
       {
         "id": "L09_Q2",
@@ -4080,7 +2090,12 @@
           "The parameter 'artifact' shadows the global",
           "Return the parameter value"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "Variable Shadowing",
+          "explanation": "When a local variable has the same name as a global, it 'shadows' (hides) the global. Inside that function, the name refers to the local variable, not the global.",
+          "tip": "Shadowing is often confusing. Many style guides recommend avoiding it by using different names for local vs global variables."
+        }
       },
       {
         "id": "L09_Q3",
@@ -4134,7 +2149,12 @@
           "Add to result: result += temp;",
           "temp only exists within the for loop's {}"
         ],
-        "xp_reward": 40
+        "xp_reward": 40,
+        "teaching": {
+          "concept": "Block Scope",
+          "explanation": "Variables declared inside {} braces only exist within that block. A variable declared inside a for loop is created and destroyed each iteration. It can't be accessed outside.",
+          "tip": "Block scope keeps variables contained. Declaring 'int i' inside for() means it disappears after the loop - no leftover clutter!"
+        }
       }
     ]
   },
@@ -4170,284 +2190,22 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 416,
+      "spawn_y": 224,
       "terminals": [
         {
           "x": 160,
-          "y": 224,
+          "y": 96,
           "quest_id": "L10_Q1"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 480,
+          "y": 96,
           "quest_id": "L10_Q2"
         },
         {
-          "x": 288,
+          "x": 320,
           "y": 320,
           "quest_id": "L10_Q3"
-        }
-      ],
-      "tiles": [
-        {
-          "x": 6,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 13,
-          "type": "wall"
         }
       ]
     },
@@ -4504,7 +2262,12 @@
           "Base case: if (n <= 0) return 0;",
           "Recursive: return n + sumToN(n - 1);"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "Recursive Base Case",
+          "explanation": "Every recursive function needs a base case - when to STOP recursing. For sumToN, when n is 0 or less, we return 0 immediately without calling sumToN again.",
+          "tip": "Think of recursion as asking: 'Can I solve this directly?' (base case) or 'Can I break this into a smaller version of the same problem?' (recursive case)"
+        }
       },
       {
         "id": "L10_Q2",
@@ -4566,7 +2329,12 @@
           "Base case: any number to the power 0 is 1",
           "Recursive: multiply base by power(base, exp-1)"
         ],
-        "xp_reward": 40
+        "xp_reward": 40,
+        "teaching": {
+          "concept": "Recursive Multiplication",
+          "explanation": "2^3 = 2 * 2 * 2. Recursively: 2^3 = 2 * 2^2 = 2 * 2 * 2^1 = 2 * 2 * 2 * 2^0 = 2 * 2 * 2 * 1 = 8. Each recursive call reduces the exponent by 1.",
+          "tip": "The base case (exp == 0 returns 1) is mathematically correct: any number to the power 0 equals 1. This also stops the recursion!"
+        }
       },
       {
         "id": "L10_Q3",
@@ -4621,7 +2389,12 @@
           "Base case 2: if (n == 1) return 1;",
           "Recursive: return fib(n-1) + fib(n-2);"
         ],
-        "xp_reward": 45
+        "xp_reward": 45,
+        "teaching": {
+          "concept": "Multiple Base Cases",
+          "explanation": "Fibonacci needs TWO base cases because fib(n) calls both fib(n-1) AND fib(n-2). Without both cases, one branch recurses forever. Always trace your recursive calls mentally!",
+          "tip": "This naive Fibonacci is slow (exponential time) because it recalculates the same values repeatedly. Later you'll learn memoization to fix this!"
+        }
       }
     ]
   },
@@ -4660,17 +2433,17 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
+      "spawn_x": 32,
       "spawn_y": 224,
       "terminals": [
         {
-          "x": 96,
-          "y": 224,
+          "x": 160,
+          "y": 160,
           "quest_id": "L11_Q1"
         },
         {
-          "x": 512,
-          "y": 224,
+          "x": 480,
+          "y": 160,
           "quest_id": "L11_Q2"
         }
       ],
@@ -4678,67 +2451,32 @@
         {
           "x": 2,
           "y": 2,
-          "type": "wall"
+          "type": "water"
         },
         {
           "x": 3,
           "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 2,
-          "type": "wall"
+          "type": "water"
         },
         {
           "x": 15,
           "y": 2,
-          "type": "wall"
+          "type": "water"
         },
         {
           "x": 16,
           "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 2,
-          "type": "wall"
+          "type": "water"
         },
         {
           "x": 2,
           "y": 3,
-          "type": "wall"
+          "type": "water"
         },
         {
           "x": 3,
           "y": 3,
           "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 3,
-          "type": "wall"
         },
         {
           "x": 15,
@@ -4751,214 +2489,14 @@
           "type": "water"
         },
         {
-          "x": 17,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 16,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 16,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 16,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 16,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 8,
-          "type": "wall"
-        },
-        {
           "x": 2,
           "y": 9,
-          "type": "wall"
+          "type": "water"
         },
         {
           "x": 3,
           "y": 9,
           "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 9,
-          "type": "wall"
         },
         {
           "x": 15,
@@ -4971,34 +2509,14 @@
           "type": "water"
         },
         {
-          "x": 17,
-          "y": 9,
-          "type": "wall"
-        },
-        {
           "x": 2,
           "y": 10,
-          "type": "wall"
+          "type": "water"
         },
         {
           "x": 3,
           "y": 10,
           "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 10,
-          "type": "wall"
         },
         {
           "x": 15,
@@ -5009,51 +2527,6 @@
           "x": 16,
           "y": 10,
           "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 11,
-          "type": "wall"
         }
       ]
     },
@@ -5109,7 +2582,12 @@
           "Use *ptr to get the value at the address",
           "Example: return *ptr;"
         ],
-        "xp_reward": 25
+        "xp_reward": 25,
+        "teaching": {
+          "concept": "Dereferencing Pointers",
+          "explanation": "A pointer holds a memory address. The * operator 'dereferences' it - follows the address to get the actual value stored there. If ptr points to 42, then *ptr gives 42.",
+          "tip": "Think of * as 'value at address'. If ptr is like a street address, *ptr is what's inside that house."
+        }
       },
       {
         "id": "L11_Q2",
@@ -5170,7 +2648,12 @@
           "Dereference both pointers: *a and *b",
           "Return their sum: return *a + *b;"
         ],
-        "xp_reward": 30
+        "xp_reward": 30,
+        "teaching": {
+          "concept": "Working with Multiple Pointers",
+          "explanation": "Pointers are just variables - you can have as many as you need. Each one points to a different memory location. Dereference each with * to get its value.",
+          "tip": "In expressions, * binds tightly: *a + *b means 'value at a' plus 'value at b'. Use parentheses if unsure: (*a) + (*b)."
+        }
       }
     ]
   },
@@ -5210,349 +2693,22 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 32,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 64,
-          "y": 96,
+          "x": 160,
+          "y": 64,
           "quest_id": "L12_Q1"
         },
         {
-          "x": 416,
-          "y": 224,
+          "x": 320,
+          "y": 192,
           "quest_id": "L12_Q2"
         },
         {
-          "x": 512,
-          "y": 352,
+          "x": 480,
+          "y": 320,
           "quest_id": "L12_Q3"
-        }
-      ],
-      "tiles": [
-        {
-          "x": 1,
-          "y": 2,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 6,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 6,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 7,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 11,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 11,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 11,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 11,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 11,
-          "type": "water"
-        },
-        {
-          "x": 6,
-          "y": 11,
-          "type": "water"
-        },
-        {
-          "x": 7,
-          "y": 11,
-          "type": "water"
-        },
-        {
-          "x": 8,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 6,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 7,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 8,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 6,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 7,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 8,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 9,
-          "y": 13,
-          "type": "wall"
         }
       ]
     },
@@ -5601,7 +2757,12 @@
           "Use *hook to dereference the pointer",
           "return *hook;"
         ],
-        "xp_reward": 25
+        "xp_reward": 25,
+        "teaching": {
+          "concept": "Pointer Parameters",
+          "explanation": "When a function takes a pointer parameter (int *hook), it receives a memory address. The pointer lets you 'reach into' memory and access values indirectly.",
+          "tip": "The pointer itself is passed by value (a copy of the address), but since both copies point to the same memory, you can modify the original data."
+        }
       },
       {
         "id": "L12_Q2",
@@ -5647,7 +2808,12 @@
           "Dereference and multiply: *ptr * 2",
           "return *ptr * 2;"
         ],
-        "xp_reward": 30
+        "xp_reward": 30,
+        "teaching": {
+          "concept": "Dereferenced Values in Expressions",
+          "explanation": "Once you dereference a pointer with *ptr, you get the actual value stored at that address. This value can be used in any expression: arithmetic (*ptr * 2), comparisons (*ptr > 10), or function calls.",
+          "tip": "Think of *ptr as 'the value at ptr'. Anywhere you'd normally use a variable, you can use *ptr instead."
+        }
       },
       {
         "id": "L12_Q3",
@@ -5702,7 +2868,12 @@
           "Then use: return *ptr * 2;",
           "Full pattern: declare pointer, assign address with &, use value with *"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "The Address-Of Operator (&)",
+          "explanation": "The & operator gets the memory address of any variable. 'int *ptr = &val' creates a pointer and immediately assigns it the address of val. Now ptr 'points to' val.",
+          "tip": "Reading right-to-left: &val gives address \u2192 stored in ptr \u2192 ptr is declared as int*. You can also split this: 'int *ptr; ptr = &val;'"
+        }
       }
     ]
   },
@@ -5742,204 +2913,22 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 32,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 96,
-          "y": 128,
+          "x": 160,
+          "y": 96,
           "quest_id": "L13_Q1"
         },
         {
-          "x": 288,
-          "y": 256,
+          "x": 320,
+          "y": 192,
           "quest_id": "L13_Q2"
         },
         {
-          "x": 512,
-          "y": 384,
+          "x": 480,
+          "y": 320,
           "quest_id": "L13_Q3"
-        }
-      ],
-      "tiles": [
-        {
-          "x": 2,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 9,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 10,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 11,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 10,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 11,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 9,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 10,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 11,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 11,
-          "type": "water"
-        },
-        {
-          "x": 16,
-          "y": 11,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 11,
-          "type": "water"
-        },
-        {
-          "x": 18,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 18,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 16,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 18,
-          "y": 13,
-          "type": "wall"
         }
       ]
     },
@@ -5995,7 +2984,12 @@
           "First set: *ptr = val;",
           "Then return: return *ptr;"
         ],
-        "xp_reward": 30
+        "xp_reward": 30,
+        "teaching": {
+          "concept": "Writing Through Pointers",
+          "explanation": "The dereference operator (*) works for BOTH reading and writing. '*ptr = val' writes the value of val into the memory location ptr points to. The original variable is permanently changed!",
+          "tip": "Assignment to *ptr modifies the ORIGINAL data, not a copy. This is why functions use pointers to 'return' multiple values or modify caller's variables."
+        }
       },
       {
         "id": "L13_Q2",
@@ -6048,7 +3042,12 @@
           "Modify: *ptr = *ptr + 1; or (*ptr)++;",
           "Return the updated value"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "Modify-in-Place Operations",
+          "explanation": "You can read, modify, and write back through a pointer in one expression: '*ptr = *ptr + 1' reads the value, adds 1, and stores it back. Shorthand: (*ptr)++ or ++(*ptr).",
+          "tip": "The parentheses in (*ptr)++ are crucial! Without them, *ptr++ increments the POINTER, not the value. Operator precedence matters."
+        }
       },
       {
         "id": "L13_Q3",
@@ -6101,7 +3100,12 @@
           "Multiply: *ptr = *ptr * 2;",
           "Or use: *ptr *= 2;"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "Compound Assignment Through Pointers",
+          "explanation": "All compound assignment operators work with dereferenced pointers: *ptr *= 2 doubles the value, *ptr += 5 adds 5, *ptr /= 2 halves it. These are shorthand for *ptr = *ptr op value.",
+          "tip": "Compound assignments (*ptr *= 2) are more efficient and clearer than writing *ptr = *ptr * 2. Use them when modifying existing values."
+        }
       }
     ]
   },
@@ -6139,144 +3143,22 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 32,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 224,
-          "y": 96,
+          "x": 480,
+          "y": 64,
           "quest_id": "L14_Q1"
         },
         {
-          "x": 288,
-          "y": 224,
+          "x": 320,
+          "y": 160,
           "quest_id": "L14_Q2"
         },
         {
-          "x": 352,
-          "y": 352,
+          "x": 160,
+          "y": 288,
           "quest_id": "L14_Q3"
-        }
-      ],
-      "tiles": [
-        {
-          "x": 5,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 12,
-          "type": "wall"
         }
       ]
     },
@@ -6350,7 +3232,12 @@
           "Use *(arr + i) to access the element",
           "This is equivalent to arr[i]"
         ],
-        "xp_reward": 30
+        "xp_reward": 30,
+        "teaching": {
+          "concept": "Pointer Arithmetic Basics",
+          "explanation": "When you add a number to a pointer, C moves by that many ELEMENTS (not bytes). *(arr + 2) means 'go 2 elements forward from arr, then dereference'. This is identical to arr[2].",
+          "tip": "Array subscript notation arr[i] is just syntactic sugar for *(arr + i). Understanding this connection is key to mastering C."
+        }
       },
       {
         "id": "L14_Q2",
@@ -6426,7 +3313,12 @@
           "Use a for loop: for(int i = 0; i < n; i++)",
           "Add each element: sum += *(arr + i);"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "Traversing Arrays with Pointers",
+          "explanation": "To process all array elements, loop from 0 to n-1 and access each with *(arr + i). C doesn't know array sizes, so you MUST pass the size (n) separately to avoid going out of bounds.",
+          "tip": "Always pass array size alongside the array pointer. Without n, there's no way to know where the array ends!"
+        }
       },
       {
         "id": "L14_Q3",
@@ -6513,7 +3405,12 @@
           "if (*(arr + i) == target) return i;",
           "Return -1 after the loop if not found"
         ],
-        "xp_reward": 40
+        "xp_reward": 40,
+        "teaching": {
+          "concept": "Linear Search Pattern",
+          "explanation": "Searching an array means checking each element until you find a match or exhaust all options. Return immediately when found (early exit), return a sentinel value (-1) if not found after checking all.",
+          "tip": "The return -1 MUST be outside the loop. If it's inside, you'd return -1 after checking just the first element that doesn't match!"
+        }
       }
     ]
   },
@@ -6552,214 +3449,22 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 32,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 480,
-          "y": 128,
+          "x": 160,
+          "y": 64,
           "quest_id": "L15_Q1"
         },
         {
-          "x": 64,
-          "y": 192,
+          "x": 320,
+          "y": 160,
           "quest_id": "L15_Q2"
         },
         {
-          "x": 64,
+          "x": 480,
           "y": 288,
           "quest_id": "L15_Q3"
-        }
-      ],
-      "tiles": [
-        {
-          "x": 2,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 16,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 11,
-          "type": "wall"
         }
       ]
     },
@@ -6815,7 +3520,12 @@
           "Check: if (ptr == NULL) return -1;",
           "Otherwise: return *ptr;"
         ],
-        "xp_reward": 30
+        "xp_reward": 30,
+        "teaching": {
+          "concept": "NULL Check Pattern",
+          "explanation": "NULL is a special pointer value meaning 'points to nothing'. Dereferencing NULL (*ptr when ptr is NULL) causes a crash (segmentation fault). Always check BEFORE dereferencing!",
+          "tip": "The pattern 'if (ptr == NULL) return error_value; return *ptr;' is the foundation of defensive programming in C."
+        }
       },
       {
         "id": "L15_Q2",
@@ -6861,7 +3571,12 @@
           "Compare ptr to NULL",
           "return ptr != NULL;"
         ],
-        "xp_reward": 30
+        "xp_reward": 30,
+        "teaching": {
+          "concept": "Boolean Pointer Checks",
+          "explanation": "Comparing a pointer to NULL yields a boolean (0 or 1). 'ptr != NULL' returns 1 if valid, 0 if NULL. You can also write 'ptr' alone as a condition - a non-NULL pointer is 'truthy'.",
+          "tip": "In C, any non-zero value is true. So 'if (ptr)' works the same as 'if (ptr != NULL)' - though explicit NULL checks are more readable."
+        }
       },
       {
         "id": "L15_Q3",
@@ -6922,7 +3637,12 @@
           "Check both: if (a == NULL || b == NULL)",
           "Return 0 for invalid, *a + *b for valid"
         ],
-        "xp_reward": 40
+        "xp_reward": 40,
+        "teaching": {
+          "concept": "Multiple Pointer Validation",
+          "explanation": "When using multiple pointers, check ALL of them before dereferencing ANY. Use logical OR (||) to combine checks: 'if (a == NULL || b == NULL)' returns true if EITHER is invalid.",
+          "tip": "Check for failure first, return early, then proceed with the 'happy path'. This 'guard clause' pattern keeps your code flat and readable."
+        }
       }
     ]
   },
@@ -6961,224 +3681,22 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 32,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 96,
-          "y": 96,
+          "x": 160,
+          "y": 64,
           "quest_id": "L16_Q1"
+        },
+        {
+          "x": 320,
+          "y": 160,
+          "quest_id": "L16_Q2"
         },
         {
           "x": 480,
           "y": 288,
-          "quest_id": "L16_Q2"
-        },
-        {
-          "x": 320,
-          "y": 352,
           "quest_id": "L16_Q3"
-        }
-      ],
-      "tiles": [
-        {
-          "x": 2,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 14,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 14,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 14,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 8,
-          "type": "door"
-        },
-        {
-          "x": 14,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 8,
-          "type": "wall"
         }
       ]
     },
@@ -7236,7 +3754,12 @@
           "Set fields: h.hp = hp_val; h.level = level_val;",
           "Access member: return h.hp;"
         ],
-        "xp_reward": 25
+        "xp_reward": 25,
+        "teaching": {
+          "concept": "Struct Definition and Field Access",
+          "explanation": "A struct groups related variables into one unit. 'struct Hero { int hp; int level; };' defines the blueprint. Create an instance with 'struct Hero h;', then access fields with the dot operator: h.hp, h.level.",
+          "tip": "Think of a struct as a custom data type. Just like 'int x;' creates an integer, 'struct Hero h;' creates a Hero containing multiple values."
+        }
       },
       {
         "id": "L16_Q2",
@@ -7298,7 +3821,12 @@
           "Check h.hp > 0",
           "return h.hp > 0;"
         ],
-        "xp_reward": 30
+        "xp_reward": 30,
+        "teaching": {
+          "concept": "Struct Fields in Conditions",
+          "explanation": "Struct fields are regular values you can use anywhere. 'h.hp > 0' compares the hp field to 0, returning 1 (true) or 0 (false). Struct members work in all expressions just like regular variables.",
+          "tip": "The expression 'h.hp > 0' evaluates to 1 or 0, which you can return directly. No if/else needed!"
+        }
       },
       {
         "id": "L16_Q3",
@@ -7360,7 +3888,12 @@
           "Access both fields: h.hp and h.level",
           "return h.hp + h.level * 10;"
         ],
-        "xp_reward": 40
+        "xp_reward": 40,
+        "teaching": {
+          "concept": "Combining Multiple Struct Fields",
+          "explanation": "You can combine struct fields in any expression: 'h.hp + h.level * 10' reads both fields and computes a result. The struct keeps related data together, making your code more organized.",
+          "tip": "Structs are perfect for game entities! A Hero with hp/level is cleaner than separate variables hp_hero1, level_hero1, hp_hero2..."
+        }
       }
     ]
   },
@@ -7399,334 +3932,22 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 128,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 224,
-          "y": 160,
+          "x": 480,
+          "y": 64,
           "quest_id": "L17_Q1"
         },
         {
-          "x": 512,
-          "y": 160,
+          "x": 320,
+          "y": 128,
           "quest_id": "L17_Q2"
         },
         {
-          "x": 256,
-          "y": 384,
+          "x": 160,
+          "y": 288,
           "quest_id": "L17_Q3"
-        }
-      ],
-      "tiles": [
-        {
-          "x": 6,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 4,
-          "type": "door"
-        },
-        {
-          "x": 9,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 4,
-          "type": "door"
-        },
-        {
-          "x": 17,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 11,
-          "type": "water"
-        },
-        {
-          "x": 9,
-          "y": 11,
-          "type": "water"
-        },
-        {
-          "x": 13,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 13,
-          "type": "wall"
         }
       ]
     },
@@ -7791,7 +4012,12 @@
           "Set all fields: c.gold = gold_val; etc.",
           "return c.gold;"
         ],
-        "xp_reward": 30
+        "xp_reward": 30,
+        "teaching": {
+          "concept": "Structs with Multiple Fields",
+          "explanation": "Structs can have many fields of any type. Initialize each field separately: c.gold = gold_val; c.gems = gems_val; c.keys = keys_val; Each field is independent.",
+          "tip": "Field order in the struct definition doesn't affect how you access them. c.keys works regardless of where 'keys' appears in the struct definition."
+        }
       },
       {
         "id": "L17_Q2",
@@ -7861,7 +4087,12 @@
           "Access all fields: c.gold, c.gems, c.keys",
           "return c.gold + c.gems * 10 + c.keys * 5;"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "Computing with Struct Fields",
+          "explanation": "Use struct fields in formulas just like regular variables. 'c.gold + c.gems*10 + c.keys*5' calculates a weighted sum using all three fields. The struct keeps related data together for cleaner code.",
+          "tip": "Structs make complex calculations readable. Compare 'chest.gold + chest.gems*10' vs 'gold1 + gems1*10' - the struct version is self-documenting."
+        }
       },
       {
         "id": "L17_Q3",
@@ -7931,7 +4162,12 @@
           "Check: c.gold == 0 && c.gems == 0 && c.keys == 0",
           "Use && to combine conditions"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "Validating Multiple Struct Fields",
+          "explanation": "Use && (AND) to check multiple conditions: 'c.gold == 0 && c.gems == 0 && c.keys == 0' is true only if ALL fields are zero. The entire expression returns 1 or 0.",
+          "tip": "The expression itself evaluates to 1 or 0, so 'return c.gold == 0 && c.gems == 0 && c.keys == 0;' works directly - no if statement needed!"
+        }
       }
     ]
   },
@@ -7965,269 +4201,22 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 32,
+      "spawn_y": 224,
       "terminals": [
         {
           "x": 160,
-          "y": 96,
+          "y": 64,
           "quest_id": "L18_Q1"
         },
         {
-          "x": 448,
-          "y": 256,
+          "x": 320,
+          "y": 160,
           "quest_id": "L18_Q2"
         },
         {
-          "x": 192,
-          "y": 416,
+          "x": 480,
+          "y": 288,
           "quest_id": "L18_Q3"
-        }
-      ],
-      "tiles": [
-        {
-          "x": 2,
-          "y": 1,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 2,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 3,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 4,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 5,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 13,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 14,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 15,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 16,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 6,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 7,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 8,
-          "type": "water"
-        },
-        {
-          "x": 1,
-          "y": 9,
-          "type": "door"
-        },
-        {
-          "x": 2,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 9,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 13,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 14,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 15,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 16,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 10,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 11,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 10,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 13,
-          "type": "wall"
         }
       ]
     },
@@ -8284,7 +4273,12 @@
           "struct Chest *ptr = &c;",
           "ptr->gold += addAmount; return ptr->gold;"
         ],
-        "xp_reward": 30
+        "xp_reward": 30,
+        "teaching": {
+          "concept": "The Arrow Operator (->)",
+          "explanation": "When you have a POINTER to a struct, use -> to access members. 'ptr->gold' means 'the gold field of the struct that ptr points to'. It's shorthand for (*ptr).gold.",
+          "tip": "Use . with struct variables (c.gold), use -> with struct pointers (ptr->gold). This distinction is crucial in C!"
+        }
       },
       {
         "id": "L18_Q2",
@@ -8338,7 +4332,12 @@
           "ptr->gold = goldAmt; ptr->gems = gemAmt;",
           "Return the sum using ptr-> for both"
         ],
-        "xp_reward": 30
+        "xp_reward": 30,
+        "teaching": {
+          "concept": "Reading and Writing with ->",
+          "explanation": "The arrow operator works for both reading (return ptr->gold) and writing (ptr->gold = value). You can access multiple fields through the same pointer: ptr->gold + ptr->gems.",
+          "tip": "The pattern 'struct X x; struct X *p = &x;' lets you use both syntaxes: x.field or p->field refer to the same data."
+        }
       },
       {
         "id": "L18_Q3",
@@ -8392,7 +4391,12 @@
           "ptr->gems = bonusGems;",
           "Arrow operator works for both reading and writing"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "Compound Assignment Through Pointers",
+          "explanation": "All compound operators work with ->: ptr->gold *= 2 doubles the gold, ptr->gold += 10 adds 10. This modifies the original struct because you're working through a pointer.",
+          "tip": "This is how real C code modifies structs: pass a pointer to a function, use -> to update fields. The changes persist after the function returns!"
+        }
       }
     ]
   },
@@ -8426,304 +4430,17 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 32,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 224,
-          "y": 192,
+          "x": 160,
+          "y": 64,
           "quest_id": "L19_Q1"
         },
         {
-          "x": 288,
-          "y": 384,
+          "x": 320,
+          "y": 192,
           "quest_id": "L19_Q2"
-        }
-      ],
-      "tiles": [
-        {
-          "x": 2,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 13,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 13,
-          "type": "wall"
         }
       ]
     },
@@ -8787,7 +4504,12 @@
           "Access nested: g.leader.level",
           "Chained dots for nested struct access"
         ],
-        "xp_reward": 30
+        "xp_reward": 30,
+        "teaching": {
+          "concept": "Nested Struct Access",
+          "explanation": "A struct can contain another struct as a member. 'g.leader' gives you the Hero struct inside Guild, then '.level' accesses that Hero's level field. Chain the dots: g.leader.level.",
+          "tip": "Read left-to-right: g \u2192 leader (a Hero) \u2192 level (an int). Each dot takes you one level deeper into the nested structure."
+        }
       },
       {
         "id": "L19_Q2",
@@ -8857,7 +4579,12 @@
           "struct Guild g = {h, memberCount};",
           "Multiply g.leader.level * g.memberCount"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "Initializer Syntax for Nested Structs",
+          "explanation": "You can initialize nested structs inline: 'struct Guild g = {h, memberCount}' sets g.leader = h and g.memberCount = memberCount. Mix nested access with regular fields: g.leader.level * g.memberCount.",
+          "tip": "The initializer {h, memberCount} maps values in order to struct fields. The inner struct h is assigned to the first field (leader)."
+        }
       }
     ]
   },
@@ -8891,279 +4618,22 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 32,
+      "spawn_y": 224,
       "terminals": [
         {
           "x": 160,
-          "y": 224,
+          "y": 64,
           "quest_id": "L20_Q1"
         },
         {
-          "x": 320,
-          "y": 224,
+          "x": 480,
+          "y": 64,
           "quest_id": "L20_Q2"
         },
         {
-          "x": 480,
-          "y": 224,
+          "x": 320,
+          "y": 192,
           "quest_id": "L20_Q3"
-        }
-      ],
-      "tiles": [
-        {
-          "x": 2,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 6,
-          "type": "door"
-        },
-        {
-          "x": 2,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 2,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 11,
-          "type": "wall"
         }
       ]
     },
@@ -9227,7 +4697,12 @@
           "army[0].strength = s1; to populate",
           "Loop: for(int i = 0; i < 3; i++) sum += army[i].strength;"
         ],
-        "xp_reward": 35
+        "xp_reward": 35,
+        "teaching": {
+          "concept": "Arrays of Structs",
+          "explanation": "'struct Soldier army[3]' creates an array of 3 Soldier structs. Access elements by index first, then field: army[0].strength, army[1].strength, army[2].strength.",
+          "tip": "The order matters: army[i] gives you one Soldier struct, then .strength accesses that soldier's strength field."
+        }
       },
       {
         "id": "L20_Q2",
@@ -9400,309 +4875,99 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 96,
-      "spawn_y": 160,
+      "spawn_x": 32,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 128,
-          "y": 224,
+          "x": 160,
+          "y": 160,
           "quest_id": "L21_Q1"
         },
         {
           "x": 480,
-          "y": 224,
+          "y": 160,
           "quest_id": "L21_Q2"
         }
       ],
       "tiles": [
         {
-          "x": 4,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 11,
-          "type": "water"
-        },
-        {
           "x": 2,
-          "y": 11,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 11,
-          "type": "water"
-        },
-        {
-          "x": 18,
-          "y": 11,
-          "type": "water"
-        },
-        {
-          "x": 1,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 2,
-          "y": 12,
+          "y": 2,
           "type": "water"
         },
         {
           "x": 3,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 12,
+          "y": 2,
           "type": "water"
         },
         {
           "x": 15,
-          "y": 12,
+          "y": 2,
           "type": "water"
         },
         {
           "x": 16,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 18,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 1,
-          "y": 13,
+          "y": 2,
           "type": "water"
         },
         {
           "x": 2,
-          "y": 13,
+          "y": 3,
           "type": "water"
         },
         {
           "x": 3,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 4,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 6,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 13,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 14,
-          "y": 13,
+          "y": 3,
           "type": "water"
         },
         {
           "x": 15,
-          "y": 13,
+          "y": 3,
           "type": "water"
         },
         {
           "x": 16,
-          "y": 13,
+          "y": 3,
           "type": "water"
         },
         {
-          "x": 17,
-          "y": 13,
+          "x": 2,
+          "y": 9,
           "type": "water"
         },
         {
-          "x": 18,
-          "y": 13,
+          "x": 3,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 10,
           "type": "water"
         }
       ]
@@ -9858,354 +5123,17 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 128,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 96,
-          "y": 128,
+          "x": 160,
+          "y": 64,
           "quest_id": "L22_Q1"
         },
         {
-          "x": 512,
-          "y": 352,
+          "x": 320,
+          "y": 192,
           "quest_id": "L22_Q2"
-        }
-      ],
-      "tiles": [
-        {
-          "x": 3,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 4,
-          "type": "door"
-        },
-        {
-          "x": 16,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 11,
-          "type": "door"
-        },
-        {
-          "x": 11,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 13,
-          "type": "wall"
         }
       ]
     },
@@ -10359,350 +5287,18 @@
     "world_config": {
       "width": 20,
       "height": 15,
-      "spawn_x": 64,
-      "spawn_y": 32,
+      "spawn_x": 32,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 96,
-          "y": 96,
+          "x": 160,
+          "y": 64,
           "quest_id": "L23_Q1"
         },
         {
-          "x": 512,
-          "y": 352,
+          "x": 320,
+          "y": 192,
           "quest_id": "L23_Q2"
-        }
-      ],
-      "tiles": [
-        {
-          "x": 3,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 5,
-          "type": "door"
-        },
-        {
-          "x": 6,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 5,
-          "type": "door"
-        },
-        {
-          "x": 13,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 7,
-          "type": "door"
-        },
-        {
-          "x": 12,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 10,
-          "type": "door"
-        },
-        {
-          "x": 3,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 12,
-          "type": "wall"
         }
       ]
     },
@@ -10858,308 +5454,98 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 192,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 96,
-          "y": 224,
+          "x": 160,
+          "y": 160,
           "quest_id": "L24_Q1"
         },
         {
-          "x": 544,
-          "y": 224,
+          "x": 480,
+          "y": 160,
           "quest_id": "L24_Q2"
         }
       ],
       "tiles": [
         {
+          "x": 2,
+          "y": 2,
+          "type": "water"
+        },
+        {
           "x": 3,
           "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 2,
-          "type": "wall"
+          "type": "water"
         },
         {
           "x": 15,
           "y": 2,
-          "type": "wall"
+          "type": "water"
         },
         {
           "x": 16,
           "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 7,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 7,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 8,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 9,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 10,
-          "y": 10,
-          "type": "door"
-        },
-        {
-          "x": 11,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 1,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 3,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 6,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 8,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 14,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 17,
-          "y": 12,
-          "type": "water"
-        },
-        {
-          "x": 1,
-          "y": 13,
           "type": "water"
         },
         {
           "x": 2,
-          "y": 13,
+          "y": 3,
           "type": "water"
         },
         {
-          "x": 4,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 5,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 7,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 8,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 12,
-          "y": 13,
-          "type": "water"
-        },
-        {
-          "x": 13,
-          "y": 13,
+          "x": 3,
+          "y": 3,
           "type": "water"
         },
         {
           "x": 15,
-          "y": 13,
+          "y": 3,
           "type": "water"
         },
         {
           "x": 16,
-          "y": 13,
+          "y": 3,
           "type": "water"
         },
         {
-          "x": 18,
-          "y": 13,
+          "x": 2,
+          "y": 9,
           "type": "water"
         },
         {
-          "x": 19,
-          "y": 13,
+          "x": 3,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 9,
+          "type": "water"
+        },
+        {
+          "x": 2,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 3,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 15,
+          "y": 10,
+          "type": "water"
+        },
+        {
+          "x": 16,
+          "y": 10,
           "type": "water"
         }
       ]
@@ -11330,199 +5716,22 @@
       "width": 20,
       "height": 15,
       "spawn_x": 32,
-      "spawn_y": 64,
+      "spawn_y": 224,
       "terminals": [
         {
-          "x": 96,
+          "x": 160,
           "y": 64,
           "quest_id": "L25_Q1"
         },
         {
-          "x": 352,
-          "y": 224,
+          "x": 320,
+          "y": 160,
           "quest_id": "L25_Q2"
         },
         {
           "x": 480,
-          "y": 352,
+          "y": 288,
           "quest_id": "L25_Q3"
-        }
-      ],
-      "tiles": [
-        {
-          "x": 3,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 1,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 2,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 3,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 3,
-          "type": "door"
-        },
-        {
-          "x": 3,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 4,
-          "type": "wall"
-        },
-        {
-          "x": 3,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 4,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 5,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 6,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 5,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 6,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 7,
-          "type": "door"
-        },
-        {
-          "x": 11,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 8,
-          "type": "wall"
-        },
-        {
-          "x": 11,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 12,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 13,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 14,
-          "y": 9,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 16,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 17,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 10,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 11,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 18,
-          "y": 12,
-          "type": "wall"
-        },
-        {
-          "x": 15,
-          "y": 13,
-          "type": "door"
-        },
-        {
-          "x": 18,
-          "y": 13,
-          "type": "wall"
         }
       ]
     },
