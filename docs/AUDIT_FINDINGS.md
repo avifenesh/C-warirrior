@@ -425,13 +425,15 @@ The Code Warrior project is in **GOOD HEALTH** with a functional core gameplay l
 #### Technical Debt
 - ~~`OpenInventory` and `UseItem` handlers are TODO stubs~~ **REMOVED**
 - Many game metaphors from mechanics.md are PLANNED but not implemented
-- NULL/Array test cases in some levels can't be validated via stdin
+- ~~NULL/Array test cases in some levels can't be validated via stdin~~ **FIXED** (array support added)
+- NULL pointer tests still have stdin limitation (minor - affects edge cases only)
 
 #### Recommendations
 1. ~~Fix L06_Q1 expected output to `"Abracadabra!\n1"`~~ **DONE**
 2. ~~Either implement or remove inventory stubs from PlayerAction~~ **DONE (removed)**
-3. Update mechanics.md with [PLANNED] markers for unimplemented features
-4. Consider adding integration tests for the quest flow
+3. ~~Update mechanics.md with [PLANNED] markers for unimplemented features~~ **DONE**
+4. ~~Fix array parameter validation in test harness~~ **DONE** (commit cbb1073)
+5. Consider adding integration tests for the quest flow
 
 ---
 
@@ -646,3 +648,4 @@ int sumList(int a, int b, int c) {
 | 2025-11-30 | Claude | Batch 2-3 complete - API parity, feature audit |
 | 2025-11-30 | Claude | Batch 4 complete - E2E testing passed |
 | 2025-11-30 | Claude | Batch 5-6 complete - Documentation updated, audit finalized |
+| 2025-11-30 | Claude | Fixed array parameter support in harness.rs (L14 now validates) |
