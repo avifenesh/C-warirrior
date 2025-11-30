@@ -1562,9 +1562,10 @@
     "lesson": {
       "title": "Null Pointer Safety",
       "content": [
-        "NULL is a special value meaning 'points to nothing'. Dereferencing NULL crashes your program!",
-        "Always check if a pointer is NULL before using it: if (ptr != NULL)",
-        "Functions should return safe defaults when given NULL pointers."
+        "NULL is a special pointer value meaning 'points to nothing'. Dereferencing NULL causes SEGMENTATION FAULT (crash)!",
+        "Where NULL comes from: malloc fails, you set ptr = NULL explicitly, or pointers are uninitialized.",
+        "ALWAYS check for NULL before dereferencing: if (ptr != NULL) { use *ptr }",
+        "Defensive programming: anticipate failure cases and handle them gracefully with NULL checks."
       ],
       "examples": [
         {
@@ -2557,14 +2558,16 @@
     "lesson": {
       "title": "Growing Arrays with Realloc",
       "content": [
-        "realloc resizes allocated memory: ptr = realloc(ptr, new_size);",
-        "It preserves existing data and may move the block to a new location.",
-        "Always assign realloc's result back to the pointer (it may return a new address)."
+        "realloc resizes allocated memory, preserving existing data.",
+        "DANGER: realloc can fail and return NULL!",
+        "SAFE PATTERN: Use a temp pointer to avoid losing original memory:",
+        "int *temp = realloc(arr, new_size); if (temp) arr = temp;",
+        "Always assign realloc result - memory may move to new location."
       ],
       "examples": [
         {
-          "code": "int growAndSum(int a, int b) {\n    int *arr = malloc(sizeof(int));\n    arr[0] = a;\n    arr = realloc(arr, 2 * sizeof(int));\n    arr[1] = b;\n    int sum = arr[0] + arr[1];\n    free(arr);\n    return sum;\n}",
-          "explanation": "Start with 1 element, grow to 2, compute sum, free."
+          "code": "int *arr = malloc(sizeof(int));\narr[0] = 10;\nint *temp = realloc(arr, 2 * sizeof(int));\nif (temp == NULL) { free(arr); return -1; }\narr = temp;\narr[1] = 20;",
+          "explanation": "Safe realloc: save to temp, check NULL, then assign back."
         }
       ]
     },
