@@ -109,9 +109,11 @@ From `docs/core/CONSTRAINTS.md`:
 
 **Code**:
 ```
-src/          # Rust backend (game logic)
-src-ui/       # Svelte frontend (UI only)
-tools/        # MCP servers and scripts
+src/              # Rust shared library (game logic)
+src-api/          # Axum HTTP API server (web backend)
+src-tauri/        # Tauri desktop app (IPC bridge)
+src-ui/           # Svelte frontend (UI only)
+tools/            # MCP servers and scripts
 ```
 
 **Data**:
@@ -126,7 +128,8 @@ docs/core/          # Shared AI documentation
 docs/architecture/  # Technical design
 docs/game_design/   # Mechanics
 docs/curriculum/    # Educational theory
-docs/ai/           # This directory
+docs/interfaces/    # Type schemas
+docs/ai/            # This directory
 ```
 
 **Agent Instructions**:

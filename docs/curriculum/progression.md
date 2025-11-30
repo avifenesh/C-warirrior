@@ -86,48 +86,67 @@ By completing Code Warrior, players will be able to:
 
 ## Level Structure
 
-### Level Schema
+### Multi-Quest Level Schema
 
-Every level follows this JSON structure (stored in database):
+The current level structure uses a **multi-quest** system where each level contains multiple terminals, each linked to a specific quest. Players complete all quests to finish a level.
 
 ```json
 {
-    "level_id": "L01_hello_world",
+    "id": "L01",
     "title": "The First Spell",
-    "phase": 1,
-    "concept": "printf, basic syntax",
-    "prerequisites": [],
-    "pedagogy": {
-        "intro_dialogue": "Welcome, warrior. Before you can fight, you must learn to speak. Cast the 'Hello World' spell.",
-        "tutorial_text": "In C, we use `printf()` to output text...",
-        "code_template": "#include <stdio.h>\n\nint main() {\n    // Your code here\n    return 0;\n}",
-        "hints": [
-            "Use printf() to output text",
-            "Don't forget the semicolon!",
-            "Include quotes around your string"
-        ]
+    "theme": "L01_village",
+    "concept": "return values",
+    "description": "Master the art of returning values to unlock the door ahead.",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() { return 0; }",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 90,
+    "map_file": "maps/L01_first_spell.json",
+    "world_config": {
+        "width": 20,
+        "height": 15,
+        "spawn_x": 64,
+        "spawn_y": 224,
+        "terminals": [
+            {"x": 192, "y": 224, "quest_id": "L01_Q1"},
+            {"x": 320, "y": 224, "quest_id": "L01_Q2"},
+            {"x": 448, "y": 224, "quest_id": "L01_Q3"}
+        ],
+        "preset": "tutorial"
     },
-    "challenge": {
-        "type": "exact_output",
-        "success_criteria": {
-            "stdout": "Hello World\n",
-            "stderr": "",
-            "exit_code": 0
-        },
-        "validation": "exact_match"
-    },
-    "rewards": {
-        "xp": 50,
-        "items": [],
-        "unlocks": "L02_variables"
-    },
-    "world": {
-        "map_file": "tutorial_chamber.json",
-        "spawn_point": {"x": 5, "y": 5},
-        "completion_trigger": "door_unlock"
-    }
+    "quests": [
+        {
+            "id": "L01_Q1",
+            "order": 1,
+            "title": "The Secret Number",
+            "description": "Return the secret number 42.",
+            "recommended": true,
+            "function_signature": {
+                "name": "getSecret",
+                "return_type": "int",
+                "parameters": []
+            },
+            "user_template": "int getSecret() {\n    // Return the secret number: 42\n    \n}",
+            "test_cases": [
+                {"input": [], "expected": "42", "sample": true}
+            ],
+            "hints": [
+                "Use the 'return' keyword to send a value back",
+                "Example: return 42;"
+            ],
+            "xp_reward": 25
+        }
+    ]
 }
 ```
+
+### Quest Structure
+
+Each quest is a function-based challenge:
+- `function_signature`: Defines the function name, return type, and parameters
+- `user_template`: Starting code shown in the terminal
+- `test_cases`: Inputs and expected outputs for validation
+- `recommended`: Suggests which quest to try first
 
 ### Success Criteria Types
 
@@ -143,52 +162,37 @@ Every level follows this JSON structure (stored in database):
 
 ## Phase 1: Foundations
 
-**Goal**: Understand basic C syntax, types, and output.
+**Goal**: Understand basic C syntax, return values, and functions.
 
 **Estimated Time**: 2-3 hours
 
-### Level 1: The First Spell (printf)
+### Level 1: The First Spell (Return Values)
 
-**Concept**: Basic output with `printf`
+**Concept**: Functions that return values
 
-**Puzzle**: Locked door requires player to "speak the password"
+**Structure**: 3 quests teaching return statements
 
-**Code Challenge**:
-```c
-#include <stdio.h>
+**Quests**:
+1. **The Secret Number** - Return the literal value 42
+2. **Double Trouble** - Return a computed value (21 * 2)
+3. **The Sum Spell** - Return a sum (10 + 20 + 12)
 
-int main() {
-    printf("Hello World\n");
-    return 0;
-}
-```
-
-**Game Effect**: Door glows and unlocks when correct output is produced.
-
-**Learning Outcome**: Understand basic program structure, semicolons, string literals.
+**Learning Outcome**: Understand the `return` keyword, function return types.
 
 ---
 
-### Level 2: The Empty Backpack (Variables)
+### Level 2: The Empty Backpack (Variables & Parameters)
 
-**Concept**: Variable declaration and initialization
+**Concept**: Function parameters and arithmetic
 
-**Puzzle**: Player needs to carry a sword but has no inventory slots
+**Structure**: 3 quests with increasing complexity
 
-**Code Challenge**:
-```c
-#include <stdio.h>
+**Quests**:
+1. **Adding Weights** - Sum two parameters
+2. **Calculate Area** - Multiply parameters
+3. **Triple Sum** - Sum three parameters
 
-int main() {
-    int sword_weight = 10;
-    printf("Sword weight: %d\n", sword_weight);
-    return 0;
-}
-```
-
-**Game Effect**: Inventory slot appears labeled `sword_weight`, player can now pick up sword.
-
-**Learning Outcome**: Understand typed variables, assignment, `%d` formatting.
+**Learning Outcome**: Understand parameters, arithmetic operators.
 
 ---
 
@@ -196,7 +200,7 @@ int main() {
 
 **Concept**: Conditional logic
 
-**Puzzle**: Guard only allows entry if player level is >= 5
+**Structure**: 3 quests teaching comparisons and branching
 
 **Code Challenge**:
 ```c

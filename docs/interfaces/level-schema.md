@@ -376,55 +376,127 @@ impl LevelRegistry {
 
 The source of truth for level definitions is `src/assets/levels.json`.
 
-### Minimal Schema
+### Quest-Based Level Schema (Current)
+
+The current level system uses a **multi-quest** structure where each level contains multiple quests (terminals), each teaching a specific aspect of the concept.
 
 ```json
 [
   {
     "id": "L01",
     "title": "The First Spell",
-    "concept": "printf",
-    "description": "The door is voice-activated...",
-    "code_template": "#include <stdio.h>\n\nint main() {\n    // Print 'Hello World'\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Hello World\n"
-    }
-  }
-]
-```
-
-### Extended Schema (with all fields)
-
-```json
-[
-  {
-    "id": "L01",
-    "title": "The First Spell",
-    "concept": "printf",
-    "description": "The door is voice-activated. You must speak the ancient password to enter.",
-    "code_template": "#include <stdio.h>\n\nint main() {\n    // Print 'Hello World'\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Hello World\n"
-    },
-    "hints": [
-      "Use printf() to print text to the screen",
-      "Don't forget the \\n at the end for a newline",
-      "The syntax is: printf(\"text here\\n\");"
-    ],
-    "xp_reward": 50,
+    "theme": "L01_village",
+    "concept": "return values",
+    "description": "Master the art of returning values to unlock the door ahead.",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 90,
+    "map_file": "maps/L01_first_spell.json",
+    "challenges": [],
     "world_config": {
       "width": 20,
       "height": 15,
       "spawn_x": 64,
-      "spawn_y": 64,
-      "terminal_x": 320,
-      "terminal_y": 224,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 192, "y": 224, "quest_id": "L01_Q1"},
+        {"x": 320, "y": 224, "quest_id": "L01_Q2"},
+        {"x": 448, "y": 224, "quest_id": "L01_Q3"}
+      ],
       "preset": "tutorial"
-    }
+    },
+    "quests": [
+      {
+        "id": "L01_Q1",
+        "order": 1,
+        "title": "The Secret Number",
+        "description": "Return the secret number 42.",
+        "recommended": true,
+        "function_signature": {
+          "name": "getSecret",
+          "return_type": "int",
+          "parameters": []
+        },
+        "user_template": "int getSecret() {\n    // Return the secret number: 42\n    \n}",
+        "test_cases": [
+          {"input": [], "expected": "42", "sample": true}
+        ],
+        "hints": [
+          "Use the 'return' keyword to send a value back",
+          "Example: return 42;"
+        ],
+        "xp_reward": 25
+      }
+    ]
   }
 ]
+```
+
+### Quest Structure
+
+Each quest defines a function-based challenge:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique quest identifier (e.g., "L01_Q1") |
+| `order` | number | Display order in the level |
+| `title` | string | Quest title shown to player |
+| `description` | string | What the player needs to accomplish |
+| `recommended` | boolean | Whether this is the suggested starting quest |
+| `function_signature` | object | Function name, return type, and parameters |
+| `user_template` | string | Code template shown in the editor |
+| `test_cases` | array | Test inputs and expected outputs |
+| `hints` | array | Progressive hints for struggling players |
+| `xp_reward` | number | XP awarded on completion |
+
+### Test Case Structure
+
+```json
+{
+  "input": [3, 4],
+  "expected": "7",
+  "sample": true
+}
+```
+
+- `input`: Array of arguments to pass to the function
+- `expected`: Expected return value as a string
+- `sample`: Whether this test case is visible to the player
+
+### World Config with Terminals
+
+The `world_config` now includes an array of terminals linked to quests:
+
+```json
+{
+  "terminals": [
+    {"x": 192, "y": 224, "quest_id": "L01_Q1"},
+    {"x": 320, "y": 224, "quest_id": "L01_Q2"}
+  ]
+}
+```
+
+### Legacy Challenge Schema (Deprecated)
+
+Some older levels may still use the single-challenge format with `success_criteria`:
+
+```json
+{
+  "id": "L22",
+  "success_criteria": {
+    "type": "exact_match",
+    "expected_stdout": "Value before banish: 999\nMemory banished!\n"
+  },
+  "challenges": [
+    {
+      "id": "free_memory",
+      "prompt": "Free the allocated memory...",
+      "expected_output": "...",
+      "starter_code": "..."
+    }
+  ]
+}
 ```
 
 ---
@@ -598,6 +670,10 @@ impl CCompiler {
 | SuccessCriteria | `src/levels/validator.rs` | `src-ui/src/lib/types.ts` |
 | ExecutionOutput | `src/compiler/mod.rs` | `src-ui/src/lib/types.ts` |
 | CodeResult | `src/levels/validator.rs` | `src-ui/src/lib/types.ts` |
+| Quest | `src/levels/loader.rs` | `src-ui/src/lib/types.ts` |
+| FunctionSignature | `src/levels/loader.rs` | `src-ui/src/lib/types.ts` |
+| TestCase | `src/levels/loader.rs` | `src-ui/src/lib/types.ts` |
+| TestSuiteResult | `src/levels/harness.rs` | `src-ui/src/lib/types.ts` |
 | LevelRegistry | `src/levels/mod.rs` | N/A (backend only) |
 | CCompiler | `src/compiler/mod.rs` | N/A (backend only) |
 
@@ -605,22 +681,14 @@ impl CCompiler {
 
 ## Usage Notes
 
-### For Gemini 3 (Level System)
-- Implement `LevelRegistry` to load from `src/assets/levels.json`
-- Implement `SuccessCriteria::validate()` for all criteria types
-- Implement `CCompiler` for safe code execution
-- Add proper timeout and sandboxing
+### For Development
+- Source of truth: `src/assets/levels.json`
+- LevelRegistry loads levels at startup
+- Use quest-based validation for function challenges
+- Use stdout matching for legacy challenges
 
-### For Sonnet 4.5 1M (Rust Backend)
-- Use `LevelData.world_config` to create level worlds
-- Call `LevelRegistry` methods from game state, don't implement directly
-
-### For GPT 5.1 Codex Max (Svelte Frontend)
-- Display `LevelData` in level select and game UI
-- Show `CodeResult` feedback in code editor
-- Use `code_template` as initial editor content
-
-### For Opus 4.5 Standard (Integration)
-- Wire up `submit_code` command to call compiler
-- Return `CodeResult` from commands, not raw `ExecutionOutput`
-- Include friendly feedback messages for the player
+### For Adding Levels
+- Add level definition to `src/assets/levels.json`
+- Include all quests with function signatures and test cases
+- Create map file in `src/assets/maps/` if needed
+- Test with the C compiler MCP tool

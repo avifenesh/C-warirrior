@@ -7,6 +7,31 @@
 
 ---
 
+## Project Structure
+
+```
+src/                  # Rust shared library (game logic + types)
+├── game/            # Pure game logic (state, physics, player, world)
+├── levels/          # Level loading, validation, puzzle harness
+├── compiler/        # C code compilation and execution
+├── models/          # Database models
+└── persistence/     # Save/load functionality
+
+src-api/             # Axum HTTP API server (for web frontend)
+└── src/             # API routes and handlers
+
+src-tauri/           # Tauri desktop app (IPC bridge)
+└── src/             # Tauri commands for desktop
+
+src-ui/              # Svelte frontend (UI only)
+├── src/lib/         # Shared components, backend abstraction, types
+└── src/routes/      # Pages
+
+tools/               # MCP servers and scripts
+```
+
+---
+
 ## Where to Implement Things
 
 - **Architecture & IPC patterns**
@@ -23,11 +48,12 @@
 
 - **Curriculum & level structure**  
   - See `docs/CURRICULUM.md` → `docs/curriculum/progression.md` for:
-    - Level JSON schema (concept, pedagogy, challenge, rewards).
+    - Multi-quest level schema with function-based challenges.
     - Phase/level progression and learning goals.
+  - Source of truth: `src/assets/levels.json`
 
 - **Tools and runtime helpers**  
-  - See `docs/IMPLEMENTATION.md` → `tools/README.md` for:
+  - See `tools/README.md` for:
     - `c_compiler_mcp.py` (C execution MCP server).
     - `generate_map.py` (procedural map generator).
 
@@ -37,13 +63,17 @@
 
 When you need concrete examples, copy from these existing patterns instead of inventing new ones:
 
-- **Tauri command + event pattern**  
-  - Rust command and event examples live in `docs/architecture/system.md` and in code under `src-tauri/` (e.g. `move_player`, `submit_c_code`, `game_tick` events).
+- **HTTP API route (Axum)**  
+  - Routes are defined in `src-api/src/main.rs`
+  - Use `State<Arc<AppState>>` for shared state access
+
+- **Tauri command pattern**  
+  - Commands live in `src-tauri/src/commands/`
+  - Register in `src-tauri/src/main.rs`
 
 - **Svelte 5 Runes usage**  
-  - Use `$state`, `$derived`, `$effect` as shown in:
-    - `SKILL.md` (short example).
-    - Svelte snippets referenced in `docs/architecture/system.md`.
+  - Use `$state`, `$derived`, `$effect` as shown in `src-ui/src/routes/+page.svelte`
+  - Use backend abstraction: `import { getBackend } from '$lib/backend'`
 
 - **C executor behavior**  
   - The canonical execution pipeline (compile with `gcc`, enforce timeout, capture stdout/stderr) is described in:
@@ -55,6 +85,6 @@ When you need concrete examples, copy from these existing patterns instead of in
 ## Next Steps
 
 1. For any new feature, start by checking `docs/ARCHITECTURE.md` and `docs/GAME_DESIGN.md`.
-2. When adding levels, follow the schemas in `docs/CURRICULUM.md`.
-3. Use `SKILL.md` when working with AI agents so they respect the constraints above.
+2. When adding levels, follow the schemas in `docs/CURRICULUM.md` and update `src/assets/levels.json`.
+3. Use the AI documentation in `docs/ai/` and `docs/core/` for agent-specific guidance.
 

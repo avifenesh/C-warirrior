@@ -77,10 +77,11 @@
 
 **Do NOT suggest alternative technologies.**
 
-- **Backend**: Rust 2021, Axum, Diesel (SQLite), Tokio
+- **Backend**: Rust 2021, Axum (HTTP API), SQLx (Postgres), Tokio
 - **Frontend**: Svelte 5 (Runes), TailwindCSS, TypeScript
-- **Bridge**: Tauri 2.0 (Commands/Events)
+- **Bridge**: Tauri 2.0 (Commands/Events for desktop), HTTP (for web)
 - **Assets**: Tiled maps, procedural generation
+- **Database**: PostgreSQL (Neon for production)
 
 ## 6. Solo Developer Context
 
@@ -110,14 +111,22 @@
 **Follow established patterns:**
 
 ```
-src/                  # Rust backend
-├── commands/         # Tauri commands
-├── game/            # Pure game logic
-└── types/           # Shared types
+src/                  # Rust shared library (game logic + types)
+├── game/            # Pure game logic (state, physics, player, world)
+├── levels/          # Level loading, validation, puzzle harness
+├── compiler/        # C code compilation and execution
+├── models/          # Database models
+└── persistence/     # Save/load functionality
 
-src-ui/              # Svelte frontend
-├── lib/components/  # UI components
-└── routes/          # Pages
+src-api/             # Axum HTTP API server (for web frontend)
+└── src/             # API routes and handlers
+
+src-tauri/           # Tauri desktop app (IPC bridge)
+└── src/             # Tauri commands for desktop
+
+src-ui/              # Svelte frontend (UI only)
+├── src/lib/         # Shared components, backend abstraction, types
+└── src/routes/      # Pages
 
 docs/
 ├── core/            # Shared AI docs (this file)

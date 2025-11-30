@@ -44,10 +44,10 @@ Standard web development patterns (React state management, frontend routing, cli
 |-----------|---------|---------|--------------|
 | **Rust** | 2021+ | Core language | Memory safety, performance, concurrency |
 | **Tauri** | 2.0 | Desktop framework | IPC bridge, window management, OS integration |
+| **Axum** | 0.7+ | HTTP API | Web frontend communication |
 | **Tokio** | 1.x | Async runtime | Game loop threading, async I/O |
-| **Diesel** | 2.x | ORM | Type-safe database operations |
-| **SQLite** | 3.x | Persistence | Save states, progress tracking |
-| **Axum** | 0.7+ | (Optional) HTTP | Internal APIs if needed |
+| **SQLx** | 0.7+ | Database | Type-safe PostgreSQL operations |
+| **PostgreSQL** | - | Persistence | Save states, progress tracking (Neon for production) |
 
 ### Frontend Stack (Svelte)
 
@@ -62,9 +62,9 @@ Standard web development patterns (React state management, frontend routing, cli
 
 | Tool | Purpose |
 |------|---------|
-| **ts-rs** | Generate TypeScript types from Rust structs |
-| **wfc** | Wave Function Collapse for procedural generation |
+| **ts-rs** | Generate TypeScript types from Rust structs (optional) |
 | **Tiled** | Level editor for handcrafted maps |
+| **Playwright** | E2E testing for web frontend |
 
 ---
 
@@ -503,36 +503,56 @@ $effect(() => {
 
 ### Persistence Layer
 
+The API server uses SQLx with PostgreSQL (Neon in production):
+
 ```rust
-use diesel::prelude::*;
+// src-api/src/db.rs
+use sqlx::{Pool, Postgres};
 
-#[derive(Queryable, Insertable)]
-#[diesel(table_name = save_states)]
-struct SaveState {
-    id: i32,
-    slot: i32,
-    player_data: String, // JSON blob
-    world_data: String,
-    timestamp: i64,
-}
-
-pub fn save_game(conn: &mut SqliteConnection, state: &GameState, slot: i32) -> Result<()> {
-    let save = SaveState {
-        id: 0,
-        slot,
-        player_data: serde_json::to_string(&state.player)?,
-        world_data: serde_json::to_string(&state.world)?,
-        timestamp: chrono::Utc::now().timestamp(),
-    };
-
-    diesel::insert_into(save_states::table)
-        .values(&save)
-        .on_conflict(save_states::slot)
-        .do_update()
-        .set(&save)
-        .execute(conn)?;
-
+pub async fn init_database(pool: &Pool<Postgres>) -> Result<(), sqlx::Error> {
+    // Run migrations to create tables
+    sqlx::query(
+        r#"
+        CREATE TABLE IF NOT EXISTS game_sessions (
+            device_id TEXT PRIMARY KEY,
+            game_state JSONB NOT NULL,
+            created_at TIMESTAMPTZ DEFAULT NOW(),
+            updated_at TIMESTAMPTZ DEFAULT NOW()
+        )
+        "#,
+    )
+    .execute(pool)
+    .await?;
+    
+    // Save slots table
+    sqlx::query(
+        r#"
+        CREATE TABLE IF NOT EXISTS save_slots (
+            device_id TEXT NOT NULL,
+            slot_id TEXT NOT NULL,
+            name TEXT NOT NULL,
+            game_state JSONB NOT NULL,
+            created_at TIMESTAMPTZ DEFAULT NOW(),
+            PRIMARY KEY (device_id, slot_id)
+        )
+        "#,
+    )
+    .execute(pool)
+    .await?;
+    
     Ok(())
+}
+```
+
+Session management uses an in-memory cache with database fallback:
+
+```rust
+// AppState in src-api/src/main.rs
+struct AppState {
+    db: Pool<Postgres>,
+    levels: Arc<LevelRegistry>,
+    compiler: Arc<CCompiler>,
+    sessions: DashMap<String, GameState>,  // In-memory cache
 }
 ```
 

@@ -181,34 +181,34 @@ Use **GCC compilation + timeout-enforced execution** with 2-second limit.
 
 ---
 
-## ADR-005: SQLite + Diesel for Persistence
+## ADR-005: PostgreSQL + SQLx for Persistence
 
 **Date**: 2024-01-05
-**Status**: Accepted
+**Status**: Accepted (Updated)
 
 ### Context
 
-Need database solution for save states and progress tracking.
+Need database solution for save states and progress tracking, with cloud deployment support.
 
 ### Decision
 
-Use **SQLite with Diesel ORM**.
+Use **PostgreSQL with SQLx** (Neon for production hosting).
 
 ### Rationale
 
-1. **Embedded**: No separate server needed
-2. **Type Safety**: Diesel provides compile-time query checking
+1. **Cloud-Ready**: Works with Neon serverless Postgres
+2. **Type Safety**: SQLx provides compile-time query checking
 3. **Transactions**: ACID guarantees prevent save corruption
-4. **Portability**: Single file database easy to backup/share
+4. **Async**: Native async/await support with Tokio
 5. **Rust Ecosystem**: Well-supported, mature tooling
 
 ### Alternatives Considered
 
 | Alternative | Rejected Because |
 |-------------|------------------|
+| **SQLite + Diesel** | Less cloud-friendly; Diesel has more complex async story |
 | **JSON files** | No transactions; prone to corruption; manual schema management |
-| **PostgreSQL** | Overkill; requires server; not portable |
-| **sled (Rust DB)** | Less mature; smaller ecosystem |
+| **MongoDB** | Overkill for this use case; more complex setup |
 | **In-memory only** | Loses progress on crash |
 
 ### Consequences
@@ -216,12 +216,12 @@ Use **SQLite with Diesel ORM**.
 **Positive**:
 - Type-safe queries
 - Reliable persistence
-- Easy migrations
+- Cloud deployment ready
+- Async-first design
 
 **Negative**:
-- Diesel adds compile-time overhead
-- More complex than JSON files
-- Learning curve for SQL/Diesel
+- Requires Postgres instance (Neon free tier works)
+- Connection pooling considerations for serverless
 
 ---
 
