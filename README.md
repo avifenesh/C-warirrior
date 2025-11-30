@@ -35,6 +35,7 @@ This separation ensures security, performance, and clear responsibilities for bo
 ## Documentation Structure
 
 ### Core Documentation
+- **[Logic Mind Map](docs/logic-mindmap.md)** - Source of truth for end-to-end flow and file locations
 - **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Technical architecture and design patterns
 - **[GAME_DESIGN.md](docs/GAME_DESIGN.md)** - RPG mechanics and C concept mappings
 - **[CURRICULUM.md](docs/CURRICULUM.md)** - Educational framework and learning progression

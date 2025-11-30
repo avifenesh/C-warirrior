@@ -8,6 +8,7 @@
 1. **Read constraints first**: [`../core/CONSTRAINTS.md`](../core/CONSTRAINTS.md) - Critical rules
 2. **Find your domain**: [`../core/DOMAINS.md`](../core/DOMAINS.md) - What to read when
 3. **Follow workflows**: [`../core/WORKFLOWS.md`](../core/WORKFLOWS.md) - Step-by-step guides
+4. **Check flow map**: [`../logic-mindmap.md`](../logic-mindmap.md) - Current backend/frontend routes and sources
 
 ### For Claude Code
 4. **Use skills**: [`skills.md`](skills.md) - Specialized domain knowledge
@@ -93,12 +94,12 @@ From `docs/core/CONSTRAINTS.md`:
 
 | Task | Documentation | Tools |
 |------|---------------|-------|
-| **Add game feature** | `rust-tauri-patterns` skill (Claude) or `core/WORKFLOWS.md` | None |
+| **Add game feature** | `rust-tauri-patterns` skill (Claude) or `core/WORKFLOWS.md`; confirm endpoints in `logic-mindmap.md` | None |
 | **Create C puzzle** | `c-puzzle-designer` skill (Claude) or `core/WORKFLOWS.md` | `compile_and_run_c` (REQUIRED) |
 | **Generate map** | `core/WORKFLOWS.md` | `generate_map.py` or future MCP |
 | **Design game mechanic** | `game-metaphor-mapper` skill (Claude) or `game_design/mechanics.md` | None |
 | **Fix bug** | `architecture/system.md` | Depends on issue |
-| **Add level** | `curriculum/progression.md` + `assets/levels.json` | `compile_and_run_c`, `generate_map.py` |
+| **Add level** | `curriculum/progression.md` + `assets/levels.json`; check unlock flow in `logic-mindmap.md` | `compile_and_run_c`, `generate_map.py` |
 
 ---
 

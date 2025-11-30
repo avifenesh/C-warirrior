@@ -4,6 +4,7 @@
 - Use this as the entrypoint for RPG mechanics and C↔RPG metaphor design.
 - Read `docs/game_design/mechanics.md` before proposing new mechanics or features.
 - Use `docs/game_design/glossary.md` as the reference for terms and metaphors.
+- Validate mechanic changes against the live flow in `docs/logic-mindmap.md` to ensure new interactions align with current game state handling.
 
 ---
 
