@@ -9,11 +9,12 @@
 
 ## Where to Implement Things
 
-- **Architecture & IPC patterns**  
+- **Architecture & IPC patterns**
   - See `docs/ARCHITECTURE.md` → `docs/architecture/system.md` for:
     - Backend‑authoritative model (Rust owns game state and logic).
     - Game loop threading (Tokio / std threads).
-    - Tauri commands and events (frontend `invoke`, backend `emit_all`).
+    - Axum route flow and Tauri commands/events (frontend `invoke`, backend `emit_all`).
+    - Cross-reference `docs/logic-mindmap.md` for the current HTTP endpoints, session lifecycle, and frontend polling cadence.
 
 - **Game mechanics & metaphors**  
   - See `docs/GAME_DESIGN.md` → `docs/game_design/mechanics.md` for:

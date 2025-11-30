@@ -8,6 +8,7 @@
 **Keywords**: structure, Tauri, Rust backend, Svelte frontend, how it works
 
 **Primary Source**: `docs/architecture/system.md`
+**Flow Map**: `docs/logic-mindmap.md` (backend routes, frontend entry points)
 
 **Key Topics**:
 - Rust/Tauri/Svelte stack details

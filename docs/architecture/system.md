@@ -4,6 +4,7 @@
 - Use this to understand the Rust/Tauri/Svelte architecture and backend‑authoritative model.
 - When in doubt, put game logic and C execution in Rust, and keep Svelte as a visualization layer.
 - Do not introduce patterns that contradict the command/event IPC model described here.
+- Keep runtime flow in sync with [`docs/logic-mindmap.md`](../logic-mindmap.md); it is the source of truth for how Axum routes, game state helpers, and the Svelte page wire together in code.
 
 ## Table of Contents
 1. [Architectural Overview](#architectural-overview)
@@ -263,19 +264,25 @@ export interface PlayerState {
 
 ### HTTP (Axum) Contract Used by Web Frontend
 
-The web build talks to the Axum API (Railway) with these endpoints:
+The web build talks to the Axum API defined in `src-api/src/main.rs`; update this list when the flows in `docs/logic-mindmap.md` change.
 
 | Endpoint | Method | Purpose | Notes |
 |----------|--------|---------|-------|
-| `/api/game/init` | POST | Create session, seed state | Frontend immediately fetches `/api/game/render-state` after init |
-| `/api/game/state` | GET | Full `GameState` snapshot | Used rarely; render path prefers `/render-state` |
-| `/api/game/render-state` | GET | Render-ready `RenderState` | Polled at ~150ms for web path |
-| `/api/game/action` | POST | Apply `PlayerAction` | Rejects `SubmitCode` (use code endpoint) |
-| `/api/levels` | GET | List `LevelInfo` | Includes lock/completion flags |
-| `/api/levels/{id}/load` | POST | Load level, returns `{ level_data, render_state }` | Frontend caches `level_data` client-side |
-| `/api/code/submit` | POST | Compile/run C, validate | Returns `CodeResult`; frontend refetches render-state on success |
+| `/api/game/init` | POST | Create session, seed state | Bootstraps DB/migrations, caches session, then frontend fetches `/api/game/render-state`. |
+| `/api/game/state` | GET | Full `GameState` snapshot | Used rarely; render path prefers `/render-state`. |
+| `/api/game/render-state` | GET | Render-ready `RenderState` | Polling target for map view and play mode. |
+| `/api/game/action` | POST | Apply `PlayerAction` | Routes movement, interaction, pause/resume, TODO: inventory actions. |
+| `/api/levels` | GET | List `LevelInfo` | Merges registry with unlock/completion flags. |
+| `/api/levels/{id}/load` | POST | Load level | Validates unlock, builds `World`, updates progression, returns `{ level_data, render_state }`. |
+| `/api/code/submit` | POST | Compile/run C, validate | Completes level on success and returns feedback + render state. |
+| `/api/code/submit-quest` | POST | Function-based quest submission | Runs per-test harness, updates XP, can complete level when all quests done. |
+| `/api/levels/current/quests` | GET | Quest list for active level | Surfaces quest metadata + completion flags. |
+| `/api/levels/current/quests/{quest_id}` | GET | Quest details | Fetch single quest by id for terminal view. |
+| `/api/code/hint/{index}` | GET | Sequential hints | Streams hints in order for current quest/challenge. |
+| `/api/player/progress` | GET | Player totals | Aggregates from `ProgressionState`. |
+| `/api/player/saves` | GET/POST/DELETE | Save slot list/upsert/delete | Serializes `GameState` per slot; load endpoint restores state. |
 
-Not implemented on HTTP path: streamed `code_output`, `level_complete` events, or `complete_level` command. Web UI derives hints from cached `level_data.hints`.
+Frontends that embed via Tauri continue to use command/event IPC for realtime ticks, but should mirror the same state transitions documented in the Axum routes.
 
 ---
 
