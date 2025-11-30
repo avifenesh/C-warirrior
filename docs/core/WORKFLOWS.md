@@ -29,8 +29,11 @@ impl NewFeature {
 }
 ```
 
-### Step 4: Create Tauri Command
+### Step 4: Create Tauri Command (for desktop) or Axum Route (for web)
+
+**For Tauri (desktop):**
 ```rust
+// src-tauri/src/commands/game.rs
 #[tauri::command]
 async fn feature_action(
     state: State<'_, AppState>,
@@ -40,13 +43,29 @@ async fn feature_action(
 }
 ```
 
-### Step 5: Register Command
-Add to `main.rs`:
+**For Axum (web API):**
+```rust
+// src-api/src/main.rs
+async fn feature_action(
+    State(state): State<Arc<AppState>>,
+) -> Result<Json<Response>, StatusCode> {
+    // Implementation
+}
+```
+
+### Step 5: Register Command/Route
+
+**For Tauri** - Add to `src-tauri/src/main.rs`:
 ```rust
 .invoke_handler(tauri::generate_handler![
     feature_action,
     // ... other commands
 ])
+```
+
+**For Axum** - Add to router in `src-api/src/main.rs`:
+```rust
+.route("/api/feature/action", post(feature_action))
 ```
 
 ### Step 6: Generate TypeScript Types
@@ -57,11 +76,18 @@ cargo test  # Generates bindings/*.ts
 ### Step 7: Create Svelte Component
 ```svelte
 <script lang="ts">
-import { invoke } from '@tauri-apps/api/core';
+import { getBackend } from '$lib/backend';
+
+let backend = $state<Backend | null>(null);
 
 async function doAction() {
-    await invoke('feature_action');
+    if (!backend) return;
+    await backend.processAction({ type: 'feature_action' });
 }
+
+$effect(() => {
+    getBackend().then(b => backend = b);
+});
 </script>
 ```
 
@@ -234,13 +260,46 @@ Follow "Workflow 2: Creating a C Puzzle"
 ### Step 5: Create Level Entry
 ```json
 {
-  "id": 7,
+  "id": "L07",
   "title": "Function Pointers",
-  "description": "Learn to use function pointers...",
+  "theme": "L07_cavern",
   "concept": "function_pointers",
-  "puzzle": { ... },
-  "map": "level_7.json",
-  "reward": "unlock_teleport"
+  "description": "Learn to use function pointers...",
+  "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() { return 0; }",
+  "hints": [],
+  "xp_reward": 0,
+  "total_xp_reward": 100,
+  "map_file": "maps/L07_cavern.json",
+  "world_config": {
+    "width": 20,
+    "height": 15,
+    "spawn_x": 64,
+    "spawn_y": 224,
+    "terminals": [
+      {"x": 192, "y": 224, "quest_id": "L07_Q1"}
+    ],
+    "preset": "tutorial"
+  },
+  "quests": [
+    {
+      "id": "L07_Q1",
+      "order": 1,
+      "title": "Quest Title",
+      "description": "Quest description...",
+      "recommended": true,
+      "function_signature": {
+        "name": "myFunction",
+        "return_type": "int",
+        "parameters": []
+      },
+      "user_template": "int myFunction() {\n    // Your code\n}",
+      "test_cases": [
+        {"input": [], "expected": "42", "sample": true}
+      ],
+      "hints": ["Hint 1"],
+      "xp_reward": 50
+    }
+  ]
 }
 ```
 

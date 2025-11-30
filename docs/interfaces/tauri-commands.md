@@ -521,31 +521,22 @@ async function boot() {
 
 | Command/Event | Rust File | TypeScript File |
 |---------------|-----------|-----------------|
-| Game commands | `src/commands/game.rs` | `src-ui/src/lib/backend` |
-| Level commands | `src/commands/levels.rs` | `src-ui/src/lib/backend` |
+| Game state & types | `src/game/state.rs` | `src-ui/src/lib/types.ts` |
+| Tauri commands | `src-tauri/src/commands/` | `src-ui/src/lib/backend/tauri.ts` |
+| HTTP routes | `src-api/src/main.rs` | `src-ui/src/lib/backend/http.ts` |
+| Level registry | `src/levels/` | N/A (backend only) |
 | Event structs | `src/events.rs` | `src-ui/src/lib/types.ts` |
-| Main setup | `src/main.rs` | N/A |
 
 ---
 
 ## Usage Notes
 
-### For Opus 4.5 Standard (Integration)
-- Implement all commands in `src/commands/`
-- Register all commands in `src/main.rs`
-- Create the unified `api.ts` module for frontend
+### For Development
+- Use the backend abstraction in `src-ui/src/lib/backend`
+- The abstraction auto-detects Tauri vs HTTP environment
+- Subscribe to events using the backend's `onGameTick()` etc.
 
-### For GPT 5.1 Codex Max (Svelte Frontend)
-- Import from `$lib/api` not `@tauri-apps/api` directly
-- Use `api.processAction()` for all game actions
-- Subscribe to events in `$effect()` blocks
-
-### For Gemini 3 (Level System)
-- Implement `LevelRegistry` that commands use
-- Provide `validate_output()` method for code validation
-- Return proper `LevelData` structures
-
-### For Sonnet 4.5 1M (Rust Backend)
-- Implement `GameState` methods that commands call
-- Provide `to_render_state()` for efficient rendering
-- Don't implement commands directly (that's Opus's job)
+### For Adding New Endpoints
+- **Tauri**: Add command in `src-tauri/src/commands/`, register in `main.rs`
+- **HTTP**: Add route handler in `src-api/src/main.rs`
+- **Frontend**: Add method to `Backend` interface and both implementations

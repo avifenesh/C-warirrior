@@ -121,7 +121,9 @@
 
 ### Source Code
 ```
-src/                 # Rust backend
+src/                 # Rust shared library (game + levels + compiler)
+src-api/             # Axum HTTP API server
+src-tauri/           # Tauri desktop app
 src-ui/              # Svelte frontend
 tools/               # Scripts and MCP servers
 ```
@@ -133,13 +135,13 @@ docs/architecture/   # Technical details
 docs/game_design/    # Mechanics and metaphors
 docs/curriculum/     # Educational theory
 docs/ai/             # AI agent guides
+docs/interfaces/     # Type schemas (game-state, level-schema, tauri-commands)
 ```
 
 ### Assets
 ```
 src/assets/levels.json    # Level definitions (SOURCE OF TRUTH)
 src/assets/maps/          # Tiled map files
-src/assets/sprites/       # Game sprites
 ```
 
 ---

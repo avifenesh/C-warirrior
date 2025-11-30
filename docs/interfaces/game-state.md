@@ -261,7 +261,7 @@ export interface World {
 ### GameState (Main State Container)
 
 ```rust
-// Rust
+// Rust - src/game/state.rs
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GameState {
     pub player: Player,
@@ -269,11 +269,18 @@ pub struct GameState {
     pub inventory: Inventory,
     pub current_level_id: Option<String>,
     pub game_phase: GamePhase,
+    pub progression: ProgressionState,
+    /// Active quest ID when at a terminal (for multi-quest levels)
+    pub active_quest_id: Option<String>,
+    // Legacy fields for backwards compatibility
+    #[serde(skip)]
     pub total_xp: u32,
+    #[serde(skip)]
     pub levels_completed: Vec<String>,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "snake_case")]
 pub enum GamePhase {
     MainMenu,
     Playing,
@@ -290,6 +297,8 @@ impl Default for GameState {
             inventory: Inventory::new(10),
             current_level_id: None,
             game_phase: GamePhase::MainMenu,
+            progression: ProgressionState::new(),
+            active_quest_id: None,
             total_xp: 0,
             levels_completed: Vec::new(),
         }
@@ -297,40 +306,23 @@ impl Default for GameState {
 }
 
 impl GameState {
-    pub fn new() -> Self {
-        Self::default()
+    /// Complete a quest and award XP
+    pub fn complete_quest(&mut self, level_id: &str, quest_id: &str, xp_reward: u32) -> u32 {
+        let xp_earned = self.progression.complete_quest(level_id, quest_id, xp_reward);
+        self.player.xp += xp_earned;
+        self.total_xp = self.progression.total_xp;
+        xp_earned
     }
 
-    pub fn start_level(&mut self, level_id: String, world: World) {
-        self.current_level_id = Some(level_id);
-        self.world = world;
-        self.player.position = self.world.spawn_point;
-        self.game_phase = GamePhase::Playing;
-    }
-
-    pub fn complete_level(&mut self, xp_reward: u32) {
-        if let Some(ref level_id) = self.current_level_id {
-            if !self.levels_completed.contains(level_id) {
-                self.levels_completed.push(level_id.clone());
-            }
-        }
-        self.total_xp += xp_reward;
-        self.player.xp += xp_reward;
-        self.game_phase = GamePhase::LevelComplete;
-    }
-
-    pub fn enter_coding_mode(&mut self) {
-        self.game_phase = GamePhase::Coding;
-    }
-
-    pub fn exit_coding_mode(&mut self) {
-        self.game_phase = GamePhase::Playing;
+    /// Check if all quests in a level are completed
+    pub fn is_level_fully_completed(&self, level_id: &str, total_quests: usize) -> bool {
+        self.progression.is_level_fully_completed(level_id, total_quests)
     }
 }
 ```
 
 ```typescript
-// TypeScript
+// TypeScript - src-ui/src/lib/types.ts
 export type GamePhase = 'main_menu' | 'playing' | 'coding' | 'paused' | 'level_complete';
 
 export interface GameState {
@@ -352,7 +344,7 @@ The `RenderState` is a subset of `GameState` sent to the frontend on each tick.
 It contains only what's needed for rendering to minimize IPC overhead.
 
 ```rust
-// Rust
+// Rust - src/game/state.rs
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RenderState {
     pub player: Player,
@@ -360,50 +352,29 @@ pub struct RenderState {
     pub viewport_offset: Position,
     pub game_phase: GamePhase,
     pub current_level_id: Option<String>,
-}
-
-impl GameState {
-    /// Generate render state for frontend (20x15 viewport centered on player)
-    pub fn to_render_state(&self) -> RenderState {
-        let viewport_width = 20;
-        let viewport_height = 15;
-
-        // Calculate viewport offset (center on player)
-        let (px, py) = self.player.position.tile_coords(32.0);
-        let offset_x = (px - (viewport_width as i32 / 2)).max(0) as usize;
-        let offset_y = (py - (viewport_height as i32 / 2)).max(0) as usize;
-
-        // Extract visible tiles
-        let mut visible_tiles = Vec::new();
-        for y in offset_y..(offset_y + viewport_height).min(self.world.height) {
-            let row: Vec<Tile> = self.world.tiles[y]
-                .iter()
-                .skip(offset_x)
-                .take(viewport_width)
-                .cloned()
-                .collect();
-            visible_tiles.push(row);
-        }
-
-        RenderState {
-            player: self.player.clone(),
-            visible_tiles,
-            viewport_offset: Position::new(offset_x as f32, offset_y as f32),
-            game_phase: self.game_phase,
-            current_level_id: self.current_level_id.clone(),
-        }
-    }
+    pub map: Option<TileMapRender>,
+    pub objects: Vec<ObjectRender>,
+    pub show_terminal: bool,
+    pub active_dialogue: Option<String>,
+    /// The quest ID of the terminal the player is interacting with
+    pub active_quest_id: Option<String>,
 }
 ```
 
 ```typescript
-// TypeScript
+// TypeScript - src-ui/src/lib/types.ts
 export interface RenderState {
     player: Player;
     visible_tiles: Tile[][];
     viewport_offset: Position;
     game_phase: GamePhase;
     current_level_id: string | null;
+    map?: TileMapRender | null;
+    objects: ObjectRender[];
+    show_terminal: boolean;
+    active_dialogue: string | null;
+    /** The quest ID of the terminal the player is interacting with */
+    active_quest_id: string | null;
 }
 ```
 
@@ -475,25 +446,20 @@ export const XP_PER_LEVEL = 100;
 | GameState | `src/game/state.rs` | `src-ui/src/lib/types.ts` |
 | RenderState | `src/game/state.rs` | `src-ui/src/lib/types.ts` |
 | PlayerAction | `src/game/state.rs` | `src-ui/src/lib/types.ts` |
-| Constants | `src/game/constants.rs` | `src-ui/src/lib/constants.ts` |
+| ProgressionState | `src/game/progression.rs` | N/A (internal) |
+| Constants | `src/game/constants.rs` | N/A |
 
 ---
 
 ## Usage Notes
 
-### For Sonnet 4.5 1M (Rust Backend)
-- Implement all structs exactly as shown
-- Add `#[derive(Debug, Clone, Serialize, Deserialize)]` to all types
-- Use `Position` for all coordinate values
-- `GameState` is the single source of truth
-
-### For GPT 5.1 Codex Max (Svelte Frontend)
-- Import types from `$lib/types.ts`
+### For Development
+- Import types from `$lib/types.ts` in the frontend
 - Use `RenderState` for rendering, not full `GameState`
-- `PlayerAction` is what you send via Tauri commands
+- `PlayerAction` is what you send via the backend abstraction
 - Never mutate state directly, always send actions to backend
 
-### For Opus 4.5 Standard (Integration)
-- Generate TypeScript types from Rust using ts-rs (optional)
-- Or manually keep types in sync as defined here
+### For Type Synchronization
+- Rust types are authoritative
+- TypeScript types in `src-ui/src/lib/types.ts` must match Rust
 - Serialize Rust enums as `snake_case` for TypeScript
