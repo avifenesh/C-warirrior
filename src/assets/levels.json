@@ -11,6 +11,18 @@
     "total_xp_reward": 90,
     "map_file": "maps/L01_first_spell.json",
     "challenges": [],
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 192, "y": 224, "quest_id": "L01_Q1"},
+        {"x": 320, "y": 224, "quest_id": "L01_Q2"},
+        {"x": 448, "y": 224, "quest_id": "L01_Q3"}
+      ],
+      "preset": "tutorial"
+    },
     "quests": [
       {
         "id": "L01_Q1",
@@ -82,14 +94,11 @@
     "title": "The Empty Backpack",
     "theme": "L02_market",
     "concept": "variables",
-    "description": "The merchant needs to calculate the total weight of items. Help him add them together!",
-    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    printf(\"%d\\n\", addWeight(10, 25));\n    return 0;\n}",
-    "hints": [
-      "Use the + operator to add numbers",
-      "Return the sum of both parameters",
-      "Example: return a + b;"
-    ],
-    "xp_reward": 75,
+    "description": "The merchant needs help with calculations. Master arithmetic with parameters!",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 90,
     "map_file": "maps/L02_empty_backpack.json",
     "challenges": [],
     "lesson": {
@@ -110,21 +119,101 @@
         }
       ]
     },
-    "function_signature": {
-      "name": "addWeight",
-      "return_type": "int",
-      "parameters": [
-        {"name": "item1", "type": "int"},
-        {"name": "item2", "type": "int"}
-      ]
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 160, "y": 224, "quest_id": "L02_Q1"},
+        {"x": 288, "y": 224, "quest_id": "L02_Q2"},
+        {"x": 416, "y": 224, "quest_id": "L02_Q3"}
+      ],
+      "preset": "tutorial"
     },
-    "user_template": "int addWeight(int item1, int item2) {\n    // Return the sum of item1 and item2\n    \n}",
-    "test_cases": [
-      {"input": [10, 25], "expected": "35", "sample": true},
-      {"input": [5, 5], "expected": "10", "sample": true},
-      {"input": [100, 200], "expected": "300", "sample": false},
-      {"input": [0, 42], "expected": "42", "sample": false},
-      {"input": [999, 1], "expected": "1000", "sample": false}
+    "quests": [
+      {
+        "id": "L02_Q1",
+        "order": 1,
+        "title": "Adding Weights",
+        "description": "The merchant needs to calculate the total weight of two items.",
+        "recommended": true,
+        "function_signature": {
+          "name": "addWeight",
+          "return_type": "int",
+          "parameters": [
+            {"name": "item1", "type": "int"},
+            {"name": "item2", "type": "int"}
+          ]
+        },
+        "user_template": "int addWeight(int item1, int item2) {\n    // Return the sum of item1 and item2\n    \n}",
+        "test_cases": [
+          {"input": [10, 25], "expected": "35", "sample": true},
+          {"input": [5, 5], "expected": "10", "sample": true},
+          {"input": [100, 200], "expected": "300", "sample": false},
+          {"input": [0, 42], "expected": "42", "sample": false}
+        ],
+        "hints": [
+          "Use the + operator to add numbers",
+          "Return the sum: return item1 + item2;"
+        ],
+        "xp_reward": 25
+      },
+      {
+        "id": "L02_Q2",
+        "order": 2,
+        "title": "Calculate Area",
+        "description": "Find the area of a rectangular storage crate.",
+        "recommended": false,
+        "function_signature": {
+          "name": "calculateArea",
+          "return_type": "int",
+          "parameters": [
+            {"name": "width", "type": "int"},
+            {"name": "height", "type": "int"}
+          ]
+        },
+        "user_template": "int calculateArea(int width, int height) {\n    // Return width multiplied by height\n    \n}",
+        "test_cases": [
+          {"input": [3, 4], "expected": "12", "sample": true},
+          {"input": [5, 5], "expected": "25", "sample": true},
+          {"input": [1, 100], "expected": "100", "sample": false},
+          {"input": [10, 10], "expected": "100", "sample": false}
+        ],
+        "hints": [
+          "Use the * operator to multiply",
+          "Area = width * height"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L02_Q3",
+        "order": 3,
+        "title": "Triple Sum",
+        "description": "Sum three item weights for the heavy load calculation.",
+        "recommended": false,
+        "function_signature": {
+          "name": "tripleSum",
+          "return_type": "int",
+          "parameters": [
+            {"name": "a", "type": "int"},
+            {"name": "b", "type": "int"},
+            {"name": "c", "type": "int"}
+          ]
+        },
+        "user_template": "int tripleSum(int a, int b, int c) {\n    // Return the sum of all three values\n    \n}",
+        "test_cases": [
+          {"input": [1, 2, 3], "expected": "6", "sample": true},
+          {"input": [10, 20, 30], "expected": "60", "sample": true},
+          {"input": [0, 0, 0], "expected": "0", "sample": false},
+          {"input": [100, 200, 300], "expected": "600", "sample": false}
+        ],
+        "hints": [
+          "Chain additions: a + b + c",
+          "Example: return a + b + c;"
+        ],
+        "xp_reward": 35
+      }
     ]
   },
   {
@@ -132,14 +221,11 @@
     "title": "The Gatekeeper",
     "theme": "L03_tower",
     "concept": "if/else",
-    "description": "The guard blocks the path. He only respects warriors who can identify the larger of two numbers.",
-    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    printf(\"%d\\n\", maxValue(3, 7));\n    return 0;\n}",
-    "hints": [
-      "Use if/else to compare the two values",
-      "if (a > b) means 'if a is greater than b'",
-      "Return the larger value in each branch"
-    ],
-    "xp_reward": 100,
+    "description": "The guard tests your logic. Prove your worth with conditional decisions!",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 100,
     "map_file": "maps/L03_gatekeeper.json",
     "challenges": [],
     "lesson": {
@@ -160,22 +246,101 @@
         }
       ]
     },
-    "function_signature": {
-      "name": "maxValue",
-      "return_type": "int",
-      "parameters": [
-        {"name": "a", "type": "int"},
-        {"name": "b", "type": "int"}
-      ]
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 160, "y": 224, "quest_id": "L03_Q1"},
+        {"x": 288, "y": 224, "quest_id": "L03_Q2"},
+        {"x": 416, "y": 224, "quest_id": "L03_Q3"}
+      ],
+      "preset": "tutorial"
     },
-    "user_template": "int maxValue(int a, int b) {\n    // Return the larger of a and b\n    \n}",
-    "test_cases": [
-      {"input": [3, 7], "expected": "7", "sample": true},
-      {"input": [10, 2], "expected": "10", "sample": true},
-      {"input": [5, 5], "expected": "5", "sample": false},
-      {"input": [-3, -7], "expected": "-3", "sample": false},
-      {"input": [0, 100], "expected": "100", "sample": false},
-      {"input": [42, 0], "expected": "42", "sample": false}
+    "quests": [
+      {
+        "id": "L03_Q1",
+        "order": 1,
+        "title": "Maximum Value",
+        "description": "Return the larger of two numbers to impress the guard.",
+        "recommended": true,
+        "function_signature": {
+          "name": "maxValue",
+          "return_type": "int",
+          "parameters": [
+            {"name": "a", "type": "int"},
+            {"name": "b", "type": "int"}
+          ]
+        },
+        "user_template": "int maxValue(int a, int b) {\n    // Return the larger of a and b\n    \n}",
+        "test_cases": [
+          {"input": [3, 7], "expected": "7", "sample": true},
+          {"input": [10, 2], "expected": "10", "sample": true},
+          {"input": [5, 5], "expected": "5", "sample": false},
+          {"input": [-3, -7], "expected": "-3", "sample": false}
+        ],
+        "hints": [
+          "Use if (a > b) to compare",
+          "Return the larger value in each branch"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L03_Q2",
+        "order": 2,
+        "title": "Even or Odd",
+        "description": "Determine if a number is even (return 1) or odd (return 0).",
+        "recommended": false,
+        "function_signature": {
+          "name": "isEven",
+          "return_type": "int",
+          "parameters": [
+            {"name": "n", "type": "int"}
+          ]
+        },
+        "user_template": "int isEven(int n) {\n    // Return 1 if n is even, 0 if odd\n    \n}",
+        "test_cases": [
+          {"input": [4], "expected": "1", "sample": true},
+          {"input": [7], "expected": "0", "sample": true},
+          {"input": [0], "expected": "1", "sample": false},
+          {"input": [-2], "expected": "1", "sample": false}
+        ],
+        "hints": [
+          "Use the modulo operator: n % 2",
+          "Even numbers have n % 2 == 0"
+        ],
+        "xp_reward": 35
+      },
+      {
+        "id": "L03_Q3",
+        "order": 3,
+        "title": "Clamp Value",
+        "description": "Keep a value within bounds: if below min, return min; if above max, return max.",
+        "recommended": false,
+        "function_signature": {
+          "name": "clamp",
+          "return_type": "int",
+          "parameters": [
+            {"name": "value", "type": "int"},
+            {"name": "min", "type": "int"},
+            {"name": "max", "type": "int"}
+          ]
+        },
+        "user_template": "int clamp(int value, int min, int max) {\n    // Return value bounded between min and max\n    \n}",
+        "test_cases": [
+          {"input": [5, 0, 10], "expected": "5", "sample": true},
+          {"input": [-5, 0, 10], "expected": "0", "sample": true},
+          {"input": [15, 0, 10], "expected": "10", "sample": false},
+          {"input": [50, 0, 100], "expected": "50", "sample": false}
+        ],
+        "hints": [
+          "Check if value < min first",
+          "Then check if value > max",
+          "Otherwise return value unchanged"
+        ],
+        "xp_reward": 35
+      }
     ]
   },
   {
@@ -183,14 +348,11 @@
     "title": "The Repeating Strike",
     "theme": "L04_forest",
     "concept": "loops",
-    "description": "The training dummy requires repeated strikes. Calculate the sum of all strike damage from 1 to n.",
-    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    printf(\"%d\\n\", sumStrikes(5));\n    return 0;\n}",
-    "hints": [
-      "Use a for loop: for(int i = 1; i <= n; i++)",
-      "Create a variable to accumulate the sum",
-      "Add each number to the sum inside the loop"
-    ],
-    "xp_reward": 125,
+    "description": "Master the art of repetition with for loops!",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 120,
     "map_file": "maps/L04_forest.json",
     "challenges": [],
     "lesson": {
@@ -211,20 +373,98 @@
         }
       ]
     },
-    "function_signature": {
-      "name": "sumStrikes",
-      "return_type": "int",
-      "parameters": [
-        {"name": "n", "type": "int"}
-      ]
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 160, "y": 224, "quest_id": "L04_Q1"},
+        {"x": 288, "y": 224, "quest_id": "L04_Q2"},
+        {"x": 416, "y": 224, "quest_id": "L04_Q3"}
+      ],
+      "preset": "tutorial"
     },
-    "user_template": "int sumStrikes(int n) {\n    // Return the sum of 1 + 2 + 3 + ... + n\n    \n}",
-    "test_cases": [
-      {"input": [5], "expected": "15", "sample": true},
-      {"input": [10], "expected": "55", "sample": true},
-      {"input": [1], "expected": "1", "sample": false},
-      {"input": [100], "expected": "5050", "sample": false},
-      {"input": [3], "expected": "6", "sample": false}
+    "quests": [
+      {
+        "id": "L04_Q1",
+        "order": 1,
+        "title": "Sum of Strikes",
+        "description": "Calculate the sum of all strikes from 1 to n.",
+        "recommended": true,
+        "function_signature": {
+          "name": "sumStrikes",
+          "return_type": "int",
+          "parameters": [
+            {"name": "n", "type": "int"}
+          ]
+        },
+        "user_template": "int sumStrikes(int n) {\n    // Return the sum of 1 + 2 + 3 + ... + n\n    \n}",
+        "test_cases": [
+          {"input": [5], "expected": "15", "sample": true},
+          {"input": [10], "expected": "55", "sample": true},
+          {"input": [1], "expected": "1", "sample": false},
+          {"input": [100], "expected": "5050", "sample": false}
+        ],
+        "hints": [
+          "Use a for loop: for(int i = 1; i <= n; i++)",
+          "Accumulate: sum = sum + i"
+        ],
+        "xp_reward": 35
+      },
+      {
+        "id": "L04_Q2",
+        "order": 2,
+        "title": "Factorial",
+        "description": "Compute n! (n factorial = n × (n-1) × ... × 1).",
+        "recommended": false,
+        "function_signature": {
+          "name": "factorial",
+          "return_type": "int",
+          "parameters": [
+            {"name": "n", "type": "int"}
+          ]
+        },
+        "user_template": "int factorial(int n) {\n    // Return n! = n * (n-1) * ... * 1\n    \n}",
+        "test_cases": [
+          {"input": [5], "expected": "120", "sample": true},
+          {"input": [3], "expected": "6", "sample": true},
+          {"input": [1], "expected": "1", "sample": false},
+          {"input": [0], "expected": "1", "sample": false}
+        ],
+        "hints": [
+          "Start with result = 1",
+          "Multiply: result = result * i"
+        ],
+        "xp_reward": 40
+      },
+      {
+        "id": "L04_Q3",
+        "order": 3,
+        "title": "Count Divisible",
+        "description": "Count how many numbers from 1 to n are divisible by d.",
+        "recommended": false,
+        "function_signature": {
+          "name": "countDivisible",
+          "return_type": "int",
+          "parameters": [
+            {"name": "n", "type": "int"},
+            {"name": "d", "type": "int"}
+          ]
+        },
+        "user_template": "int countDivisible(int n, int d) {\n    // Count numbers from 1 to n divisible by d\n    \n}",
+        "test_cases": [
+          {"input": [10, 2], "expected": "5", "sample": true},
+          {"input": [10, 3], "expected": "3", "sample": true},
+          {"input": [5, 7], "expected": "0", "sample": false},
+          {"input": [100, 10], "expected": "10", "sample": false}
+        ],
+        "hints": [
+          "Use if inside the loop",
+          "Check: if (i % d == 0) count++"
+        ],
+        "xp_reward": 45
+      }
     ]
   },
   {
@@ -232,14 +472,11 @@
     "title": "Array Fortress",
     "theme": "L05_darkwoods",
     "concept": "arrays",
-    "description": "A fortress of many rooms. Return the value stored at a specific room index.",
-    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    printf(\"%d\\n\", getRoom(2));\n    return 0;\n}",
-    "hints": [
-      "Arrays store multiple values at numbered positions",
-      "Array indices start at 0, not 1",
-      "Use arrayName[index] to access a value"
-    ],
-    "xp_reward": 200,
+    "description": "A fortress of many rooms. Master array access and iteration!",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 110,
     "map_file": "maps/L05_darkwoods.json",
     "challenges": [],
     "lesson": {
@@ -260,20 +497,87 @@
         }
       ]
     },
-    "function_signature": {
-      "name": "getRoom",
-      "return_type": "int",
-      "parameters": [
-        {"name": "index", "type": "int"}
-      ]
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 160, "y": 224, "quest_id": "L05_Q1"},
+        {"x": 288, "y": 224, "quest_id": "L05_Q2"},
+        {"x": 416, "y": 224, "quest_id": "L05_Q3"}
+      ],
+      "preset": "tutorial"
     },
-    "user_template": "int getRoom(int index) {\n    // Create array: {10, 20, 30, 40, 50}\n    // Return the element at 'index'\n    \n}",
-    "test_cases": [
-      {"input": [0], "expected": "10", "sample": true},
-      {"input": [2], "expected": "30", "sample": true},
-      {"input": [4], "expected": "50", "sample": false},
-      {"input": [1], "expected": "20", "sample": false},
-      {"input": [3], "expected": "40", "sample": false}
+    "quests": [
+      {
+        "id": "L05_Q1",
+        "order": 1,
+        "title": "Room Access",
+        "description": "Return the value at a specific room index from {10, 20, 30, 40, 50}.",
+        "recommended": true,
+        "function_signature": {
+          "name": "getRoom",
+          "return_type": "int",
+          "parameters": [
+            {"name": "index", "type": "int"}
+          ]
+        },
+        "user_template": "int getRoom(int index) {\n    int rooms[5] = {10, 20, 30, 40, 50};\n    // Return the element at 'index'\n    \n}",
+        "test_cases": [
+          {"input": [0], "expected": "10", "sample": true},
+          {"input": [2], "expected": "30", "sample": true},
+          {"input": [4], "expected": "50", "sample": false},
+          {"input": [1], "expected": "20", "sample": false}
+        ],
+        "hints": [
+          "Use rooms[index] to access the element",
+          "Array indices start at 0"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L05_Q2",
+        "order": 2,
+        "title": "Sum All Rooms",
+        "description": "Sum all elements in the rooms array {10, 20, 30, 40, 50}.",
+        "recommended": false,
+        "function_signature": {
+          "name": "sumRooms",
+          "return_type": "int",
+          "parameters": []
+        },
+        "user_template": "int sumRooms() {\n    int rooms[5] = {10, 20, 30, 40, 50};\n    // Return the sum of all elements\n    \n}",
+        "test_cases": [
+          {"input": [], "expected": "150", "sample": true}
+        ],
+        "hints": [
+          "Use a for loop to iterate through the array",
+          "for (int i = 0; i < 5; i++) sum += rooms[i]"
+        ],
+        "xp_reward": 35
+      },
+      {
+        "id": "L05_Q3",
+        "order": 3,
+        "title": "Find Maximum",
+        "description": "Find the maximum value in {15, 42, 8, 23, 31}.",
+        "recommended": false,
+        "function_signature": {
+          "name": "findMax",
+          "return_type": "int",
+          "parameters": []
+        },
+        "user_template": "int findMax() {\n    int values[5] = {15, 42, 8, 23, 31};\n    // Return the maximum value\n    \n}",
+        "test_cases": [
+          {"input": [], "expected": "42", "sample": true}
+        ],
+        "hints": [
+          "Start with max = values[0]",
+          "Compare each element: if (values[i] > max) max = values[i]"
+        ],
+        "xp_reward": 45
+      }
     ]
   },
   {
@@ -281,25 +585,84 @@
     "title": "The Spell Scroll",
     "theme": "L06_river",
     "concept": "void functions",
-    "description": "The ancient scroll contains a spell, but it must be spoken to activate. Create a function that speaks the incantation.",
-    "code_template": "#include <stdio.h>\n\n// Define a void function called 'cast_spell' that prints \"Abracadabra!\"\n\nint main() {\n    cast_spell();\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Abracadabra!\n"
-    },
-    "hints": [
-      "Void functions are defined as: void functionName() { ... }",
-      "Use printf inside the function to print the spell",
-      "Don't forget the newline \\n"
-    ],
-    "xp_reward": 150,
+    "description": "Learn to create functions that perform actions without returning values.",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 70,
     "map_file": "maps/L06_river.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Void Functions",
+      "content": [
+        "Not all functions need to return a value. Void functions perform actions (like printing) without returning anything.",
+        "Declare with 'void' as the return type: void functionName() { }",
+        "Void functions can still take parameters to customize their behavior."
+      ],
+      "examples": [
+        {
+          "code": "void sayHello() {\n    printf(\"Hello!\\n\");\n}",
+          "explanation": "A simple void function that prints a greeting."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 192, "y": 224, "quest_id": "L06_Q1"},
+        {"x": 384, "y": 224, "quest_id": "L06_Q2"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "cast_spell_void",
-        "prompt": "Define and call a void function 'cast_spell' that prints the incantation.",
-        "expected_output": "Abracadabra!",
-        "starter_code": "#include <stdio.h>\n\n// Define a void function called 'cast_spell' that prints \"Abracadabra!\"\n\nint main() {\n    cast_spell();\n    return 0;\n}"
+        "id": "L06_Q1",
+        "order": 1,
+        "title": "Cast Spell",
+        "description": "Create a void function that prints the magic word.",
+        "recommended": true,
+        "function_signature": {
+          "name": "castSpell",
+          "return_type": "int",
+          "parameters": []
+        },
+        "user_template": "int castSpell() {\n    // Print \"Abracadabra!\" and return 1\n    \n}",
+        "test_cases": [
+          {"input": [], "expected": "1", "sample": true}
+        ],
+        "hints": [
+          "Use printf(\"Abracadabra!\\n\");",
+          "Return 1 to indicate success"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L06_Q2",
+        "order": 2,
+        "title": "Print Square",
+        "description": "Print the square of a number (n × n).",
+        "recommended": false,
+        "function_signature": {
+          "name": "printSquare",
+          "return_type": "int",
+          "parameters": [
+            {"name": "n", "type": "int"}
+          ]
+        },
+        "user_template": "int printSquare(int n) {\n    // Print n * n and return the result\n    \n}",
+        "test_cases": [
+          {"input": [3], "expected": "9", "sample": true},
+          {"input": [5], "expected": "25", "sample": true},
+          {"input": [0], "expected": "0", "sample": false}
+        ],
+        "hints": [
+          "Calculate n * n",
+          "Return the squared value"
+        ],
+        "xp_reward": 40
       }
     ]
   },
@@ -308,25 +671,115 @@
     "title": "The Damage Calculator",
     "theme": "L07_cavern",
     "concept": "return values",
-    "description": "The enchanting table can calculate weapon damage, but only if you create a formula that returns the result.",
-    "code_template": "#include <stdio.h>\n\n// Define a function 'calculate_damage' that takes (int base, int multiplier)\n// and returns base * multiplier\n\nint main() {\n    int damage = calculate_damage(10, 3);\n    printf(\"Damage: %d\\n\", damage);\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Damage: 30\n"
-    },
-    "hints": [
-      "Return type goes before function name: int functionName(...)",
-      "Use the return keyword to send back a value",
-      "return base * multiplier;"
-    ],
-    "xp_reward": 175,
+    "description": "Master functions that compute and return values.",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 100,
     "map_file": "maps/L07_cavern.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Functions with Return Values",
+      "content": [
+        "Functions can compute values and send them back using the return statement.",
+        "The return type (int, float, etc.) must match what you return.",
+        "Use returned values in expressions: int result = myFunction(5);"
+      ],
+      "examples": [
+        {
+          "code": "int multiply(int a, int b) {\n    return a * b;\n}",
+          "explanation": "Returns the product of two numbers."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 160, "y": 224, "quest_id": "L07_Q1"},
+        {"x": 288, "y": 224, "quest_id": "L07_Q2"},
+        {"x": 416, "y": 224, "quest_id": "L07_Q3"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "calc_damage_return",
-        "prompt": "Implement 'calculate_damage' so the table reports the correct damage.",
-        "expected_output": "Damage: 30",
-        "starter_code": "#include <stdio.h>\n\n// Define a function 'calculate_damage' that takes (int base, int multiplier)\n// and returns base * multiplier\n\nint main() {\n    int damage = calculate_damage(10, 3);\n    printf(\"Damage: %d\\n\", damage);\n    return 0;\n}"
+        "id": "L07_Q1",
+        "order": 1,
+        "title": "Calculate Damage",
+        "description": "Compute damage as base × multiplier.",
+        "recommended": true,
+        "function_signature": {
+          "name": "damage",
+          "return_type": "int",
+          "parameters": [
+            {"name": "base", "type": "int"},
+            {"name": "mult", "type": "int"}
+          ]
+        },
+        "user_template": "int damage(int base, int mult) {\n    // Return base * mult\n    \n}",
+        "test_cases": [
+          {"input": [10, 3], "expected": "30", "sample": true},
+          {"input": [5, 5], "expected": "25", "sample": true},
+          {"input": [100, 0], "expected": "0", "sample": false}
+        ],
+        "hints": [
+          "Multiply the parameters",
+          "return base * mult;"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L07_Q2",
+        "order": 2,
+        "title": "Square Number",
+        "description": "Return n squared (n × n).",
+        "recommended": false,
+        "function_signature": {
+          "name": "square",
+          "return_type": "int",
+          "parameters": [
+            {"name": "n", "type": "int"}
+          ]
+        },
+        "user_template": "int square(int n) {\n    // Return n * n\n    \n}",
+        "test_cases": [
+          {"input": [4], "expected": "16", "sample": true},
+          {"input": [7], "expected": "49", "sample": true},
+          {"input": [0], "expected": "0", "sample": false}
+        ],
+        "hints": [
+          "Multiply n by itself",
+          "return n * n;"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L07_Q3",
+        "order": 3,
+        "title": "Absolute Value",
+        "description": "Return the absolute value of n (make negative numbers positive).",
+        "recommended": false,
+        "function_signature": {
+          "name": "absolute",
+          "return_type": "int",
+          "parameters": [
+            {"name": "n", "type": "int"}
+          ]
+        },
+        "user_template": "int absolute(int n) {\n    // Return the absolute value of n\n    \n}",
+        "test_cases": [
+          {"input": [5], "expected": "5", "sample": true},
+          {"input": [-5], "expected": "5", "sample": true},
+          {"input": [0], "expected": "0", "sample": false}
+        ],
+        "hints": [
+          "If n is negative, return -n",
+          "Otherwise return n as-is"
+        ],
+        "xp_reward": 40
       }
     ]
   },
@@ -335,25 +788,87 @@
     "title": "The Stack Spire",
     "theme": "L08_mountain",
     "concept": "stack frames",
-    "description": "Each floor of the spire is a function call. Climb up through nested calls, then return back down.",
-    "code_template": "#include <stdio.h>\n\nvoid floor_3() {\n    printf(\"Floor 3 - Top!\\n\");\n}\n\nvoid floor_2() {\n    printf(\"Floor 2\\n\");\n    // Call floor_3 here\n}\n\nvoid floor_1() {\n    printf(\"Floor 1\\n\");\n    floor_2();\n}\n\nint main() {\n    printf(\"Ground Floor\\n\");\n    floor_1();\n    printf(\"Back to Ground\\n\");\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Ground Floor\nFloor 1\nFloor 2\nFloor 3 - Top!\nBack to Ground\n"
-    },
-    "hints": [
-      "Call floor_3() from inside floor_2().",
-      "Execution climbs up the call stack and then unwinds.",
-      "Match the exact output order, including newlines."
-    ],
-    "xp_reward": 200,
+    "description": "Understand how functions call each other and return values.",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 70,
     "map_file": "maps/L08_mountain.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Function Calls and the Stack",
+      "content": [
+        "When a function calls another function, execution 'pauses' the caller until the called function returns.",
+        "Functions can call other functions, building a 'stack' of active calls.",
+        "Each function's local variables live in its own 'stack frame'."
+      ],
+      "examples": [
+        {
+          "code": "int addOne(int n) {\n    return n + 1;\n}\n\nint addTwo(int n) {\n    return addOne(addOne(n));\n}",
+          "explanation": "addTwo calls addOne twice, chaining the results."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 192, "y": 224, "quest_id": "L08_Q1"},
+        {"x": 384, "y": 224, "quest_id": "L08_Q2"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "stack_spire_calls",
-        "prompt": "Complete the call chain so the hero climbs to Floor 3 and back.",
-        "expected_output": "Ground Floor\nFloor 1\nFloor 2\nFloor 3 - Top!\nBack to Ground",
-        "starter_code": "#include <stdio.h>\n\nvoid floor_3() {\n    printf(\"Floor 3 - Top!\\n\");\n}\n\nvoid floor_2() {\n    printf(\"Floor 2\\n\");\n    // Call floor_3 here\n}\n\nvoid floor_1() {\n    printf(\"Floor 1\\n\");\n    floor_2();\n}\n\nint main() {\n    printf(\"Ground Floor\\n\");\n    floor_1();\n    printf(\"Back to Ground\\n\");\n    return 0;\n}"
+        "id": "L08_Q1",
+        "order": 1,
+        "title": "Add One",
+        "description": "Create a simple helper that adds 1 to a number.",
+        "recommended": true,
+        "function_signature": {
+          "name": "addOne",
+          "return_type": "int",
+          "parameters": [
+            {"name": "n", "type": "int"}
+          ]
+        },
+        "user_template": "int addOne(int n) {\n    // Return n + 1\n    \n}",
+        "test_cases": [
+          {"input": [5], "expected": "6", "sample": true},
+          {"input": [0], "expected": "1", "sample": true},
+          {"input": [-1], "expected": "0", "sample": false}
+        ],
+        "hints": [
+          "Simply return n + 1"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L08_Q2",
+        "order": 2,
+        "title": "Double Add One",
+        "description": "Call addOne twice: addOne(addOne(n)) to add 2.",
+        "recommended": false,
+        "function_signature": {
+          "name": "doubleAddOne",
+          "return_type": "int",
+          "parameters": [
+            {"name": "n", "type": "int"}
+          ]
+        },
+        "user_template": "int addOne(int n) {\n    return n + 1;\n}\n\nint doubleAddOne(int n) {\n    // Call addOne twice to add 2\n    \n}",
+        "test_cases": [
+          {"input": [5], "expected": "7", "sample": true},
+          {"input": [0], "expected": "2", "sample": true},
+          {"input": [-2], "expected": "0", "sample": false}
+        ],
+        "hints": [
+          "Chain the calls: addOne(addOne(n))",
+          "This adds 1, then adds 1 again"
+        ],
+        "xp_reward": 40
       }
     ]
   },
@@ -362,25 +877,84 @@
     "title": "The Global Artifact",
     "theme": "L09_ice",
     "concept": "scope",
-    "description": "The temple's central artifact is visible from all chambers. But each room has its own treasures only accessible within.",
-    "code_template": "#include <stdio.h>\n\n// Declare a global variable 'artifact_power' = 100\n\nvoid east_chamber() {\n    int local_gem = 10;\n    printf(\"East: artifact=%d, gem=%d\\n\", artifact_power, local_gem);\n}\n\nvoid west_chamber() {\n    int local_gem = 20;\n    printf(\"West: artifact=%d, gem=%d\\n\", artifact_power, local_gem);\n}\n\nint main() {\n    east_chamber();\n    west_chamber();\n    printf(\"Center: artifact=%d\\n\", artifact_power);\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "East: artifact=100, gem=10\nWest: artifact=100, gem=20\nCenter: artifact=100\n"
-    },
-    "hints": [
-      "Declare 'artifact_power' outside of any function.",
-      "Global variables can be used in any function in the file.",
-      "Keep each chamber's local_gem variable inside its own function."
-    ],
-    "xp_reward": 200,
+    "description": "Understand global vs local variable visibility.",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 70,
     "map_file": "maps/L09_ice.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Variable Scope",
+      "content": [
+        "Global variables (declared outside functions) are visible everywhere in the file.",
+        "Local variables (inside a function) are only visible within that function.",
+        "If a local variable has the same name as a global, the local 'shadows' the global."
+      ],
+      "examples": [
+        {
+          "code": "int power = 100; // global\n\nint getPower() {\n    return power; // reads global\n}",
+          "explanation": "Functions can access global variables directly."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 192, "y": 224, "quest_id": "L09_Q1"},
+        {"x": 384, "y": 224, "quest_id": "L09_Q2"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "global_vs_local_scope",
-        "prompt": "Make the artifact power visible in all chambers while keeping gems local.",
-        "expected_output": "East: artifact=100, gem=10\nWest: artifact=100, gem=20\nCenter: artifact=100",
-        "starter_code": "#include <stdio.h>\n\n// Declare a global variable 'artifact_power' = 100\n\nvoid east_chamber() {\n    int local_gem = 10;\n    printf(\"East: artifact=%d, gem=%d\\n\", artifact_power, local_gem);\n}\n\nvoid west_chamber() {\n    int local_gem = 20;\n    printf(\"West: artifact=%d, gem=%d\\n\", artifact_power, local_gem);\n}\n\nint main() {\n    east_chamber();\n    west_chamber();\n    printf(\"Center: artifact=%d\\n\", artifact_power);\n    return 0;\n}"
+        "id": "L09_Q1",
+        "order": 1,
+        "title": "Read Global",
+        "description": "Access the global artifact variable (value 100).",
+        "recommended": true,
+        "function_signature": {
+          "name": "readGlobal",
+          "return_type": "int",
+          "parameters": []
+        },
+        "user_template": "int artifact = 100;  // Global variable\n\nint readGlobal() {\n    // Return the global artifact value\n    \n}",
+        "test_cases": [
+          {"input": [], "expected": "100", "sample": true}
+        ],
+        "hints": [
+          "Simply return artifact;",
+          "Global variables are accessible from any function"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L09_Q2",
+        "order": 2,
+        "title": "Local Shadow",
+        "description": "A local parameter shadows the global. Return the local value.",
+        "recommended": false,
+        "function_signature": {
+          "name": "localShadow",
+          "return_type": "int",
+          "parameters": [
+            {"name": "artifact", "type": "int"}
+          ]
+        },
+        "user_template": "int artifact = 100;  // Global (shadowed)\n\nint localShadow(int artifact) {\n    // Return the parameter (shadows global)\n    \n}",
+        "test_cases": [
+          {"input": [50], "expected": "50", "sample": true},
+          {"input": [0], "expected": "0", "sample": true},
+          {"input": [999], "expected": "999", "sample": false}
+        ],
+        "hints": [
+          "The parameter 'artifact' shadows the global",
+          "Return the parameter value"
+        ],
+        "xp_reward": 40
       }
     ]
   },
@@ -389,25 +963,118 @@
     "title": "The Recursive Mirror",
     "theme": "L10_temple",
     "concept": "recursion",
-    "description": "The mirror shows infinite reflections... but there must be a stopping point, or you'll be trapped forever!",
-    "code_template": "#include <stdio.h>\n\nvoid reflect(int depth) {\n    if (depth <= 0) {\n        printf(\"Base reflection reached!\\n\");\n        return;\n    }\n    printf(\"Reflection depth: %d\\n\", depth);\n    // Call reflect with depth - 1\n}\n\nint main() {\n    reflect(3);\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Reflection depth: 3\nReflection depth: 2\nReflection depth: 1\nBase reflection reached!\n"
-    },
-    "hints": [
-      "Always include a base case to stop recursion.",
-      "Call reflect(depth - 1) to move toward the base case.",
-      "Make sure you print at each depth before the recursive call."
-    ],
-    "xp_reward": 250,
+    "description": "Master functions that call themselves with base cases.",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 120,
     "map_file": "maps/L10_temple.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Recursion",
+      "content": [
+        "Recursion is when a function calls itself to solve smaller subproblems.",
+        "Every recursive function needs a BASE CASE to stop the recursion.",
+        "The recursive case breaks the problem into smaller pieces."
+      ],
+      "examples": [
+        {
+          "code": "int sumTo(int n) {\n    if (n <= 0) return 0;  // base\n    return n + sumTo(n - 1);  // recursive\n}",
+          "explanation": "Sums 1 to n by adding n to the sum of 1 to n-1."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 160, "y": 224, "quest_id": "L10_Q1"},
+        {"x": 288, "y": 224, "quest_id": "L10_Q2"},
+        {"x": 416, "y": 224, "quest_id": "L10_Q3"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "recursive_reflection",
-        "prompt": "Complete the recursive call so the reflections count down to the base case.",
-        "expected_output": "Reflection depth: 3\nReflection depth: 2\nReflection depth: 1\nBase reflection reached!",
-        "starter_code": "#include <stdio.h>\n\nvoid reflect(int depth) {\n    if (depth <= 0) {\n        printf(\"Base reflection reached!\\n\");\n        return;\n    }\n    printf(\"Reflection depth: %d\\n\", depth);\n    // Call reflect with depth - 1\n}\n\nint main() {\n    reflect(3);\n    return 0;\n}"
+        "id": "L10_Q1",
+        "order": 1,
+        "title": "Recursive Sum",
+        "description": "Sum 1 to n using recursion (not a loop).",
+        "recommended": true,
+        "function_signature": {
+          "name": "sumToN",
+          "return_type": "int",
+          "parameters": [
+            {"name": "n", "type": "int"}
+          ]
+        },
+        "user_template": "int sumToN(int n) {\n    // Base case: if n <= 0, return 0\n    // Recursive: return n + sumToN(n - 1)\n    \n}",
+        "test_cases": [
+          {"input": [5], "expected": "15", "sample": true},
+          {"input": [1], "expected": "1", "sample": true},
+          {"input": [0], "expected": "0", "sample": false},
+          {"input": [10], "expected": "55", "sample": false}
+        ],
+        "hints": [
+          "Base case: if (n <= 0) return 0;",
+          "Recursive: return n + sumToN(n - 1);"
+        ],
+        "xp_reward": 35
+      },
+      {
+        "id": "L10_Q2",
+        "order": 2,
+        "title": "Recursive Power",
+        "description": "Calculate base^exp using recursion.",
+        "recommended": false,
+        "function_signature": {
+          "name": "power",
+          "return_type": "int",
+          "parameters": [
+            {"name": "base", "type": "int"},
+            {"name": "exp", "type": "int"}
+          ]
+        },
+        "user_template": "int power(int base, int exp) {\n    // Base case: if exp == 0, return 1\n    // Recursive: return base * power(base, exp - 1)\n    \n}",
+        "test_cases": [
+          {"input": [2, 3], "expected": "8", "sample": true},
+          {"input": [3, 2], "expected": "9", "sample": true},
+          {"input": [5, 0], "expected": "1", "sample": false},
+          {"input": [2, 10], "expected": "1024", "sample": false}
+        ],
+        "hints": [
+          "Base case: any number to the power 0 is 1",
+          "Recursive: multiply base by power(base, exp-1)"
+        ],
+        "xp_reward": 40
+      },
+      {
+        "id": "L10_Q3",
+        "order": 3,
+        "title": "Fibonacci",
+        "description": "Return the nth Fibonacci number (0, 1, 1, 2, 3, 5, 8...).",
+        "recommended": false,
+        "function_signature": {
+          "name": "fib",
+          "return_type": "int",
+          "parameters": [
+            {"name": "n", "type": "int"}
+          ]
+        },
+        "user_template": "int fib(int n) {\n    // Base cases: fib(0) = 0, fib(1) = 1\n    // Recursive: fib(n) = fib(n-1) + fib(n-2)\n    \n}",
+        "test_cases": [
+          {"input": [6], "expected": "8", "sample": true},
+          {"input": [0], "expected": "0", "sample": true},
+          {"input": [1], "expected": "1", "sample": false},
+          {"input": [10], "expected": "55", "sample": false}
+        ],
+        "hints": [
+          "Two base cases: n==0 returns 0, n==1 returns 1",
+          "Recursive: return fib(n-1) + fib(n-2)"
+        ],
+        "xp_reward": 45
       }
     ]
   },
@@ -416,24 +1083,95 @@
     "title": "The Address Spell",
     "theme": "L11_library",
     "concept": "address-of operator",
-    "description": "To locate the hidden treasure, you must discover its exact address in the memory realm.",
-    "code_template": "#include <stdio.h>\n\nint main() {\n    int treasure = 42;\n    // Print the ADDRESS of treasure using &\n    // Format: printf(\"%p\\n\", ...);\n    return 0;\n}",
-    "success_criteria": {
-      "type": "compile_only"
-    },
-    "hints": [
-      "Use the & operator to get the address of a variable.",
-      "Print addresses with %p and cast to (void*).",
-      "The exact address changes each run; we only require compilation."
-    ],
-    "xp_reward": 225,
+    "description": "Learn to work with memory addresses through pointers.",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 55,
     "map_file": "maps/L11_library.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Pointers and Memory Addresses",
+      "content": [
+        "Every variable in C has a memory address where its value is stored.",
+        "A pointer is a variable that holds a memory address. Declare with: int *ptr;",
+        "When a function receives a pointer parameter, it can read the value at that address using the * operator."
+      ],
+      "examples": [
+        {
+          "code": "int readValue(int *ptr) {\n    return *ptr;\n}",
+          "explanation": "The function receives an address and returns the value stored there."
+        },
+        {
+          "code": "int sum(int *a, int *b) {\n    return *a + *b;\n}",
+          "explanation": "Reads values at two addresses and returns their sum."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 224, "y": 224, "quest_id": "L11_Q1"},
+        {"x": 416, "y": 224, "quest_id": "L11_Q2"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "print_address",
-        "prompt": "Reveal the memory address of the treasure using the address-of operator.",
-        "expected_output": "(varies)",
-        "starter_code": "#include <stdio.h>\n\nint main() {\n    int treasure = 42;\n    // Print the ADDRESS of treasure using & and %p\n    return 0;\n}"
+        "id": "L11_Q1",
+        "order": 1,
+        "title": "Read Via Pointer",
+        "description": "Return the value stored at the address the pointer points to.",
+        "recommended": true,
+        "function_signature": {
+          "name": "readValue",
+          "return_type": "int",
+          "parameters": [
+            {"name": "ptr", "type": "int*"}
+          ]
+        },
+        "user_template": "int readValue(int *ptr) {\n    // Return the value at the address ptr points to\n    // Use *ptr to dereference the pointer\n    \n}",
+        "test_cases": [
+          {"input": [42], "expected": "42", "sample": true},
+          {"input": [100], "expected": "100", "sample": true},
+          {"input": [0], "expected": "0", "sample": false},
+          {"input": [-5], "expected": "-5", "sample": false}
+        ],
+        "hints": [
+          "Use *ptr to get the value at the address",
+          "Example: return *ptr;"
+        ],
+        "xp_reward": 25
+      },
+      {
+        "id": "L11_Q2",
+        "order": 2,
+        "title": "Add Via Pointers",
+        "description": "Return the sum of values at two different addresses.",
+        "recommended": false,
+        "function_signature": {
+          "name": "addValues",
+          "return_type": "int",
+          "parameters": [
+            {"name": "a", "type": "int*"},
+            {"name": "b", "type": "int*"}
+          ]
+        },
+        "user_template": "int addValues(int *a, int *b) {\n    // Return the sum of values at addresses a and b\n    \n}",
+        "test_cases": [
+          {"input": [3, 4], "expected": "7", "sample": true},
+          {"input": [10, 20], "expected": "30", "sample": true},
+          {"input": [0, 0], "expected": "0", "sample": false},
+          {"input": [-5, 5], "expected": "0", "sample": false}
+        ],
+        "hints": [
+          "Dereference both pointers: *a and *b",
+          "Return their sum: return *a + *b;"
+        ],
+        "xp_reward": 30
       }
     ]
   },
@@ -442,25 +1180,120 @@
     "title": "The Grappling Hook",
     "theme": "L12_crypt",
     "concept": "pointer declaration",
-    "description": "Your grappling hook can grab distant ledges, but first you must aim it. Declare where it points!",
-    "code_template": "#include <stdio.h>\n\nint main() {\n    int ledge = 100;\n    // Declare a pointer 'hook' and point it to ledge\n    // Then print the value hook points to\n    printf(\"Grabbed: %d\\n\", *hook);\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Grabbed: 100\n"
-    },
-    "hints": [
-      "Declare a pointer with: int *name = &variable;",
-      "The * in the declaration means 'pointer to int'.",
-      "Use &ledge to get the address of ledge."
-    ],
-    "xp_reward": 250,
+    "description": "Master pointer declarations and learn to grab values from a distance!",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 90,
     "map_file": "maps/L12_crypt.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Declaring and Using Pointers",
+      "content": [
+        "Declare a pointer with: int *ptr; (a pointer to an integer)",
+        "The * in declarations means 'pointer to'. In expressions, * means 'dereference'.",
+        "Functions can modify values through pointers, allowing changes to persist outside the function."
+      ],
+      "examples": [
+        {
+          "code": "int getValue(int *ptr) {\n    return *ptr;  // Read value at address\n}",
+          "explanation": "Reading a value through a pointer."
+        },
+        {
+          "code": "int doubled(int *ptr) {\n    return *ptr * 2;\n}",
+          "explanation": "Use the dereferenced value in calculations."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 160, "y": 224, "quest_id": "L12_Q1"},
+        {"x": 288, "y": 224, "quest_id": "L12_Q2"},
+        {"x": 416, "y": 224, "quest_id": "L12_Q3"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "pointer_declare_hook",
-        "prompt": "Declare the 'hook' pointer so it grabs the ledge's value.",
-        "expected_output": "Grabbed: 100",
-        "starter_code": "#include <stdio.h>\n\nint main() {\n    int ledge = 100;\n    // Declare a pointer 'hook' and point it to ledge\n    // Then print the value hook points to\n    printf(\"Grabbed: %d\\n\", *hook);\n    return 0;\n}"
+        "id": "L12_Q1",
+        "order": 1,
+        "title": "Grab the Value",
+        "description": "Return the value your pointer hook is aimed at.",
+        "recommended": true,
+        "function_signature": {
+          "name": "grab",
+          "return_type": "int",
+          "parameters": [
+            {"name": "hook", "type": "int*"}
+          ]
+        },
+        "user_template": "int grab(int *hook) {\n    // Return the value that hook points to\n    \n}",
+        "test_cases": [
+          {"input": [100], "expected": "100", "sample": true},
+          {"input": [42], "expected": "42", "sample": true},
+          {"input": [0], "expected": "0", "sample": false}
+        ],
+        "hints": [
+          "Use *hook to dereference the pointer",
+          "return *hook;"
+        ],
+        "xp_reward": 25
+      },
+      {
+        "id": "L12_Q2",
+        "order": 2,
+        "title": "Double the Treasure",
+        "description": "Return double the value at the pointer's location.",
+        "recommended": false,
+        "function_signature": {
+          "name": "doubleTreasure",
+          "return_type": "int",
+          "parameters": [
+            {"name": "ptr", "type": "int*"}
+          ]
+        },
+        "user_template": "int doubleTreasure(int *ptr) {\n    // Return the value at ptr multiplied by 2\n    \n}",
+        "test_cases": [
+          {"input": [50], "expected": "100", "sample": true},
+          {"input": [7], "expected": "14", "sample": true},
+          {"input": [0], "expected": "0", "sample": false}
+        ],
+        "hints": [
+          "Dereference and multiply: *ptr * 2",
+          "return *ptr * 2;"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L12_Q3",
+        "order": 3,
+        "title": "Add to Pointer Value",
+        "description": "Return the value at ptr plus an additional amount.",
+        "recommended": false,
+        "function_signature": {
+          "name": "addToValue",
+          "return_type": "int",
+          "parameters": [
+            {"name": "ptr", "type": "int*"},
+            {"name": "add", "type": "int"}
+          ]
+        },
+        "user_template": "int addToValue(int *ptr, int add) {\n    // Return the value at ptr plus the add amount\n    \n}",
+        "test_cases": [
+          {"input": [10, 5], "expected": "15", "sample": true},
+          {"input": [100, 50], "expected": "150", "sample": true},
+          {"input": [0, 0], "expected": "0", "sample": false},
+          {"input": [10, -3], "expected": "7", "sample": false}
+        ],
+        "hints": [
+          "Mix pointer dereference with regular parameter",
+          "return *ptr + add;"
+        ],
+        "xp_reward": 35
       }
     ]
   },
@@ -469,25 +1302,121 @@
     "title": "The Dereference Pull",
     "theme": "L13_lake",
     "concept": "dereference operator",
-    "description": "The treasure is behind a barrier. Use your pointer to pull its value to you!",
-    "code_template": "#include <stdio.h>\n\nint main() {\n    int hidden_treasure = 777;\n    int *ptr = &hidden_treasure;\n    \n    // Change the treasure's value to 999 using the pointer\n    // Then print it\n    printf(\"Treasure value: %d\\n\", hidden_treasure);\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Treasure value: 999\n"
-    },
-    "hints": [
-      "Use *ptr on the left side of = to change the value.",
-      "ptr stores an address; *ptr reads or writes the value at that address.",
-      "After updating through the pointer, printing hidden_treasure shows the new value."
-    ],
-    "xp_reward": 275,
+    "description": "Learn to modify values through pointers - the key to powerful functions!",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 100,
     "map_file": "maps/L13_lake.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Modifying Values Through Pointers",
+      "content": [
+        "The dereference operator (*) lets you both read AND write values at an address.",
+        "Writing: *ptr = value; changes what ptr points to.",
+        "This is how functions can modify variables from their caller - by receiving pointers."
+      ],
+      "examples": [
+        {
+          "code": "void setTo42(int *ptr) {\n    *ptr = 42;\n}",
+          "explanation": "Sets the value at ptr's address to 42."
+        },
+        {
+          "code": "int setAndReturn(int *ptr, int val) {\n    *ptr = val;\n    return *ptr;\n}",
+          "explanation": "Modifies through pointer and returns the new value."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 160, "y": 224, "quest_id": "L13_Q1"},
+        {"x": 288, "y": 224, "quest_id": "L13_Q2"},
+        {"x": 416, "y": 224, "quest_id": "L13_Q3"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "dereference_update",
-        "prompt": "Use the pointer to change the treasure's value to 999.",
-        "expected_output": "Treasure value: 999",
-        "starter_code": "#include <stdio.h>\n\nint main() {\n    int hidden_treasure = 777;\n    int *ptr = &hidden_treasure;\n    \n    // Change the treasure's value to 999 using the pointer\n    // Then print it\n    printf(\"Treasure value: %d\\n\", hidden_treasure);\n    return 0;\n}"
+        "id": "L13_Q1",
+        "order": 1,
+        "title": "Set and Read",
+        "description": "Set the value at ptr to val and return it to confirm the change.",
+        "recommended": true,
+        "function_signature": {
+          "name": "setAndRead",
+          "return_type": "int",
+          "parameters": [
+            {"name": "ptr", "type": "int*"},
+            {"name": "val", "type": "int"}
+          ]
+        },
+        "user_template": "int setAndRead(int *ptr, int val) {\n    // Set *ptr to val, then return *ptr\n    \n}",
+        "test_cases": [
+          {"input": [0, 42], "expected": "42", "sample": true},
+          {"input": [100, 200], "expected": "200", "sample": true},
+          {"input": [5, 5], "expected": "5", "sample": false}
+        ],
+        "hints": [
+          "First set: *ptr = val;",
+          "Then return: return *ptr;"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L13_Q2",
+        "order": 2,
+        "title": "Increment Through Pointer",
+        "description": "Increase the value at ptr by 1 and return the new value.",
+        "recommended": false,
+        "function_signature": {
+          "name": "incrementAndRead",
+          "return_type": "int",
+          "parameters": [
+            {"name": "ptr", "type": "int*"}
+          ]
+        },
+        "user_template": "int incrementAndRead(int *ptr) {\n    // Add 1 to *ptr and return the new value\n    \n}",
+        "test_cases": [
+          {"input": [10], "expected": "11", "sample": true},
+          {"input": [0], "expected": "1", "sample": true},
+          {"input": [-1], "expected": "0", "sample": false},
+          {"input": [99], "expected": "100", "sample": false}
+        ],
+        "hints": [
+          "Modify: *ptr = *ptr + 1; or (*ptr)++;",
+          "Return the updated value"
+        ],
+        "xp_reward": 35
+      },
+      {
+        "id": "L13_Q3",
+        "order": 3,
+        "title": "Double In Place",
+        "description": "Double the value at ptr and return it.",
+        "recommended": false,
+        "function_signature": {
+          "name": "doubleInPlace",
+          "return_type": "int",
+          "parameters": [
+            {"name": "ptr", "type": "int*"}
+          ]
+        },
+        "user_template": "int doubleInPlace(int *ptr) {\n    // Double the value at ptr and return it\n    \n}",
+        "test_cases": [
+          {"input": [5], "expected": "10", "sample": true},
+          {"input": [7], "expected": "14", "sample": true},
+          {"input": [0], "expected": "0", "sample": false},
+          {"input": [50], "expected": "100", "sample": false}
+        ],
+        "hints": [
+          "Multiply: *ptr = *ptr * 2;",
+          "Or use: *ptr *= 2;"
+        ],
+        "xp_reward": 35
       }
     ]
   },
@@ -496,25 +1425,125 @@
     "title": "The Array Navigator",
     "theme": "L14_forge",
     "concept": "pointer arithmetic",
-    "description": "The corridor has numbered chambers. Navigate to chamber 3 using pointer arithmetic.",
-    "code_template": "#include <stdio.h>\n\nint main() {\n    int chambers[5] = {10, 20, 30, 40, 50};\n    int *ptr = chambers;  // Points to first element\n    \n    // Use pointer arithmetic to print the 4th chamber (index 3)\n    // Hint: *(ptr + 3) or ptr[3]\n    printf(\"Chamber 3 contains: %d\\n\", ???);\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Chamber 3 contains: 40\n"
-    },
-    "hints": [
-      "Adding 1 to a pointer moves it to the next array element.",
-      "ptr[3] is the same as *(ptr + 3).",
-      "Index 3 is the 4th chamber in the corridor."
-    ],
-    "xp_reward": 300,
+    "description": "Navigate arrays using pointer arithmetic - the foundation of efficient C programming!",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 105,
     "map_file": "maps/L14_forge.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Pointer Arithmetic and Arrays",
+      "content": [
+        "In C, arrays and pointers are closely related. An array name IS a pointer to its first element.",
+        "Adding n to a pointer moves it forward by n elements: *(arr + 2) is the same as arr[2].",
+        "Use pointer arithmetic to traverse arrays efficiently in loops."
+      ],
+      "examples": [
+        {
+          "code": "int getAt(int *arr, int i) {\n    return *(arr + i);  // or arr[i]\n}",
+          "explanation": "Access element at index i using pointer arithmetic."
+        },
+        {
+          "code": "int sum(int *arr, int n) {\n    int total = 0;\n    for(int i = 0; i < n; i++)\n        total += *(arr + i);\n    return total;\n}",
+          "explanation": "Sum array elements using pointer arithmetic in a loop."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 160, "y": 224, "quest_id": "L14_Q1"},
+        {"x": 288, "y": 224, "quest_id": "L14_Q2"},
+        {"x": 416, "y": 224, "quest_id": "L14_Q3"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "pointer_arithmetic_navigate",
-        "prompt": "Use pointer arithmetic to read the value in chamber 3 (index 3).",
-        "expected_output": "Chamber 3 contains: 40",
-        "starter_code": "#include <stdio.h>\n\nint main() {\n    int chambers[5] = {10, 20, 30, 40, 50};\n    int *ptr = chambers;  // Points to first element\n    \n    // Use pointer arithmetic to print the 4th chamber (index 3)\n    // Hint: *(ptr + 3) or ptr[3]\n    printf(\"Chamber 3 contains: %d\\n\", ???);\n    return 0;\n}"
+        "id": "L14_Q1",
+        "order": 1,
+        "title": "Navigate to Index",
+        "description": "Return the element at index i from the array using pointer arithmetic.",
+        "recommended": true,
+        "function_signature": {
+          "name": "getAt",
+          "return_type": "int",
+          "parameters": [
+            {"name": "arr", "type": "int*"},
+            {"name": "i", "type": "int"}
+          ]
+        },
+        "user_template": "int getAt(int *arr, int i) {\n    // Return the element at index i\n    // Use *(arr + i) or arr[i]\n    \n}",
+        "test_cases": [
+          {"input": [[10, 20, 30, 40, 50], 2], "expected": "30", "sample": true},
+          {"input": [[10, 20, 30, 40, 50], 0], "expected": "10", "sample": true},
+          {"input": [[10, 20, 30, 40, 50], 4], "expected": "50", "sample": false}
+        ],
+        "hints": [
+          "Use *(arr + i) to access the element",
+          "This is equivalent to arr[i]"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L14_Q2",
+        "order": 2,
+        "title": "Sum Array Elements",
+        "description": "Sum all n elements of the array using pointer arithmetic.",
+        "recommended": false,
+        "function_signature": {
+          "name": "sumArray",
+          "return_type": "int",
+          "parameters": [
+            {"name": "arr", "type": "int*"},
+            {"name": "n", "type": "int"}
+          ]
+        },
+        "user_template": "int sumArray(int *arr, int n) {\n    // Sum all n elements using pointer arithmetic\n    int sum = 0;\n    \n    return sum;\n}",
+        "test_cases": [
+          {"input": [[1, 2, 3], 3], "expected": "6", "sample": true},
+          {"input": [[10, 20, 30, 40], 4], "expected": "100", "sample": true},
+          {"input": [[5], 1], "expected": "5", "sample": false},
+          {"input": [[0, 0, 0], 3], "expected": "0", "sample": false}
+        ],
+        "hints": [
+          "Use a for loop: for(int i = 0; i < n; i++)",
+          "Add each element: sum += *(arr + i);"
+        ],
+        "xp_reward": 35
+      },
+      {
+        "id": "L14_Q3",
+        "order": 3,
+        "title": "Find Element Index",
+        "description": "Find the index of target in the array. Return -1 if not found.",
+        "recommended": false,
+        "function_signature": {
+          "name": "findIndex",
+          "return_type": "int",
+          "parameters": [
+            {"name": "arr", "type": "int*"},
+            {"name": "n", "type": "int"},
+            {"name": "target", "type": "int"}
+          ]
+        },
+        "user_template": "int findIndex(int *arr, int n, int target) {\n    // Find target in arr and return its index\n    // Return -1 if not found\n    \n}",
+        "test_cases": [
+          {"input": [[5, 10, 15, 20], 4, 15], "expected": "2", "sample": true},
+          {"input": [[5, 10, 15, 20], 4, 5], "expected": "0", "sample": true},
+          {"input": [[5, 10, 15, 20], 4, 99], "expected": "-1", "sample": false},
+          {"input": [[42], 1, 42], "expected": "0", "sample": false}
+        ],
+        "hints": [
+          "Loop through the array comparing each element",
+          "if (*(arr + i) == target) return i;",
+          "Return -1 after the loop if not found"
+        ],
+        "xp_reward": 40
       }
     ]
   },
@@ -523,25 +1552,121 @@
     "title": "The Null Trap",
     "theme": "L15_lair",
     "concept": "null pointers",
-    "description": "Some paths lead to void. Check before you step, or face a SEGFAULT!",
-    "code_template": "#include <stdio.h>\n\nint main() {\n    int treasure = 42;\n    int *safe_ptr = &treasure;\n    int *trap_ptr = NULL;\n    \n    // Safely print values - check for NULL first!\n    // If pointer is NULL, print \"Path is blocked!\"\n    // If pointer is valid, print \"Found: X\"\n    \n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Found: 42\nPath is blocked!\n"
-    },
-    "hints": [
-      "Compare pointers to NULL before dereferencing.",
-      "Print one line for the safe path and one for the trap.",
-      "Use if/else to choose which message to print."
-    ],
-    "xp_reward": 350,
+    "description": "Learn to safely handle null pointers and avoid the dreaded SEGFAULT!",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 100,
     "map_file": "maps/L15_lair.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Null Pointer Safety",
+      "content": [
+        "NULL is a special value meaning 'points to nothing'. Dereferencing NULL crashes your program!",
+        "Always check if a pointer is NULL before using it: if (ptr != NULL)",
+        "Functions should return safe defaults when given NULL pointers."
+      ],
+      "examples": [
+        {
+          "code": "int safeRead(int *ptr) {\n    if (ptr == NULL) return -1;\n    return *ptr;\n}",
+          "explanation": "Returns -1 for NULL, otherwise the actual value."
+        },
+        {
+          "code": "int isValid(int *ptr) {\n    return ptr != NULL;\n}",
+          "explanation": "Returns 1 if pointer is valid, 0 if NULL."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 160, "y": 224, "quest_id": "L15_Q1"},
+        {"x": 288, "y": 224, "quest_id": "L15_Q2"},
+        {"x": 416, "y": 224, "quest_id": "L15_Q3"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "null_pointer_check",
-        "prompt": "Check each pointer before using it so you avoid the null trap.",
-        "expected_output": "Found: 42\nPath is blocked!",
-        "starter_code": "#include <stdio.h>\n\nint main() {\n    int treasure = 42;\n    int *safe_ptr = &treasure;\n    int *trap_ptr = NULL;\n    \n    // Safely print values - check for NULL first!\n    // If pointer is NULL, print \"Path is blocked!\"\n    // If pointer is valid, print \"Found: X\"\n    \n    return 0;\n}"
+        "id": "L15_Q1",
+        "order": 1,
+        "title": "Safe Read",
+        "description": "Return the value at ptr, or -1 if ptr is NULL.",
+        "recommended": true,
+        "function_signature": {
+          "name": "safeRead",
+          "return_type": "int",
+          "parameters": [
+            {"name": "ptr", "type": "int*"}
+          ]
+        },
+        "user_template": "int safeRead(int *ptr) {\n    // Return *ptr if valid, or -1 if NULL\n    \n}",
+        "test_cases": [
+          {"input": [42], "expected": "42", "sample": true},
+          {"input": [100], "expected": "100", "sample": true},
+          {"input": ["NULL"], "expected": "-1", "sample": false},
+          {"input": [0], "expected": "0", "sample": false}
+        ],
+        "hints": [
+          "Check: if (ptr == NULL) return -1;",
+          "Otherwise: return *ptr;"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L15_Q2",
+        "order": 2,
+        "title": "Is Valid Pointer",
+        "description": "Return 1 if the pointer is valid (not NULL), 0 if NULL.",
+        "recommended": false,
+        "function_signature": {
+          "name": "isValid",
+          "return_type": "int",
+          "parameters": [
+            {"name": "ptr", "type": "int*"}
+          ]
+        },
+        "user_template": "int isValid(int *ptr) {\n    // Return 1 if ptr is not NULL, 0 if NULL\n    \n}",
+        "test_cases": [
+          {"input": [42], "expected": "1", "sample": true},
+          {"input": ["NULL"], "expected": "0", "sample": true},
+          {"input": [0], "expected": "1", "sample": false}
+        ],
+        "hints": [
+          "Compare ptr to NULL",
+          "return ptr != NULL;"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L15_Q3",
+        "order": 3,
+        "title": "Safe Add",
+        "description": "Return *a + *b if both pointers are valid. Return 0 if either is NULL.",
+        "recommended": false,
+        "function_signature": {
+          "name": "safeAdd",
+          "return_type": "int",
+          "parameters": [
+            {"name": "a", "type": "int*"},
+            {"name": "b", "type": "int*"}
+          ]
+        },
+        "user_template": "int safeAdd(int *a, int *b) {\n    // Return *a + *b if both valid, 0 if either is NULL\n    \n}",
+        "test_cases": [
+          {"input": [3, 4], "expected": "7", "sample": true},
+          {"input": [10, 20], "expected": "30", "sample": true},
+          {"input": ["NULL", 5], "expected": "0", "sample": false},
+          {"input": [5, "NULL"], "expected": "0", "sample": false}
+        ],
+        "hints": [
+          "Check both: if (a == NULL || b == NULL)",
+          "Return 0 for invalid, *a + *b for valid"
+        ],
+        "xp_reward": 40
       }
     ]
   },
@@ -550,25 +1675,122 @@
     "title": "The Blueprint Scroll",
     "theme": "L16_courtyard",
     "concept": "struct definition",
-    "description": "The ancient scroll contains a blueprint for creating heroes. Define the structure that holds a warrior's attributes.",
-    "code_template": "#include <stdio.h>\n\n// Define a struct 'Hero' with:\n// - char name[50]\n// - int hp\n// - int level\n\nint main() {\n    struct Hero warrior = {\"Valor\", 100, 5};\n    printf(\"Hero: %s, HP: %d, Level: %d\\n\", warrior.name, warrior.hp, warrior.level);\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Hero: Valor, HP: 100, Level: 5\n"
-    },
-    "hints": [
-      "Structs group related data together using: struct Name { ... };",
-      "Use 'char name[50]' for a string field",
-      "Initialize with: struct Hero h = {\"name\", 100, 5};"
-    ],
-    "xp_reward": 300,
+    "description": "Learn to group related data together using structs!",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 95,
     "map_file": "maps/L16_courtyard.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Structs: Custom Data Types",
+      "content": [
+        "A struct groups related variables together into a single unit.",
+        "Define with: struct Hero { int hp; int level; };",
+        "Access members with dot notation: hero.hp, hero.level"
+      ],
+      "examples": [
+        {
+          "code": "struct Hero {\n    int hp;\n    int level;\n};",
+          "explanation": "Defines a Hero type with hp and level fields."
+        },
+        {
+          "code": "int getHP(struct Hero h) {\n    return h.hp;\n}",
+          "explanation": "Functions can receive structs and access their members."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 160, "y": 224, "quest_id": "L16_Q1"},
+        {"x": 288, "y": 224, "quest_id": "L16_Q2"},
+        {"x": 416, "y": 224, "quest_id": "L16_Q3"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "define_hero_struct",
-        "prompt": "Define the Hero struct with name, hp, and level fields.",
-        "expected_output": "Hero: Valor, HP: 100, Level: 5",
-        "starter_code": "#include <stdio.h>\n\n// Define a struct 'Hero' with name, hp, and level\n\nint main() {\n    struct Hero warrior = {\"Valor\", 100, 5};\n    printf(\"Hero: %s, HP: %d, Level: %d\\n\", warrior.name, warrior.hp, warrior.level);\n    return 0;\n}"
+        "id": "L16_Q1",
+        "order": 1,
+        "title": "Get Hero HP",
+        "description": "Return the hp field from the Hero struct.",
+        "recommended": true,
+        "function_signature": {
+          "name": "getHP",
+          "return_type": "int",
+          "parameters": [
+            {"name": "hp", "type": "int"},
+            {"name": "level", "type": "int"}
+          ]
+        },
+        "user_template": "// struct Hero { int hp; int level; }; is provided\n\nint getHP(int hp, int level) {\n    // Simply return the hp value\n    \n}",
+        "test_cases": [
+          {"input": [100, 5], "expected": "100", "sample": true},
+          {"input": [50, 10], "expected": "50", "sample": true},
+          {"input": [0, 1], "expected": "0", "sample": false}
+        ],
+        "hints": [
+          "Just return the hp parameter",
+          "return hp;"
+        ],
+        "xp_reward": 25
+      },
+      {
+        "id": "L16_Q2",
+        "order": 2,
+        "title": "Is Hero Alive",
+        "description": "Return 1 if hp > 0, otherwise return 0.",
+        "recommended": false,
+        "function_signature": {
+          "name": "isAlive",
+          "return_type": "int",
+          "parameters": [
+            {"name": "hp", "type": "int"}
+          ]
+        },
+        "user_template": "int isAlive(int hp) {\n    // Return 1 if hp > 0, else 0\n    \n}",
+        "test_cases": [
+          {"input": [100], "expected": "1", "sample": true},
+          {"input": [0], "expected": "0", "sample": true},
+          {"input": [1], "expected": "1", "sample": false},
+          {"input": [-5], "expected": "0", "sample": false}
+        ],
+        "hints": [
+          "Compare hp to 0",
+          "return hp > 0;"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L16_Q3",
+        "order": 3,
+        "title": "Calculate Power Level",
+        "description": "Return hp + (level × 10) as the hero's power level.",
+        "recommended": false,
+        "function_signature": {
+          "name": "powerLevel",
+          "return_type": "int",
+          "parameters": [
+            {"name": "hp", "type": "int"},
+            {"name": "level", "type": "int"}
+          ]
+        },
+        "user_template": "int powerLevel(int hp, int level) {\n    // Return hp + level * 10\n    \n}",
+        "test_cases": [
+          {"input": [100, 5], "expected": "150", "sample": true},
+          {"input": [50, 10], "expected": "150", "sample": true},
+          {"input": [0, 0], "expected": "0", "sample": false},
+          {"input": [200, 20], "expected": "400", "sample": false}
+        ],
+        "hints": [
+          "Multiply level by 10 and add hp",
+          "return hp + level * 10;"
+        ],
+        "xp_reward": 40
       }
     ]
   },
@@ -577,25 +1799,126 @@
     "title": "The Chest Contents",
     "theme": "L17_throne",
     "concept": "struct members",
-    "description": "You found a treasure chest! Use dot notation to access and modify its contents.",
-    "code_template": "#include <stdio.h>\n\nstruct Chest {\n    int gold;\n    int gems;\n    int keys;\n};\n\nint main() {\n    struct Chest treasure;\n    \n    // Set gold to 500, gems to 10, keys to 3\n    // Then print: \"Chest: X gold, Y gems, Z keys\"\n    \n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Chest: 500 gold, 10 gems, 3 keys\n"
-    },
-    "hints": [
-      "Access struct members with dot notation: chest.gold = 500;",
-      "Each field must be set individually",
-      "Use %d for integers in printf"
-    ],
-    "xp_reward": 325,
+    "description": "Access and compute with struct member values!",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 100,
     "map_file": "maps/L17_throne.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Working with Struct Members",
+      "content": [
+        "Use dot notation to access struct members: chest.gold",
+        "Members can be read, modified, and used in calculations",
+        "Each field acts like a regular variable of its type"
+      ],
+      "examples": [
+        {
+          "code": "int getGold(int gold, int gems, int keys) {\n    return gold;\n}",
+          "explanation": "Access and return a single field value."
+        },
+        {
+          "code": "int totalValue(int gold, int gems, int keys) {\n    return gold + gems * 10 + keys * 5;\n}",
+          "explanation": "Compute a value from multiple fields."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 160, "y": 224, "quest_id": "L17_Q1"},
+        {"x": 288, "y": 224, "quest_id": "L17_Q2"},
+        {"x": 416, "y": 224, "quest_id": "L17_Q3"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "access_struct_members",
-        "prompt": "Set the chest contents using dot notation and print the result.",
-        "expected_output": "Chest: 500 gold, 10 gems, 3 keys",
-        "starter_code": "#include <stdio.h>\n\nstruct Chest {\n    int gold;\n    int gems;\n    int keys;\n};\n\nint main() {\n    struct Chest treasure;\n    // Set gold=500, gems=10, keys=3 using dot notation\n    // Print: \"Chest: X gold, Y gems, Z keys\"\n    return 0;\n}"
+        "id": "L17_Q1",
+        "order": 1,
+        "title": "Get Gold Count",
+        "description": "Return the gold amount from the chest.",
+        "recommended": true,
+        "function_signature": {
+          "name": "getGold",
+          "return_type": "int",
+          "parameters": [
+            {"name": "gold", "type": "int"},
+            {"name": "gems", "type": "int"},
+            {"name": "keys", "type": "int"}
+          ]
+        },
+        "user_template": "// Chest has: gold, gems, keys\n\nint getGold(int gold, int gems, int keys) {\n    // Return the gold amount\n    \n}",
+        "test_cases": [
+          {"input": [500, 10, 3], "expected": "500", "sample": true},
+          {"input": [100, 5, 2], "expected": "100", "sample": true},
+          {"input": [0, 0, 0], "expected": "0", "sample": false}
+        ],
+        "hints": [
+          "Simply return the gold parameter",
+          "return gold;"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L17_Q2",
+        "order": 2,
+        "title": "Total Chest Value",
+        "description": "Calculate total value: gold + gems×10 + keys×5.",
+        "recommended": false,
+        "function_signature": {
+          "name": "totalValue",
+          "return_type": "int",
+          "parameters": [
+            {"name": "gold", "type": "int"},
+            {"name": "gems", "type": "int"},
+            {"name": "keys", "type": "int"}
+          ]
+        },
+        "user_template": "int totalValue(int gold, int gems, int keys) {\n    // Return gold + gems*10 + keys*5\n    \n}",
+        "test_cases": [
+          {"input": [100, 5, 2], "expected": "160", "sample": true},
+          {"input": [500, 10, 3], "expected": "615", "sample": true},
+          {"input": [0, 0, 0], "expected": "0", "sample": false},
+          {"input": [0, 10, 10], "expected": "150", "sample": false}
+        ],
+        "hints": [
+          "Multiply gems by 10, keys by 5",
+          "return gold + gems * 10 + keys * 5;"
+        ],
+        "xp_reward": 35
+      },
+      {
+        "id": "L17_Q3",
+        "order": 3,
+        "title": "Is Chest Empty",
+        "description": "Return 1 if all fields are 0, otherwise 0.",
+        "recommended": false,
+        "function_signature": {
+          "name": "isEmpty",
+          "return_type": "int",
+          "parameters": [
+            {"name": "gold", "type": "int"},
+            {"name": "gems", "type": "int"},
+            {"name": "keys", "type": "int"}
+          ]
+        },
+        "user_template": "int isEmpty(int gold, int gems, int keys) {\n    // Return 1 if all are 0, else 0\n    \n}",
+        "test_cases": [
+          {"input": [0, 0, 0], "expected": "1", "sample": true},
+          {"input": [1, 0, 0], "expected": "0", "sample": true},
+          {"input": [0, 1, 0], "expected": "0", "sample": false},
+          {"input": [100, 50, 10], "expected": "0", "sample": false}
+        ],
+        "hints": [
+          "Check all three: gold == 0 && gems == 0 && keys == 0",
+          "Use && to combine conditions"
+        ],
+        "xp_reward": 35
       }
     ]
   },
@@ -604,25 +1927,121 @@
     "title": "The Teleport Chest",
     "theme": "L18_treasury",
     "concept": "struct pointers",
-    "description": "The chest is behind a magical barrier. Use a pointer to reach through and modify its contents!",
-    "code_template": "#include <stdio.h>\n\nstruct Chest {\n    int gold;\n};\n\nvoid add_gold(struct Chest *c, int amount) {\n    // Use arrow operator to add gold\n}\n\nint main() {\n    struct Chest treasure = {100};\n    add_gold(&treasure, 50);\n    printf(\"Gold: %d\\n\", treasure.gold);\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Gold: 150\n"
-    },
-    "hints": [
-      "Use the arrow operator (->) to access members through a pointer",
-      "c->gold is equivalent to (*c).gold",
-      "Add the amount to the existing gold: c->gold += amount;"
-    ],
-    "xp_reward": 350,
+    "description": "Modify struct values through pointers using the arrow operator!",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 95,
     "map_file": "maps/L18_treasury.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Struct Pointers and Arrow Operator",
+      "content": [
+        "When you have a pointer to a struct, use -> to access members: ptr->field",
+        "The arrow operator is shorthand for (*ptr).field",
+        "This allows functions to modify struct data in the caller's scope"
+      ],
+      "examples": [
+        {
+          "code": "int addGold(int *gold, int amt) {\n    *gold += amt;\n    return *gold;\n}",
+          "explanation": "Adds amount to gold through pointer and returns new total."
+        },
+        {
+          "code": "int heal(int *hp, int amt) {\n    *hp += amt;\n    return *hp;\n}",
+          "explanation": "Increases HP and returns the new value."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 160, "y": 224, "quest_id": "L18_Q1"},
+        {"x": 288, "y": 224, "quest_id": "L18_Q2"},
+        {"x": 416, "y": 224, "quest_id": "L18_Q3"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "struct_pointer_arrow",
-        "prompt": "Use the arrow operator to modify the chest through a pointer.",
-        "expected_output": "Gold: 150",
-        "starter_code": "#include <stdio.h>\n\nstruct Chest {\n    int gold;\n};\n\nvoid add_gold(struct Chest *c, int amount) {\n    // Use -> to add gold\n}\n\nint main() {\n    struct Chest treasure = {100};\n    add_gold(&treasure, 50);\n    printf(\"Gold: %d\\n\", treasure.gold);\n    return 0;\n}"
+        "id": "L18_Q1",
+        "order": 1,
+        "title": "Add Gold",
+        "description": "Add amount to gold and return the new total.",
+        "recommended": true,
+        "function_signature": {
+          "name": "addGold",
+          "return_type": "int",
+          "parameters": [
+            {"name": "gold", "type": "int*"},
+            {"name": "amt", "type": "int"}
+          ]
+        },
+        "user_template": "int addGold(int *gold, int amt) {\n    // Add amt to *gold and return the new value\n    \n}",
+        "test_cases": [
+          {"input": [100, 50], "expected": "150", "sample": true},
+          {"input": [0, 25], "expected": "25", "sample": true},
+          {"input": [200, 0], "expected": "200", "sample": false}
+        ],
+        "hints": [
+          "Modify through pointer: *gold += amt;",
+          "Return the updated value: return *gold;"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L18_Q2",
+        "order": 2,
+        "title": "Heal Hero",
+        "description": "Add healing amount to HP and return new HP value.",
+        "recommended": false,
+        "function_signature": {
+          "name": "heal",
+          "return_type": "int",
+          "parameters": [
+            {"name": "hp", "type": "int*"},
+            {"name": "amount", "type": "int"}
+          ]
+        },
+        "user_template": "int heal(int *hp, int amount) {\n    // Add amount to *hp and return new hp\n    \n}",
+        "test_cases": [
+          {"input": [50, 30], "expected": "80", "sample": true},
+          {"input": [100, 0], "expected": "100", "sample": true},
+          {"input": [0, 50], "expected": "50", "sample": false}
+        ],
+        "hints": [
+          "Add amount to what hp points to",
+          "*hp += amount; return *hp;"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L18_Q3",
+        "order": 3,
+        "title": "Level Up",
+        "description": "Increase level by 1 and add 10 to HP. Return the new level.",
+        "recommended": false,
+        "function_signature": {
+          "name": "levelUp",
+          "return_type": "int",
+          "parameters": [
+            {"name": "hp", "type": "int*"},
+            {"name": "level", "type": "int*"}
+          ]
+        },
+        "user_template": "int levelUp(int *hp, int *level) {\n    // Increase *level by 1, add 10 to *hp\n    // Return the new level\n    \n}",
+        "test_cases": [
+          {"input": [100, 5], "expected": "6", "sample": true},
+          {"input": [50, 1], "expected": "2", "sample": true},
+          {"input": [0, 0], "expected": "1", "sample": false}
+        ],
+        "hints": [
+          "Modify both: (*level)++; *hp += 10;",
+          "Return the new level value"
+        ],
+        "xp_reward": 35
       }
     ]
   },
@@ -631,25 +2050,90 @@
     "title": "The Guild Hierarchy",
     "theme": "L19_dungeon",
     "concept": "nested structs",
-    "description": "The guild has a hierarchy. Each guild has a leader, and the leader is also a hero with their own attributes.",
-    "code_template": "#include <stdio.h>\n\nstruct Hero {\n    char name[50];\n    int level;\n};\n\nstruct Guild {\n    char guild_name[50];\n    struct Hero leader;\n    int member_count;\n};\n\nint main() {\n    struct Guild warriors = {\"Iron Fist\", {\"Maximus\", 50}, 100};\n    \n    // Print: \"Guild: X, Leader: Y (Lv.Z), Members: N\"\n    printf(\"Guild: %s, Leader: %s (Lv.%d), Members: %d\\n\",\n           ???);\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Guild: Iron Fist, Leader: Maximus (Lv.50), Members: 100\n"
-    },
-    "hints": [
-      "Access nested struct members with multiple dots: guild.leader.name",
-      "The leader is a Hero struct inside the Guild struct",
-      "Use warriors.guild_name, warriors.leader.name, etc."
-    ],
-    "xp_reward": 375,
+    "description": "Work with structs that contain other structs - hierarchical data!",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 65,
     "map_file": "maps/L19_dungeon.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Nested Structs",
+      "content": [
+        "Structs can contain other structs, creating hierarchical data.",
+        "Access nested fields with chained dots: guild.leader.level",
+        "This models real-world relationships like 'Guild has a Leader who is a Hero'"
+      ],
+      "examples": [
+        {
+          "code": "// Guild has leaderLevel and memberCount\nint guildPower(int leaderLevel, int members) {\n    return leaderLevel * members;\n}",
+          "explanation": "Calculate guild power from nested data."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 224, "y": 224, "quest_id": "L19_Q1"},
+        {"x": 416, "y": 224, "quest_id": "L19_Q2"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "nested_struct_access",
-        "prompt": "Access the nested Hero struct inside Guild to print the hierarchy.",
-        "expected_output": "Guild: Iron Fist, Leader: Maximus (Lv.50), Members: 100",
-        "starter_code": "#include <stdio.h>\n\nstruct Hero {\n    char name[50];\n    int level;\n};\n\nstruct Guild {\n    char guild_name[50];\n    struct Hero leader;\n    int member_count;\n};\n\nint main() {\n    struct Guild warriors = {\"Iron Fist\", {\"Maximus\", 50}, 100};\n    // Print the guild info using nested access\n    return 0;\n}"
+        "id": "L19_Q1",
+        "order": 1,
+        "title": "Get Leader Level",
+        "description": "Return the leader's level from the guild data.",
+        "recommended": true,
+        "function_signature": {
+          "name": "leaderLevel",
+          "return_type": "int",
+          "parameters": [
+            {"name": "level", "type": "int"}
+          ]
+        },
+        "user_template": "// Guild has a leader with a level\n\nint leaderLevel(int level) {\n    // Return the leader's level\n    \n}",
+        "test_cases": [
+          {"input": [50], "expected": "50", "sample": true},
+          {"input": [10], "expected": "10", "sample": true},
+          {"input": [1], "expected": "1", "sample": false}
+        ],
+        "hints": [
+          "Simply return the level parameter",
+          "return level;"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L19_Q2",
+        "order": 2,
+        "title": "Calculate Guild Power",
+        "description": "Return leaderLevel × memberCount as guild power.",
+        "recommended": false,
+        "function_signature": {
+          "name": "guildPower",
+          "return_type": "int",
+          "parameters": [
+            {"name": "leaderLevel", "type": "int"},
+            {"name": "memberCount", "type": "int"}
+          ]
+        },
+        "user_template": "int guildPower(int leaderLevel, int memberCount) {\n    // Return leaderLevel * memberCount\n    \n}",
+        "test_cases": [
+          {"input": [50, 100], "expected": "5000", "sample": true},
+          {"input": [10, 50], "expected": "500", "sample": true},
+          {"input": [1, 1], "expected": "1", "sample": false},
+          {"input": [0, 100], "expected": "0", "sample": false}
+        ],
+        "hints": [
+          "Multiply the two values",
+          "return leaderLevel * memberCount;"
+        ],
+        "xp_reward": 35
       }
     ]
   },
@@ -658,25 +2142,118 @@
     "title": "The Army Roster",
     "theme": "L20_passage",
     "concept": "array of structs",
-    "description": "The army needs a roster! Create an array of soldiers and iterate through them.",
-    "code_template": "#include <stdio.h>\n\nstruct Soldier {\n    char name[20];\n    int strength;\n};\n\nint main() {\n    struct Soldier army[3] = {\n        {\"Grunt\", 10},\n        {\"Knight\", 25},\n        {\"Champion\", 50}\n    };\n    \n    // Loop through and print each soldier\n    // Format: \"Soldier: X, Strength: Y\"\n    \n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Soldier: Grunt, Strength: 10\nSoldier: Knight, Strength: 25\nSoldier: Champion, Strength: 50\n"
-    },
-    "hints": [
-      "Use a for loop: for(int i = 0; i < 3; i++)",
-      "Access array elements with: army[i].name",
-      "Each iteration prints one soldier"
-    ],
-    "xp_reward": 400,
+    "description": "Process arrays of structured data - the foundation of real programs!",
+    "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 110,
     "map_file": "maps/L20_passage.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Arrays of Structs",
+      "content": [
+        "Arrays can hold structs just like they hold integers.",
+        "Access with: array[i].field (combines array indexing and struct access)",
+        "Loop through to process all elements: for(int i = 0; i < n; i++)"
+      ],
+      "examples": [
+        {
+          "code": "int totalStrength(int *strengths, int n) {\n    int sum = 0;\n    for(int i = 0; i < n; i++)\n        sum += strengths[i];\n    return sum;\n}",
+          "explanation": "Sum all strength values from the army."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 160, "y": 224, "quest_id": "L20_Q1"},
+        {"x": 288, "y": 224, "quest_id": "L20_Q2"},
+        {"x": 416, "y": 224, "quest_id": "L20_Q3"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "array_of_structs_loop",
-        "prompt": "Loop through the army array and print each soldier.",
-        "expected_output": "Soldier: Grunt, Strength: 10\nSoldier: Knight, Strength: 25\nSoldier: Champion, Strength: 50",
-        "starter_code": "#include <stdio.h>\n\nstruct Soldier {\n    char name[20];\n    int strength;\n};\n\nint main() {\n    struct Soldier army[3] = {\n        {\"Grunt\", 10},\n        {\"Knight\", 25},\n        {\"Champion\", 50}\n    };\n    // Loop and print each soldier\n    return 0;\n}"
+        "id": "L20_Q1",
+        "order": 1,
+        "title": "Total Army Strength",
+        "description": "Sum all strength values from the soldiers array.",
+        "recommended": true,
+        "function_signature": {
+          "name": "totalStrength",
+          "return_type": "int",
+          "parameters": [
+            {"name": "strengths", "type": "int*"},
+            {"name": "n", "type": "int"}
+          ]
+        },
+        "user_template": "int totalStrength(int *strengths, int n) {\n    // Sum all n strength values\n    int sum = 0;\n    \n    return sum;\n}",
+        "test_cases": [
+          {"input": [[10, 25, 50], 3], "expected": "85", "sample": true},
+          {"input": [[5, 5, 5, 5], 4], "expected": "20", "sample": true},
+          {"input": [[100], 1], "expected": "100", "sample": false}
+        ],
+        "hints": [
+          "Loop: for(int i = 0; i < n; i++)",
+          "Add each: sum += strengths[i];"
+        ],
+        "xp_reward": 35
+      },
+      {
+        "id": "L20_Q2",
+        "order": 2,
+        "title": "Find Strongest Index",
+        "description": "Return the index of the soldier with highest strength.",
+        "recommended": false,
+        "function_signature": {
+          "name": "strongestIndex",
+          "return_type": "int",
+          "parameters": [
+            {"name": "strengths", "type": "int*"},
+            {"name": "n", "type": "int"}
+          ]
+        },
+        "user_template": "int strongestIndex(int *strengths, int n) {\n    // Find index of maximum strength\n    int maxIdx = 0;\n    \n    return maxIdx;\n}",
+        "test_cases": [
+          {"input": [[10, 50, 25], 3], "expected": "1", "sample": true},
+          {"input": [[100, 50, 25], 3], "expected": "0", "sample": true},
+          {"input": [[10, 25, 50], 3], "expected": "2", "sample": false}
+        ],
+        "hints": [
+          "Track max index, update when you find larger",
+          "if(strengths[i] > strengths[maxIdx]) maxIdx = i;"
+        ],
+        "xp_reward": 35
+      },
+      {
+        "id": "L20_Q3",
+        "order": 3,
+        "title": "Count Strong Soldiers",
+        "description": "Count soldiers with strength >= minStrength.",
+        "recommended": false,
+        "function_signature": {
+          "name": "countStrong",
+          "return_type": "int",
+          "parameters": [
+            {"name": "strengths", "type": "int*"},
+            {"name": "n", "type": "int"},
+            {"name": "minStrength", "type": "int"}
+          ]
+        },
+        "user_template": "int countStrong(int *strengths, int n, int minStrength) {\n    // Count soldiers with strength >= minStrength\n    int count = 0;\n    \n    return count;\n}",
+        "test_cases": [
+          {"input": [[10, 25, 50], 3, 20], "expected": "2", "sample": true},
+          {"input": [[10, 25, 50], 3, 100], "expected": "0", "sample": true},
+          {"input": [[10, 25, 50], 3, 10], "expected": "3", "sample": false}
+        ],
+        "hints": [
+          "Loop and check: if(strengths[i] >= minStrength)",
+          "Increment count for each match"
+        ],
+        "xp_reward": 40
       }
     ]
   },
@@ -686,24 +2263,92 @@
     "theme": "L21_stairs",
     "concept": "malloc basics",
     "description": "The void stretches before you. Use malloc to summon solid ground from nothingness!",
-    "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    // Allocate memory for one integer using malloc\n    int *land = ???;\n    \n    *land = 42;\n    printf(\"Land summoned with value: %d\\n\", *land);\n    \n    free(land);\n    return 0;\n}",
-    "success_criteria": {
-      "type": "exact_match",
-      "expected_stdout": "Land summoned with value: 42\n"
-    },
-    "hints": [
-      "malloc returns a pointer to allocated memory",
-      "Use: int *ptr = (int*)malloc(sizeof(int));",
-      "sizeof(int) tells malloc how many bytes to allocate"
-    ],
-    "xp_reward": 425,
+    "code_template": "#include <stdio.h>\n#include <stdlib.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
+    "hints": [],
+    "xp_reward": 0,
+    "total_xp_reward": 70,
     "map_file": "maps/L21_stairs.json",
-    "challenges": [
+    "challenges": [],
+    "lesson": {
+      "title": "Dynamic Memory with Malloc",
+      "content": [
+        "malloc (memory allocate) requests memory from the system at runtime.",
+        "Use: int *ptr = (int*)malloc(sizeof(int)); to allocate space for one integer.",
+        "Always check if malloc returned NULL (allocation failed) and always free() when done."
+      ],
+      "examples": [
+        {
+          "code": "int mallocAndRead(int val) {\n    int *p = (int*)malloc(sizeof(int));\n    *p = val;\n    int result = *p;\n    free(p);\n    return result;\n}",
+          "explanation": "Allocate, store a value, read it back, free, and return."
+        }
+      ]
+    },
+    "world_config": {
+      "width": 20,
+      "height": 15,
+      "spawn_x": 64,
+      "spawn_y": 224,
+      "terminals": [
+        {"x": 224, "y": 224, "quest_id": "L21_Q1"},
+        {"x": 416, "y": 224, "quest_id": "L21_Q2"}
+      ],
+      "preset": "tutorial"
+    },
+    "quests": [
       {
-        "id": "malloc_single_int",
-        "prompt": "Use malloc to allocate space for one integer.",
-        "expected_output": "Land summoned with value: 42",
-        "starter_code": "#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    // Allocate memory for one integer\n    int *land = ???;\n    *land = 42;\n    printf(\"Land summoned with value: %d\\n\", *land);\n    free(land);\n    return 0;\n}"
+        "id": "L21_Q1",
+        "order": 1,
+        "title": "Allocate and Read",
+        "description": "Malloc an integer, store the given value, read it back, free, and return.",
+        "recommended": true,
+        "function_signature": {
+          "name": "mallocRead",
+          "return_type": "int",
+          "parameters": [
+            {"name": "val", "type": "int"}
+          ]
+        },
+        "user_template": "int mallocRead(int val) {\n    // 1. Allocate memory for one int\n    // 2. Store val in it\n    // 3. Read the value back\n    // 4. Free the memory\n    // 5. Return the value\n    \n}",
+        "test_cases": [
+          {"input": [42], "expected": "42", "sample": true},
+          {"input": [100], "expected": "100", "sample": true},
+          {"input": [0], "expected": "0", "sample": false},
+          {"input": [-5], "expected": "-5", "sample": false}
+        ],
+        "hints": [
+          "int *p = (int*)malloc(sizeof(int));",
+          "*p = val; to store the value",
+          "Don't forget to free(p) before returning!"
+        ],
+        "xp_reward": 30
+      },
+      {
+        "id": "L21_Q2",
+        "order": 2,
+        "title": "Allocate and Compute",
+        "description": "Malloc an integer, compute a + b, store it, read back, free, and return.",
+        "recommended": false,
+        "function_signature": {
+          "name": "mallocSum",
+          "return_type": "int",
+          "parameters": [
+            {"name": "a", "type": "int"},
+            {"name": "b", "type": "int"}
+          ]
+        },
+        "user_template": "int mallocSum(int a, int b) {\n    // Allocate, compute a+b, store, read, free, return\n    \n}",
+        "test_cases": [
+          {"input": [3, 4], "expected": "7", "sample": true},
+          {"input": [10, 20], "expected": "30", "sample": true},
+          {"input": [0, 0], "expected": "0", "sample": false},
+          {"input": [100, -50], "expected": "50", "sample": false}
+        ],
+        "hints": [
+          "Compute a + b and store in allocated memory",
+          "int *p = (int*)malloc(sizeof(int)); *p = a + b;",
+          "Read back with int result = *p; before freeing"
+        ],
+        "xp_reward": 40
       }
     ]
   },

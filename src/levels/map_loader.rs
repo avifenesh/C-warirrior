@@ -165,6 +165,7 @@ impl TiledMap {
                                         tile_type: TileType::Door,
                                         walkable: !is_locked,
                                         interactable: true,
+                                        quest_id: None,
                                     };
                                 }
                             }
@@ -209,6 +210,7 @@ impl LegacyMap {
                             tile_type: TileType::Door,
                             walkable: !obj.locked,
                             interactable: true,
+                            quest_id: None,
                         };
                     }
                     _ => {}
@@ -227,6 +229,7 @@ fn tile_id_to_tile(id: u32) -> Tile {
             tile_type: TileType::Void,
             walkable: false,
             interactable: false,
+            quest_id: None,
         },
         1 => Tile::floor(),
         2 => Tile::floor(), // Tech floor is still floor
@@ -239,6 +242,7 @@ fn tile_id_to_tile(id: u32) -> Tile {
             tile_type: TileType::Door,
             walkable: true,
             interactable: true,
+            quest_id: None,
         },
         _ => Tile::floor(),
     }

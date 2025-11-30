@@ -44,6 +44,9 @@ pub struct GameState {
     pub current_level_id: Option<String>,
     pub game_phase: GamePhase,
     pub progression: ProgressionState,
+    /// Active quest ID when at a terminal (for multi-quest levels)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub active_quest_id: Option<String>,
     // Keep these for backwards compatibility with existing code
     #[serde(skip)]
     pub total_xp: u32,
@@ -60,6 +63,7 @@ impl Default for GameState {
             current_level_id: None,
             game_phase: GamePhase::MainMenu,
             progression: ProgressionState::new(),
+            active_quest_id: None,
             total_xp: 0,
             levels_completed: Vec::new(),
         }
@@ -213,9 +217,12 @@ impl GameState {
             interaction_range,
         );
 
-        if let Some((_x, _y, tile_type)) = nearest {
+        if let Some((x, y, tile_type)) = nearest {
             match tile_type {
                 TileType::Terminal => {
+                    // Get the quest_id from this specific terminal
+                    let quest_id = self.world.get_tile_quest_id(x, y).map(|s| s.to_string());
+                    self.active_quest_id = quest_id;
                     self.enter_coding_mode();
                     return Some(TileType::Terminal);
                 }
@@ -290,6 +297,7 @@ impl GameState {
             objects: Vec::new(), // Can be populated when we have objects in GameState
             show_terminal: self.game_phase == GamePhase::Coding,
             active_dialogue: None, // Can be populated when we add dialogue system
+            active_quest_id: self.active_quest_id.clone(),
         }
     }
 }
@@ -305,6 +313,8 @@ pub struct RenderState {
     pub objects: Vec<ObjectRender>,
     pub show_terminal: bool,
     pub active_dialogue: Option<String>,
+    /// The quest ID of the terminal the player is interacting with
+    pub active_quest_id: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

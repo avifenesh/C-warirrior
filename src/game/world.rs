@@ -19,6 +19,9 @@ pub struct Tile {
     pub tile_type: TileType,
     pub walkable: bool,
     pub interactable: bool,
+    /// Quest ID for terminals (links terminal to specific quest)
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub quest_id: Option<String>,
 }
 
 impl Tile {
@@ -27,6 +30,7 @@ impl Tile {
             tile_type: TileType::Floor,
             walkable: true,
             interactable: false,
+            quest_id: None,
         }
     }
 
@@ -35,6 +39,7 @@ impl Tile {
             tile_type: TileType::Wall,
             walkable: false,
             interactable: false,
+            quest_id: None,
         }
     }
 
@@ -43,6 +48,17 @@ impl Tile {
             tile_type: TileType::Terminal,
             walkable: true,
             interactable: true,
+            quest_id: None,
+        }
+    }
+
+    /// Create a terminal linked to a specific quest
+    pub fn terminal_with_quest(quest_id: String) -> Self {
+        Self {
+            tile_type: TileType::Terminal,
+            walkable: true,
+            interactable: true,
+            quest_id: Some(quest_id),
         }
     }
 
@@ -51,6 +67,7 @@ impl Tile {
             tile_type: TileType::Door,
             walkable: false,
             interactable: true,
+            quest_id: None,
         }
     }
 
@@ -59,6 +76,7 @@ impl Tile {
             tile_type: TileType::Water,
             walkable: false,
             interactable: false,
+            quest_id: None,
         }
     }
 }
@@ -150,13 +168,33 @@ impl World {
         let mut world = Self::new(config.width, config.height);
         world.spawn_point = Position::new(config.spawn_x, config.spawn_y);
 
-        // Place terminal at configured position
-        let tx = (config.terminal_x / 32.0) as usize;
-        let ty = (config.terminal_y / 32.0) as usize;
-        if ty < config.height && tx < config.width {
-            world.tiles[ty][tx] = Tile::terminal();
+        // Place terminals from the terminals array (preferred)
+        if !config.terminals.is_empty() {
+            for terminal in &config.terminals {
+                let tx = (terminal.x / 32.0) as usize;
+                let ty = (terminal.y / 32.0) as usize;
+                if ty < config.height && tx < config.width {
+                    if let Some(ref quest_id) = terminal.quest_id {
+                        world.tiles[ty][tx] = Tile::terminal_with_quest(quest_id.clone());
+                    } else {
+                        world.tiles[ty][tx] = Tile::terminal();
+                    }
+                }
+            }
+        } else {
+            // Legacy: single terminal at configured position
+            let tx = (config.terminal_x / 32.0) as usize;
+            let ty = (config.terminal_y / 32.0) as usize;
+            if ty < config.height && tx < config.width {
+                world.tiles[ty][tx] = Tile::terminal();
+            }
         }
 
         world
+    }
+
+    /// Get the quest_id for a tile at given coordinates
+    pub fn get_tile_quest_id(&self, x: usize, y: usize) -> Option<&str> {
+        self.get_tile(x, y).and_then(|t| t.quest_id.as_deref())
     }
 }

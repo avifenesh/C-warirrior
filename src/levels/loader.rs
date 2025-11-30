@@ -99,14 +99,29 @@ pub enum WorldPreset {
     Custom(String),
 }
 
+/// Terminal placement with optional quest link
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TerminalConfig {
+    pub x: f32,
+    pub y: f32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub quest_id: Option<String>,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WorldConfig {
     pub width: usize,
     pub height: usize,
     pub spawn_x: f32,
     pub spawn_y: f32,
+    /// Legacy single terminal position (for backwards compatibility)
+    #[serde(default)]
     pub terminal_x: f32,
+    #[serde(default)]
     pub terminal_y: f32,
+    /// Multiple terminals with quest links (preferred)
+    #[serde(default)]
+    pub terminals: Vec<TerminalConfig>,
     pub preset: WorldPreset,
 }
 
@@ -119,6 +134,7 @@ impl Default for WorldConfig {
             spawn_y: 2.0 * 32.0,
             terminal_x: 10.0 * 32.0,
             terminal_y: 7.0 * 32.0,
+            terminals: vec![],
             preset: WorldPreset::Tutorial,
         }
     }

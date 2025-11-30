@@ -8,7 +8,6 @@
     import Toast, { type ToastMessage } from '$lib/components/Toast.svelte';
     import MainMenu from '$lib/components/MainMenu.svelte';
     import WorldMap from '$lib/components/WorldMap.svelte';
-    import QuestHUD from '$lib/components/QuestHUD.svelte';
     // Agent 2's new components
     import Settings from '$lib/components/Settings.svelte';
     import ErrorBoundary from '$lib/components/ErrorBoundary.svelte';
@@ -56,17 +55,14 @@
     // Progress state
     let playerProgress = $state<PlayerProgress | null>(null);
 
-    // Quest selection state (for multi-quest levels)
-    let levelQuests = $state<QuestInfo[]>([]);
-    let selectedQuest = $state<QuestInfo | null>(null);
-    let showQuestSelect = $state(false);
+    // Quest state (auto-loaded based on active_quest_id from backend)
+    let activeQuest = $state<QuestInfo | null>(null);
     let questLoadingInProgress = $state(false);
-    let questSelectionLoading = $state(false);
 
     // Derived: is this a multi-quest level?
     let isMultiQuestLevel = $derived((currentLevelData?.quests?.length ?? 0) > 0);
-    // Derive selectedQuestId from selectedQuest (single source of truth)
-    let selectedQuestId = $derived(selectedQuest?.id ?? null);
+    // Active quest ID comes from render state (set when interacting with terminal)
+    let activeQuestId = $derived(renderState?.active_quest_id ?? null);
 
     async function fetchProgress() {
         if (!backend) return;
@@ -85,65 +81,35 @@
         loadingHint = false;
     }
 
-    // Reset hints and ensure level data is loaded when terminal opens
+    // Reset hints and auto-load quest when terminal opens with active_quest_id
     $effect(() => {
         if (showTerminal) {
             hints = [];
             lastCodeResult = null;
-            // Ensure currentLevelData is loaded (handles race condition during level start)
-            if (!currentLevelData && backend) {
-                backend.getLevelData().then((data) => {
-                    currentLevelData = data;
-                    // Check if multi-quest level
-                    if (data?.quests && data.quests.length > 0) {
-                        loadLevelQuests();
-                    }
-                }).catch(() => {
-                    // Silently fail - data may already be loading via startLevel
-                });
-            } else if (currentLevelData?.quests && currentLevelData.quests.length > 0) {
-                // Level data already loaded, check for quests
-                loadLevelQuests();
+            // Auto-load quest if active_quest_id is set (multi-quest level)
+            if (activeQuestId && backend && !questLoadingInProgress) {
+                loadQuestById(activeQuestId);
             }
         } else {
-            // Terminal closed - reset quest selection
-            showQuestSelect = false;
-            selectedQuest = null;
+            // Terminal closed - reset quest
+            activeQuest = null;
         }
     });
 
-    // Load quests for current level
-    async function loadLevelQuests() {
-        if (!backend || !currentLevelData?.quests || questLoadingInProgress) return;
+    // Load quest by ID (auto-triggered when interacting with a terminal that has quest_id)
+    async function loadQuestById(questId: string) {
+        if (!backend || questLoadingInProgress) return;
         questLoadingInProgress = true;
         try {
-            const quests = await backend.getLevelQuests();
-            levelQuests = quests;
-            showQuestSelect = true;
-        } catch (e) {
-            console.error('Failed to load quests:', e);
-            addInfoToast('Failed to load quests');
-            showQuestSelect = false;
-        } finally {
-            questLoadingInProgress = false;
-        }
-    }
-
-    // Handle quest selection from QuestHUD
-    async function handleSelectQuest(questId: string) {
-        if (!backend || questSelectionLoading) return;
-        questSelectionLoading = true;
-        try {
             const quest = await backend.loadQuest(questId);
-            selectedQuest = quest;
-            showQuestSelect = false;
+            activeQuest = quest;
             hints = [];
             lastCodeResult = null;
         } catch (e) {
             console.error('Failed to load quest:', e);
             addInfoToast('Failed to load quest');
         } finally {
-            questSelectionLoading = false;
+            questLoadingInProgress = false;
         }
     }
 
@@ -225,7 +191,7 @@
     async function handleCodeSubmit(event: CustomEvent<{ code: string; testOnly?: boolean; questId?: string }>) {
         codeDraft = event.detail.code;
         const testOnly = event.detail.testOnly ?? false;
-        const questId = event.detail.questId ?? selectedQuestId;
+        const questId = event.detail.questId ?? activeQuestId;
 
         if (questId) {
             // Multi-quest level - submit to specific quest
@@ -366,9 +332,9 @@
                 } else {
                     renderState = await backend.getRenderState();
                 }
-                // Refresh quest list to update completion status
-                if (!testOnly) {
-                    await loadLevelQuests();
+                // Reload quest to update completion status
+                if (!testOnly && activeQuestId) {
+                    await loadQuestById(activeQuestId);
                 }
             }
         } catch (err) {
@@ -433,26 +399,10 @@
 
             <!-- Code Terminal Modal -->
             {#if showTerminal}
-                {#if isMultiQuestLevel && showQuestSelect}
-                    <!-- Quest Selection UI for multi-quest levels -->
-                    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90">
-                        <div class="quest-select-container">
-                            <div class="quest-select-header">
-                                <h2 class="quest-select-title">{currentLevelData?.title ?? 'Select Quest'}</h2>
-                                <button onclick={handleTerminalClose} class="quest-select-close">&#10005;</button>
-                            </div>
-                            <p class="quest-select-description">{currentLevelData?.description}</p>
-                            <QuestHUD
-                                quests={levelQuests}
-                                currentQuestId={selectedQuestId}
-                                onSelectQuest={handleSelectQuest}
-                            />
-                        </div>
-                    </div>
-                {:else if isMultiQuestLevel && selectedQuest}
-                    <!-- CodeTerminal with selected quest -->
+                {#if activeQuest}
+                    <!-- Multi-quest level: CodeTerminal with auto-loaded quest -->
                     <CodeTerminal
-                        initialCode={selectedQuest.user_template}
+                        initialCode={activeQuest.user_template}
                         submitting={codeSubmitting}
                         output={lastCodeResult ? {
                             success: lastCodeResult.success,
@@ -463,22 +413,29 @@
                             feedback: lastCodeResult.feedback,
                             test_results: lastCodeResult.test_results
                         } : null}
-                        challenge={selectedQuest.description}
+                        challenge={activeQuest.description}
                         hints={hints}
                         {loadingHint}
-                        onClose={() => { showQuestSelect = true; selectedQuest = null; lastCodeResult = null; }}
+                        onClose={handleTerminalClose}
                         onRequestHint={handleRequestHint}
-                        functionSignature={selectedQuest.function_signature
-                            ? `${selectedQuest.function_signature.return_type} ${selectedQuest.function_signature.name}(${selectedQuest.function_signature.parameters?.map((p: {type: string, name: string}) => `${p.type} ${p.name}`).join(', ') ?? ''})`
+                        functionSignature={activeQuest.function_signature
+                            ? `${activeQuest.function_signature.return_type} ${activeQuest.function_signature.name}(${activeQuest.function_signature.parameters?.map((p: {type: string, name: string}) => `${p.type} ${p.name}`).join(', ') ?? ''})`
                             : ''}
-                        questId={selectedQuestId}
-                        questTitle={selectedQuest.title}
-                        questDescription={selectedQuest.description}
-                        questXpReward={selectedQuest.xp_reward}
+                        questId={activeQuestId}
+                        questTitle={activeQuest.title}
+                        questDescription={activeQuest.description}
+                        questXpReward={activeQuest.xp_reward}
                         on:submit={handleCodeSubmit}
                     />
+                {:else if questLoadingInProgress}
+                    <!-- Loading quest -->
+                    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90">
+                        <div class="quest-loading">
+                            <p class="text-amber-400 font-['Press_Start_2P'] text-sm">Loading quest...</p>
+                        </div>
+                    </div>
                 {:else}
-                    <!-- Single-challenge level (legacy) -->
+                    <!-- Single-challenge level (legacy or no quest_id on terminal) -->
                     <CodeTerminal
                         initialCode={codeTemplate}
                         submitting={codeSubmitting}
@@ -656,8 +613,8 @@
         text-shadow: 1px 1px 0 #7f1d1d;
     }
 
-    /* Quest Selection Styles */
-    :global(.quest-select-container) {
+    /* Quest Loading Styles */
+    :global(.quest-loading) {
         background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
         border: 4px solid #0f3460;
         border-top-color: #3a506b;
@@ -665,44 +622,12 @@
         box-shadow:
             inset 0 0 0 2px #0a0a1e,
             8px 8px 0 #0a0a1e;
-        padding: 16px;
-        min-width: 280px;
-        max-width: 320px;
+        padding: 24px 32px;
+        animation: pulse 1.5s ease-in-out infinite;
     }
 
-    :global(.quest-select-header) {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 12px;
-        padding-bottom: 8px;
-        border-bottom: 2px solid #0f3460;
-    }
-
-    :global(.quest-select-title) {
-        font-family: 'Press Start 2P', 'Courier New', monospace;
-        font-size: 12px;
-        color: #fbbf24;
-        text-shadow: 2px 2px 0 #92400e;
-    }
-
-    :global(.quest-select-close) {
-        font-size: 16px;
-        color: #64748b;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 4px 8px;
-    }
-
-    :global(.quest-select-close:hover) {
-        color: #f87171;
-    }
-
-    :global(.quest-select-description) {
-        font-size: 12px;
-        color: #94a3b8;
-        margin-bottom: 12px;
-        line-height: 1.5;
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
     }
 </style>

@@ -84,6 +84,8 @@ export interface RenderState {
     objects: ObjectRender[];
     show_terminal: boolean;
     active_dialogue: string | null;
+    /** The quest ID of the terminal the player is interacting with */
+    active_quest_id: string | null;
 }
 
 export type PlayerAction =

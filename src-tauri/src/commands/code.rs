@@ -269,7 +269,6 @@ async fn run_function_based_challenge(
 
     let mut xp_earned = 0;
     let mut doors_unlocked = false;
-    let mut next_level_id: Option<String> = None;
 
     // Only complete level on SUBMIT (not TEST) and if all passed
     if all_passed && !test_only {
@@ -293,13 +292,13 @@ async fn run_function_based_challenge(
 
         info!(xp = xp_earned, unlocked = ?newly_unlocked, "Level completed");
 
-        next_level_id = levels.get_next_level(&level_id);
+        let next_level_id = levels.get_next_level(&level_id);
 
         // Emit level_complete event
         let event = LevelCompleteEvent {
             level_id: level_id.clone(),
             xp_earned,
-            next_level_id: next_level_id.clone(),
+            next_level_id,
             newly_unlocked,
         };
         let _ = app.emit("level_complete", event);
