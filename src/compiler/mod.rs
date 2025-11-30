@@ -1,6 +1,10 @@
+mod sandbox;
+
 use serde::{Deserialize, Serialize};
-use std::process::Command;
+use std::path::Path;
 use std::time::Instant;
+
+pub use sandbox::{is_nsjail_available, SandboxConfig, SandboxResult};
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ExecutionOutput {
@@ -28,60 +32,148 @@ impl ExecutionOutput {
 
 pub struct CCompiler {
     temp_dir: String,
+    timeout_secs: u64,
+    max_code_size: usize,
+    use_sandbox: bool,
+    sandbox_config: SandboxConfig,
+}
+
+impl Default for CCompiler {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl CCompiler {
     pub fn new() -> Self {
+        let use_sandbox = is_nsjail_available();
+        if !use_sandbox {
+            eprintln!("WARNING: nsjail not available, using fallback execution (NOT SECURE)");
+        }
         Self {
             temp_dir: std::env::temp_dir().to_string_lossy().to_string(),
+            timeout_secs: 5,
+            max_code_size: 10240,
+            use_sandbox,
+            sandbox_config: SandboxConfig::default(),
         }
     }
 
-    /// Compile and run C code synchronously (Tauri handles async wrapping)
+    /// Check for dangerous C functions in source code
+    fn check_dangerous_functions(&self, source: &str) -> Result<(), String> {
+        const DANGEROUS_FUNCS: &[&str] = &["system(", "exec(", "popen(", "fork("];
+
+        for func in DANGEROUS_FUNCS {
+            if source.contains(func) {
+                return Err(format!("Dangerous function '{}' is not allowed", func.trim_end_matches('(')));
+            }
+        }
+
+        Ok(())
+    }
+
+    /// Compile and run C code with security protections.
+    /// Uses nsjail sandbox when available, falls back to basic execution otherwise.
     pub async fn compile_and_run(&self, source: &str) -> Result<ExecutionOutput, String> {
         let start = Instant::now();
-        let timestamp = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_default()
-            .as_millis();
-        let source_file = format!("{}/user_code_{}.c", self.temp_dir, timestamp);
-        let binary_file = format!("{}/user_prog_{}", self.temp_dir, timestamp);
 
-        std::fs::write(&source_file, source)
-            .map_err(|e| format!("Failed to write source: {}", e))?;
-
-        // Compile with GCC
-        let compile_output = Command::new("gcc")
-            .args([&source_file, "-o", &binary_file, "-Wall"])
-            .output()
-            .map_err(|e| format!("Failed to run gcc: {}", e))?;
-
-        if !compile_output.status.success() {
-            let _ = std::fs::remove_file(&source_file);
+        // Check code size limit
+        if source.len() > self.max_code_size {
             return Ok(ExecutionOutput {
-                compile_error: Some(String::from_utf8_lossy(&compile_output.stderr).to_string()),
+                compile_error: Some(format!(
+                    "Code size exceeds maximum limit of {} bytes",
+                    self.max_code_size
+                )),
                 execution_time_ms: start.elapsed().as_millis() as u64,
                 ..Default::default()
             });
         }
 
-        // Run the compiled binary synchronously
-        let run_output = Command::new(&binary_file)
-            .output()
-            .map_err(|e| format!("Failed to run binary: {}", e))?;
+        // Only check dangerous functions in fallback mode (nsjail blocks them via seccomp)
+        if !self.use_sandbox {
+            if let Err(e) = self.check_dangerous_functions(source) {
+                return Ok(ExecutionOutput {
+                    compile_error: Some(e),
+                    execution_time_ms: start.elapsed().as_millis() as u64,
+                    ..Default::default()
+                });
+            }
+        }
 
-        let output = ExecutionOutput {
-            stdout: String::from_utf8_lossy(&run_output.stdout).to_string(),
-            stderr: String::from_utf8_lossy(&run_output.stderr).to_string(),
-            exit_code: run_output.status.code(),
-            execution_time_ms: start.elapsed().as_millis() as u64,
-            ..Default::default()
+        let timestamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_millis();
+
+        // Create sandbox directory
+        let sandbox_dir = Path::new(&self.temp_dir).join(format!("sandbox_{}", timestamp));
+        std::fs::create_dir_all(&sandbox_dir)
+            .map_err(|e| format!("Failed to create sandbox dir: {}", e))?;
+
+        let source_file = sandbox_dir.join("code.c");
+        let binary_file = sandbox_dir.join("program");
+
+        std::fs::write(&source_file, source)
+            .map_err(|e| format!("Failed to write source: {}", e))?;
+
+        // Compile with GCC (in sandbox if available)
+        let source_str = source_file.to_string_lossy().to_string();
+        let binary_str = binary_file.to_string_lossy().to_string();
+
+        let compile_result = if self.use_sandbox {
+            sandbox::sandbox_execute(
+                &self.sandbox_config,
+                "gcc",
+                &[&source_str, "-o", &binary_str, "-Wall"],
+                &sandbox_dir,
+            )
+            .await?
+        } else {
+            sandbox::fallback_execute(
+                "gcc",
+                &[&source_str, "-o", &binary_str, "-Wall"],
+                self.timeout_secs,
+            )
+            .await?
+        };
+
+        if compile_result.exit_code != Some(0) {
+            let _ = std::fs::remove_dir_all(&sandbox_dir);
+            return Ok(ExecutionOutput {
+                compile_error: Some(compile_result.stderr),
+                execution_time_ms: start.elapsed().as_millis() as u64,
+                ..Default::default()
+            });
+        }
+
+        // Run the compiled binary (in sandbox if available)
+        let run_result = if self.use_sandbox {
+            sandbox::sandbox_execute(
+                &self.sandbox_config,
+                &binary_str,
+                &[],
+                &sandbox_dir,
+            )
+            .await?
+        } else {
+            sandbox::fallback_execute(&binary_str, &[], self.timeout_secs).await?
         };
 
         // Cleanup
-        let _ = std::fs::remove_file(&source_file);
-        let _ = std::fs::remove_file(&binary_file);
+        let _ = std::fs::remove_dir_all(&sandbox_dir);
 
-        Ok(output)
+        Ok(ExecutionOutput {
+            stdout: run_result.stdout,
+            stderr: run_result.stderr,
+            exit_code: run_result.exit_code,
+            execution_time_ms: start.elapsed().as_millis() as u64,
+            timed_out: run_result.timed_out,
+            runtime_error: if run_result.timed_out {
+                Some("Execution timed out".to_string())
+            } else {
+                None
+            },
+            ..Default::default()
+        })
     }
 }

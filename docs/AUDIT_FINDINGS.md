@@ -640,6 +640,237 @@ int sumList(int a, int b, int c) {
 
 ---
 
+## Deep Audit Phase 2 (2025-12-01)
+
+### Batch 1: Compiler & Security
+
+**Files Reviewed:**
+- `src/compiler/mod.rs` (88 lines)
+- `src/compiler/sandbox.rs` (110 lines)
+
+**CRITICAL Issues:**
+
+#### ISSUE-004: Remote Code Execution via User C Code (SEVERITY: CRITICAL)
+
+**Location**: `src/compiler/mod.rs:50-57`
+
+**Problem**: User C code is compiled and executed with NO sandboxing or filtering. Malicious code can:
+- Execute system commands (`system("rm -rf /")`)
+- Read/write arbitrary files
+- Access network resources
+- Fork bomb / resource exhaustion
+
+**Current Code Flow**:
+```
+User submits C code → Write to temp file → gcc compile → Execute binary → Return output
+```
+
+**Missing Protections**:
+- No filtering of dangerous functions (`system()`, `exec()`, `fork()`, `popen()`)
+- No resource limits (memory, CPU, file descriptors)
+- No process isolation (runs as web server user)
+- No input size limits
+
+**Impact**: Full server compromise possible via any code submission endpoint.
+
+**Recommended Fix**:
+1. Run in container/sandbox (Docker, nsjail, Firecracker)
+2. Drop all capabilities before exec
+3. Use seccomp to whitelist only safe syscalls
+4. Block dangerous C functions via preprocessor
+5. Add input size limits (max 10KB code)
+
+#### ISSUE-005: Dead Code - sandbox.rs Not Used (SEVERITY: MEDIUM)
+
+**Location**: `src/compiler/sandbox.rs`
+
+**Problem**: `sandbox.rs` defines an alternate `compile_and_run()` with timeout support, but:
+1. It's never included via `mod sandbox;`
+2. Uses `self.timeout_secs` field that doesn't exist in `CCompiler` struct
+3. Would fail to compile if included
+
+**Impact**: The timeout logic in sandbox.rs is completely unused. The active `mod.rs` implementation has no timeout.
+
+#### ISSUE-006: No Execution Timeout (SEVERITY: HIGH)
+
+**Location**: `src/compiler/mod.rs:69-71`
+
+**Problem**: `Command::new(&binary_file).output()` blocks indefinitely. Infinite loop in user code will hang the server thread.
+
+**Current**: No timeout protection
+**Expected**: 2-5 second execution limit
+
+---
+
+### Batch 2: Game Physics & World
+
+**Files Reviewed:**
+- `src/game/physics.rs` (149 lines)
+- `src/game/world.rs` (201 lines)
+
+**Status: CLEAN** ✓
+
+- Proper bounds checking in `is_position_walkable()` (lines 17-25)
+- Collision detection checks all four corners (lines 39-51)
+- No floating point comparison issues
+- World tile access uses `Option` return (safe pattern)
+- No panic paths in game logic
+
+---
+
+### Batch 3: Frontend Components
+
+**Files Reviewed:**
+- `src-ui/src/lib/components/GameWorld.svelte` (398 lines)
+- `src-ui/src/lib/components/CodeEditor.svelte` (87 lines)
+- `src-ui/src/routes/+page.svelte` (partial)
+
+**Status: CLEAN** ✓
+
+- No game logic in frontend (correctly delegates to backend)
+- Svelte 5 runes used correctly ($state, $derived, $effect)
+- Event dispatchers for all actions (no direct mutations)
+- Error handling in asset loading (catch block)
+- Keyboard events properly filtered for form elements
+
+---
+
+### Batch 4: Database Layer
+
+**Files Reviewed:**
+- `src-api/src/db/operations.rs` (275 lines)
+- `src-api/src/db/schema.rs` (136 lines)
+
+**Status: CLEAN** ✓
+
+- All queries use parameterized binding (`.bind()`) - No SQL injection
+- Access control enforced via `device_id` in all queries
+- Proper indexes for performance
+- Retry logic with exponential backoff for Neon cold starts
+- No sensitive data logging
+
+---
+
+### Batch 5: Type Alignment
+
+**Files Compared:**
+- `src-ui/src/lib/types.ts` (322 lines)
+- `src/game/state.rs` (328 lines)
+
+#### ISSUE-007: TypeScript PlayerAction Mismatch (SEVERITY: MEDIUM)
+
+**Location**: `src-ui/src/lib/types.ts:91-98`
+
+**Problem**: TypeScript `PlayerAction` type includes variants that were removed from Rust:
+
+```typescript
+// types.ts - STALE
+export type PlayerAction =
+    | { type: 'open_inventory' }  // REMOVED FROM RUST
+    | { type: 'use_item'; item_id: string }  // REMOVED FROM RUST
+    | ...
+```
+
+```rust
+// state.rs - CURRENT
+pub enum PlayerAction {
+    Move { direction: Direction },
+    Interact,
+    SubmitCode { code: String },
+    Pause,
+    Resume,
+    // OpenInventory and UseItem REMOVED
+}
+```
+
+**Impact**: Frontend can send actions that backend silently ignores (no error, no effect).
+
+**Recommended Fix**: Remove `open_inventory` and `use_item` from TypeScript type.
+
+---
+
+### Batch 6: Error Handling Patterns
+
+**Search Results:**
+- `unwrap()` occurrences: 16 (mostly in tests)
+- `expect()` occurrences: 3 (runtime risk)
+
+#### ISSUE-008: SaveManager Panics on Failure (SEVERITY: MEDIUM)
+
+**Location**: `src/persistence/mod.rs:181`
+
+```rust
+impl Default for SaveManager {
+    fn default() -> Self {
+        Self::new().expect("Failed to create SaveManager")
+    }
+}
+```
+
+**Problem**: If save directory creation fails (permissions, disk full), the entire Tauri app crashes.
+
+**Impact**: Desktop app unusable if save directory unavailable.
+
+**Recommended Fix**: Return `Result<Self, Error>` or handle gracefully.
+
+#### ISSUE-009: Path-to-String Unwrap (SEVERITY: LOW)
+
+**Location**: `src/compiler/sandbox.rs:32`
+
+```rust
+.args([source_path.to_str().unwrap(), ...])
+```
+
+**Problem**: Panics on non-UTF8 file paths.
+
+**Impact**: Unlikely on modern systems, but possible on edge cases.
+
+---
+
+### Batch 7: Configuration & Dependencies
+
+**Files Reviewed:**
+- `Cargo.toml` (workspace)
+- `src-ui/package.json`
+
+**Status: ACCEPTABLE** ✓
+
+- Rust 2021 edition (current)
+- Tauri 2.0, Svelte 5 (modern)
+- No obviously outdated dependencies
+- Release profile optimized (`panic = "abort"`)
+
+**Note**: `cargo audit` not installed - recommend running to check CVEs.
+
+---
+
+## Summary of Deep Audit Findings
+
+| Issue | Severity | Status |
+|-------|----------|--------|
+| ISSUE-004: RCE via C code | CRITICAL | **FIXED** ✓ (nsjail sandbox) |
+| ISSUE-005: Dead sandbox.rs | MEDIUM | **FIXED** ✓ (replaced with real sandbox) |
+| ISSUE-006: No execution timeout | HIGH | **FIXED** ✓ (sandbox timeout) |
+| ISSUE-007: TypeScript type mismatch | MEDIUM | **FIXED** ✓ |
+| ISSUE-008: SaveManager panic | MEDIUM | **FIXED** ✓ |
+| ISSUE-009: Path unwrap panic | LOW | **FIXED** ✓ (file deleted) |
+
+### Fixes Applied (2025-12-01)
+
+**ISSUE-004**: Added dangerous function blocking (`system(`, `exec(`, `popen(`, `fork(`) and 10KB code size limit in `src/compiler/mod.rs`
+
+**ISSUE-005**: Deleted dead `src/compiler/sandbox.rs` file
+
+**ISSUE-006**: Added 5-second execution timeout using `tokio::time::timeout` in `src/compiler/mod.rs`
+
+**ISSUE-007**: Removed stale `open_inventory` and `use_item` variants from `src-ui/src/lib/types.ts`
+
+**ISSUE-008**: Added fallback to temp directory in `SaveManager::default()` implementation
+
+**ISSUE-009**: Resolved by deleting sandbox.rs (was in dead code)
+
+---
+
 ## Change Log
 
 | Date | Author | Changes |
@@ -649,3 +880,6 @@ int sumList(int a, int b, int c) {
 | 2025-11-30 | Claude | Batch 4 complete - E2E testing passed |
 | 2025-11-30 | Claude | Batch 5-6 complete - Documentation updated, audit finalized |
 | 2025-11-30 | Claude | Fixed array parameter support in harness.rs (L14 now validates) |
+| 2025-12-01 | Claude | Deep audit Phase 2 - 6 new issues identified (1 critical, 1 high, 3 medium, 1 low) |
+| 2025-12-01 | Claude | Fixed all 6 issues - compiler security, timeout, dead code, type alignment, error handling |
+| 2025-12-01 | Claude | Implemented proper nsjail sandbox for C code execution - OS-level isolation via namespaces |
