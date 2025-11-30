@@ -280,7 +280,10 @@ The web build talks to the Axum API defined in `src-api/src/main.rs`; update thi
 | `/api/levels/current/quests/{quest_id}` | GET | Quest details | Fetch single quest by id for terminal view. |
 | `/api/code/hint/{index}` | GET | Sequential hints | Streams hints in order for current quest/challenge. |
 | `/api/player/progress` | GET | Player totals | Aggregates from `ProgressionState`. |
-| `/api/player/saves` | GET/POST/DELETE | Save slot list/upsert/delete | Serializes `GameState` per slot; load endpoint restores state. |
+| `/api/saves` | GET | List all save slots | Returns a list of available save slots. |
+| `/api/saves/{slot}` | POST | Create or update a save slot | Serializes `GameState` to the specified slot. |
+| `/api/saves/{slot}` | GET | Load a specific save slot | Restores `GameState` from the specified slot. |
+| `/api/saves/{slot}` | DELETE | Delete a save slot | Removes the specified save slot. |
 
 Frontends that embed via Tauri continue to use command/event IPC for realtime ticks, but should mirror the same state transitions documented in the Axum routes.
 
