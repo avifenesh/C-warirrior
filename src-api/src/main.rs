@@ -38,6 +38,11 @@ struct InitGameRequest {
     // Empty for now, could add initial settings
 }
 
+#[derive(Debug, Deserialize)]
+struct SyncGameRequest {
+    game_state: GameState,
+}
+
 #[derive(Debug, Serialize)]
 struct InitGameResponse {
     device_id: String,
@@ -186,6 +191,7 @@ async fn main() {
     let app = Router::new()
         .route("/health", get(health_check))
         .route("/api/game/init", post(init_game))
+        .route("/api/game/sync", post(sync_game))
         .route("/api/game/state", get(get_game_state))
         .route("/api/game/render-state", get(get_render_state))
         .route("/api/game/action", post(process_action))
@@ -303,8 +309,9 @@ async fn persist_session(
 
     let progress = db::NewProgress {
         device_id: device_id.to_string(),
-        completed_levels: state.levels_completed.clone(),
-        total_xp: state.total_xp as i32,
+        // Use progression fields (IS serialized) not legacy fields (serde skip)
+        completed_levels: state.progression.completed_levels.iter().cloned().collect(),
+        total_xp: state.progression.total_xp as i32,
         current_level: state.current_level_id.clone(),
         achievements: vec![],
     };
@@ -353,6 +360,23 @@ async fn init_game(
         device_id: device_id.0,
         game_state,
     }))
+}
+
+async fn sync_game(
+    State(state): State<Arc<AppState>>,
+    axum::Extension(DeviceId(device_id)): axum::Extension<DeviceId>,
+    Json(request): Json<SyncGameRequest>,
+) -> Result<Json<serde_json::Value>, StatusCode> {
+    tracing::debug!("Syncing game state for device: {}", device_id);
+
+    persist_session(&state, &device_id, &request.game_state)
+        .await
+        .map_err(|e| {
+            tracing::error!("Sync failed for {}: {}", device_id, e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
+
+    Ok(Json(serde_json::json!({ "success": true })))
 }
 
 async fn get_game_state(
