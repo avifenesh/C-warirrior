@@ -17,9 +17,21 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 192, "y": 224, "quest_id": "L01_Q1"},
-        {"x": 320, "y": 224, "quest_id": "L01_Q2"},
-        {"x": 448, "y": 224, "quest_id": "L01_Q3"}
+        {
+          "x": 192,
+          "y": 224,
+          "quest_id": "L01_Q1"
+        },
+        {
+          "x": 320,
+          "y": 224,
+          "quest_id": "L01_Q2"
+        },
+        {
+          "x": 448,
+          "y": 224,
+          "quest_id": "L01_Q3"
+        }
       ],
       "preset": "tutorial"
     },
@@ -37,7 +49,11 @@
         },
         "user_template": "int getSecret() {\n    // Return the secret number: 42\n    \n}",
         "test_cases": [
-          {"input": [], "expected": "42", "sample": true}
+          {
+            "input": [],
+            "expected": "42",
+            "sample": true
+          }
         ],
         "hints": [
           "Use the 'return' keyword to send a value back",
@@ -58,7 +74,11 @@
         },
         "user_template": "int getDouble() {\n    // Return 21 multiplied by 2\n    \n}",
         "test_cases": [
-          {"input": [], "expected": "42", "sample": true}
+          {
+            "input": [],
+            "expected": "42",
+            "sample": true
+          }
         ],
         "hints": [
           "You can use arithmetic in return statements",
@@ -79,7 +99,11 @@
         },
         "user_template": "int getSum() {\n    // Return 10 + 20 + 12\n    \n}",
         "test_cases": [
-          {"input": [], "expected": "42", "sample": true}
+          {
+            "input": [],
+            "expected": "42",
+            "sample": true
+          }
         ],
         "hints": [
           "Add numbers with the + operator",
@@ -125,9 +149,21 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 160, "y": 224, "quest_id": "L02_Q1"},
-        {"x": 288, "y": 224, "quest_id": "L02_Q2"},
-        {"x": 416, "y": 224, "quest_id": "L02_Q3"}
+        {
+          "x": 160,
+          "y": 224,
+          "quest_id": "L02_Q1"
+        },
+        {
+          "x": 288,
+          "y": 224,
+          "quest_id": "L02_Q2"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L02_Q3"
+        }
       ],
       "preset": "tutorial"
     },
@@ -142,16 +178,50 @@
           "name": "addWeight",
           "return_type": "int",
           "parameters": [
-            {"name": "item1", "type": "int"},
-            {"name": "item2", "type": "int"}
+            {
+              "name": "item1",
+              "type": "int"
+            },
+            {
+              "name": "item2",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int addWeight(int item1, int item2) {\n    // Return the sum of item1 and item2\n    \n}",
         "test_cases": [
-          {"input": [10, 25], "expected": "35", "sample": true},
-          {"input": [5, 5], "expected": "10", "sample": true},
-          {"input": [100, 200], "expected": "300", "sample": false},
-          {"input": [0, 42], "expected": "42", "sample": false}
+          {
+            "input": [
+              10,
+              25
+            ],
+            "expected": "35",
+            "sample": true
+          },
+          {
+            "input": [
+              5,
+              5
+            ],
+            "expected": "10",
+            "sample": true
+          },
+          {
+            "input": [
+              100,
+              200
+            ],
+            "expected": "300",
+            "sample": false
+          },
+          {
+            "input": [
+              0,
+              42
+            ],
+            "expected": "42",
+            "sample": false
+          }
         ],
         "hints": [
           "Use the + operator to add numbers",
@@ -169,16 +239,50 @@
           "name": "calculateArea",
           "return_type": "int",
           "parameters": [
-            {"name": "width", "type": "int"},
-            {"name": "height", "type": "int"}
+            {
+              "name": "width",
+              "type": "int"
+            },
+            {
+              "name": "height",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int calculateArea(int width, int height) {\n    // Return width multiplied by height\n    \n}",
         "test_cases": [
-          {"input": [3, 4], "expected": "12", "sample": true},
-          {"input": [5, 5], "expected": "25", "sample": true},
-          {"input": [1, 100], "expected": "100", "sample": false},
-          {"input": [10, 10], "expected": "100", "sample": false}
+          {
+            "input": [
+              3,
+              4
+            ],
+            "expected": "12",
+            "sample": true
+          },
+          {
+            "input": [
+              5,
+              5
+            ],
+            "expected": "25",
+            "sample": true
+          },
+          {
+            "input": [
+              1,
+              100
+            ],
+            "expected": "100",
+            "sample": false
+          },
+          {
+            "input": [
+              10,
+              10
+            ],
+            "expected": "100",
+            "sample": false
+          }
         ],
         "hints": [
           "Use the * operator to multiply",
@@ -196,17 +300,58 @@
           "name": "tripleSum",
           "return_type": "int",
           "parameters": [
-            {"name": "a", "type": "int"},
-            {"name": "b", "type": "int"},
-            {"name": "c", "type": "int"}
+            {
+              "name": "a",
+              "type": "int"
+            },
+            {
+              "name": "b",
+              "type": "int"
+            },
+            {
+              "name": "c",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int tripleSum(int a, int b, int c) {\n    // Return the sum of all three values\n    \n}",
         "test_cases": [
-          {"input": [1, 2, 3], "expected": "6", "sample": true},
-          {"input": [10, 20, 30], "expected": "60", "sample": true},
-          {"input": [0, 0, 0], "expected": "0", "sample": false},
-          {"input": [100, 200, 300], "expected": "600", "sample": false}
+          {
+            "input": [
+              1,
+              2,
+              3
+            ],
+            "expected": "6",
+            "sample": true
+          },
+          {
+            "input": [
+              10,
+              20,
+              30
+            ],
+            "expected": "60",
+            "sample": true
+          },
+          {
+            "input": [
+              0,
+              0,
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              100,
+              200,
+              300
+            ],
+            "expected": "600",
+            "sample": false
+          }
         ],
         "hints": [
           "Chain additions: a + b + c",
@@ -252,9 +397,21 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 160, "y": 224, "quest_id": "L03_Q1"},
-        {"x": 288, "y": 224, "quest_id": "L03_Q2"},
-        {"x": 416, "y": 224, "quest_id": "L03_Q3"}
+        {
+          "x": 160,
+          "y": 224,
+          "quest_id": "L03_Q1"
+        },
+        {
+          "x": 288,
+          "y": 224,
+          "quest_id": "L03_Q2"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L03_Q3"
+        }
       ],
       "preset": "tutorial"
     },
@@ -269,16 +426,50 @@
           "name": "maxValue",
           "return_type": "int",
           "parameters": [
-            {"name": "a", "type": "int"},
-            {"name": "b", "type": "int"}
+            {
+              "name": "a",
+              "type": "int"
+            },
+            {
+              "name": "b",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int maxValue(int a, int b) {\n    // Return the larger of a and b\n    \n}",
         "test_cases": [
-          {"input": [3, 7], "expected": "7", "sample": true},
-          {"input": [10, 2], "expected": "10", "sample": true},
-          {"input": [5, 5], "expected": "5", "sample": false},
-          {"input": [-3, -7], "expected": "-3", "sample": false}
+          {
+            "input": [
+              3,
+              7
+            ],
+            "expected": "7",
+            "sample": true
+          },
+          {
+            "input": [
+              10,
+              2
+            ],
+            "expected": "10",
+            "sample": true
+          },
+          {
+            "input": [
+              5,
+              5
+            ],
+            "expected": "5",
+            "sample": false
+          },
+          {
+            "input": [
+              -3,
+              -7
+            ],
+            "expected": "-3",
+            "sample": false
+          }
         ],
         "hints": [
           "Use if (a > b) to compare",
@@ -296,15 +487,42 @@
           "name": "isEven",
           "return_type": "int",
           "parameters": [
-            {"name": "n", "type": "int"}
+            {
+              "name": "n",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int isEven(int n) {\n    // Return 1 if n is even, 0 if odd\n    \n}",
         "test_cases": [
-          {"input": [4], "expected": "1", "sample": true},
-          {"input": [7], "expected": "0", "sample": true},
-          {"input": [0], "expected": "1", "sample": false},
-          {"input": [-2], "expected": "1", "sample": false}
+          {
+            "input": [
+              4
+            ],
+            "expected": "1",
+            "sample": true
+          },
+          {
+            "input": [
+              7
+            ],
+            "expected": "0",
+            "sample": true
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "1",
+            "sample": false
+          },
+          {
+            "input": [
+              -2
+            ],
+            "expected": "1",
+            "sample": false
+          }
         ],
         "hints": [
           "Use the modulo operator: n % 2",
@@ -322,17 +540,58 @@
           "name": "clamp",
           "return_type": "int",
           "parameters": [
-            {"name": "value", "type": "int"},
-            {"name": "min", "type": "int"},
-            {"name": "max", "type": "int"}
+            {
+              "name": "value",
+              "type": "int"
+            },
+            {
+              "name": "min",
+              "type": "int"
+            },
+            {
+              "name": "max",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int clamp(int value, int min, int max) {\n    // Return value bounded between min and max\n    \n}",
         "test_cases": [
-          {"input": [5, 0, 10], "expected": "5", "sample": true},
-          {"input": [-5, 0, 10], "expected": "0", "sample": true},
-          {"input": [15, 0, 10], "expected": "10", "sample": false},
-          {"input": [50, 0, 100], "expected": "50", "sample": false}
+          {
+            "input": [
+              5,
+              0,
+              10
+            ],
+            "expected": "5",
+            "sample": true
+          },
+          {
+            "input": [
+              -5,
+              0,
+              10
+            ],
+            "expected": "0",
+            "sample": true
+          },
+          {
+            "input": [
+              15,
+              0,
+              10
+            ],
+            "expected": "10",
+            "sample": false
+          },
+          {
+            "input": [
+              50,
+              0,
+              100
+            ],
+            "expected": "50",
+            "sample": false
+          }
         ],
         "hints": [
           "Check if value < min first",
@@ -379,9 +638,21 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 160, "y": 224, "quest_id": "L04_Q1"},
-        {"x": 288, "y": 224, "quest_id": "L04_Q2"},
-        {"x": 416, "y": 224, "quest_id": "L04_Q3"}
+        {
+          "x": 160,
+          "y": 224,
+          "quest_id": "L04_Q1"
+        },
+        {
+          "x": 288,
+          "y": 224,
+          "quest_id": "L04_Q2"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L04_Q3"
+        }
       ],
       "preset": "tutorial"
     },
@@ -396,15 +667,42 @@
           "name": "sumStrikes",
           "return_type": "int",
           "parameters": [
-            {"name": "n", "type": "int"}
+            {
+              "name": "n",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int sumStrikes(int n) {\n    // Return the sum of 1 + 2 + 3 + ... + n\n    \n}",
         "test_cases": [
-          {"input": [5], "expected": "15", "sample": true},
-          {"input": [10], "expected": "55", "sample": true},
-          {"input": [1], "expected": "1", "sample": false},
-          {"input": [100], "expected": "5050", "sample": false}
+          {
+            "input": [
+              5
+            ],
+            "expected": "15",
+            "sample": true
+          },
+          {
+            "input": [
+              10
+            ],
+            "expected": "55",
+            "sample": true
+          },
+          {
+            "input": [
+              1
+            ],
+            "expected": "1",
+            "sample": false
+          },
+          {
+            "input": [
+              100
+            ],
+            "expected": "5050",
+            "sample": false
+          }
         ],
         "hints": [
           "Use a for loop: for(int i = 1; i <= n; i++)",
@@ -416,21 +714,48 @@
         "id": "L04_Q2",
         "order": 2,
         "title": "Factorial",
-        "description": "Compute n! (n factorial = n × (n-1) × ... × 1).",
+        "description": "Compute n! (n factorial = n \u00d7 (n-1) \u00d7 ... \u00d7 1).",
         "recommended": false,
         "function_signature": {
           "name": "factorial",
           "return_type": "int",
           "parameters": [
-            {"name": "n", "type": "int"}
+            {
+              "name": "n",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int factorial(int n) {\n    // Return n! = n * (n-1) * ... * 1\n    \n}",
         "test_cases": [
-          {"input": [5], "expected": "120", "sample": true},
-          {"input": [3], "expected": "6", "sample": true},
-          {"input": [1], "expected": "1", "sample": false},
-          {"input": [0], "expected": "1", "sample": false}
+          {
+            "input": [
+              5
+            ],
+            "expected": "120",
+            "sample": true
+          },
+          {
+            "input": [
+              3
+            ],
+            "expected": "6",
+            "sample": true
+          },
+          {
+            "input": [
+              1
+            ],
+            "expected": "1",
+            "sample": false
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "1",
+            "sample": false
+          }
         ],
         "hints": [
           "Start with result = 1",
@@ -448,16 +773,50 @@
           "name": "countDivisible",
           "return_type": "int",
           "parameters": [
-            {"name": "n", "type": "int"},
-            {"name": "d", "type": "int"}
+            {
+              "name": "n",
+              "type": "int"
+            },
+            {
+              "name": "d",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int countDivisible(int n, int d) {\n    // Count numbers from 1 to n divisible by d\n    \n}",
         "test_cases": [
-          {"input": [10, 2], "expected": "5", "sample": true},
-          {"input": [10, 3], "expected": "3", "sample": true},
-          {"input": [5, 7], "expected": "0", "sample": false},
-          {"input": [100, 10], "expected": "10", "sample": false}
+          {
+            "input": [
+              10,
+              2
+            ],
+            "expected": "5",
+            "sample": true
+          },
+          {
+            "input": [
+              10,
+              3
+            ],
+            "expected": "3",
+            "sample": true
+          },
+          {
+            "input": [
+              5,
+              7
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              100,
+              10
+            ],
+            "expected": "10",
+            "sample": false
+          }
         ],
         "hints": [
           "Use if inside the loop",
@@ -503,9 +862,21 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 160, "y": 224, "quest_id": "L05_Q1"},
-        {"x": 288, "y": 224, "quest_id": "L05_Q2"},
-        {"x": 416, "y": 224, "quest_id": "L05_Q3"}
+        {
+          "x": 160,
+          "y": 224,
+          "quest_id": "L05_Q1"
+        },
+        {
+          "x": 288,
+          "y": 224,
+          "quest_id": "L05_Q2"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L05_Q3"
+        }
       ],
       "preset": "tutorial"
     },
@@ -520,15 +891,42 @@
           "name": "getRoom",
           "return_type": "int",
           "parameters": [
-            {"name": "index", "type": "int"}
+            {
+              "name": "index",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int getRoom(int index) {\n    int rooms[5] = {10, 20, 30, 40, 50};\n    // Return the element at 'index'\n    \n}",
         "test_cases": [
-          {"input": [0], "expected": "10", "sample": true},
-          {"input": [2], "expected": "30", "sample": true},
-          {"input": [4], "expected": "50", "sample": false},
-          {"input": [1], "expected": "20", "sample": false}
+          {
+            "input": [
+              0
+            ],
+            "expected": "10",
+            "sample": true
+          },
+          {
+            "input": [
+              2
+            ],
+            "expected": "30",
+            "sample": true
+          },
+          {
+            "input": [
+              4
+            ],
+            "expected": "50",
+            "sample": false
+          },
+          {
+            "input": [
+              1
+            ],
+            "expected": "20",
+            "sample": false
+          }
         ],
         "hints": [
           "Use rooms[index] to access the element",
@@ -549,7 +947,11 @@
         },
         "user_template": "int sumRooms() {\n    int rooms[5] = {10, 20, 30, 40, 50};\n    // Return the sum of all elements\n    \n}",
         "test_cases": [
-          {"input": [], "expected": "150", "sample": true}
+          {
+            "input": [],
+            "expected": "150",
+            "sample": true
+          }
         ],
         "hints": [
           "Use a for loop to iterate through the array",
@@ -570,7 +972,11 @@
         },
         "user_template": "int findMax() {\n    int values[5] = {15, 42, 8, 23, 31};\n    // Return the maximum value\n    \n}",
         "test_cases": [
-          {"input": [], "expected": "42", "sample": true}
+          {
+            "input": [],
+            "expected": "42",
+            "sample": true
+          }
         ],
         "hints": [
           "Start with max = values[0]",
@@ -593,16 +999,21 @@
     "map_file": "maps/L06_river.json",
     "challenges": [],
     "lesson": {
-      "title": "Void Functions",
+      "title": "Void Functions: Actions Without Returns",
       "content": [
-        "Not all functions need to return a value. Void functions perform actions (like printing) without returning anything.",
+        "Not all functions need to return a value. Void functions perform actions (like printing or modifying data) without returning anything.",
         "Declare with 'void' as the return type: void functionName() { }",
-        "Void functions can still take parameters to customize their behavior."
+        "Void functions are perfect for side effects: printing output, modifying values through pointers, or triggering events.",
+        "In these quests, you'll use void helpers to demonstrate the concept, then wrap them in testable functions that return confirmation values."
       ],
       "examples": [
         {
-          "code": "void sayHello() {\n    printf(\"Hello!\\n\");\n}",
-          "explanation": "A simple void function that prints a greeting."
+          "code": "void printSpell() {\n    printf(\"Magic!\\n\");\n}\n\nint castSpell() {\n    printSpell();  // Call the void function\n    return 1;      // Confirm it worked\n}",
+          "explanation": "The void function performs the action (printing), and the wrapper returns a value we can test."
+        },
+        {
+          "code": "void addBonus(int *value, int bonus) {\n    *value += bonus;\n}\n\nint applyBonus(int base, int bonus) {\n    addBonus(&base, bonus);\n    return base;\n}",
+          "explanation": "The void function modifies through a pointer, and we return the result for testing."
         }
       ]
     },
@@ -612,8 +1023,16 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 192, "y": 224, "quest_id": "L06_Q1"},
-        {"x": 384, "y": 224, "quest_id": "L06_Q2"}
+        {
+          "x": 192,
+          "y": 224,
+          "quest_id": "L06_Q1"
+        },
+        {
+          "x": 384,
+          "y": 224,
+          "quest_id": "L06_Q2"
+        }
       ],
       "preset": "tutorial"
     },
@@ -622,45 +1041,88 @@
         "id": "L06_Q1",
         "order": 1,
         "title": "Cast Spell",
-        "description": "Create a void function that prints the magic word.",
+        "description": "Create a void function that prints the magic word, then call it from a wrapper function.",
         "recommended": true,
         "function_signature": {
           "name": "castSpell",
           "return_type": "int",
           "parameters": []
         },
-        "user_template": "int castSpell() {\n    // Print \"Abracadabra!\" and return 1\n    \n}",
+        "user_template": "// First, create the void function that prints\nvoid printSpell() {\n    // Print \"Abracadabra!\" with a newline\n    \n}\n\n// Then create the wrapper that calls it\nint castSpell() {\n    // Call printSpell() to cast the magic\n    // Return 1 to confirm the spell was cast\n    \n}",
         "test_cases": [
-          {"input": [], "expected": "1", "sample": true}
+          {
+            "input": [],
+            "expected": "1",
+            "sample": true
+          }
         ],
         "hints": [
-          "Use printf(\"Abracadabra!\\n\");",
-          "Return 1 to indicate success"
+          "In printSpell(): use printf(\"Abracadabra!\\n\");",
+          "In castSpell(): call printSpell(); then return 1;",
+          "The void function does the work, the int function confirms it happened"
         ],
         "xp_reward": 30
       },
       {
         "id": "L06_Q2",
         "order": 2,
-        "title": "Print Square",
-        "description": "Print the square of a number (n × n).",
+        "title": "Enchant Weapon",
+        "description": "Use a void function to add bonus damage through a pointer, then return the result.",
         "recommended": false,
         "function_signature": {
-          "name": "printSquare",
+          "name": "enchantWeapon",
           "return_type": "int",
           "parameters": [
-            {"name": "n", "type": "int"}
+            {
+              "name": "baseDamage",
+              "type": "int"
+            },
+            {
+              "name": "bonus",
+              "type": "int"
+            }
           ]
         },
-        "user_template": "int printSquare(int n) {\n    // Print n * n and return the result\n    \n}",
+        "user_template": "// First, create a void function that modifies through pointer\nvoid addDamage(int *damage, int bonus) {\n    // Add bonus to the value at the pointer\n    \n}\n\n// Then create the wrapper that uses it\nint enchantWeapon(int baseDamage, int bonus) {\n    // Use addDamage to modify baseDamage\n    // Return the enchanted (modified) damage value\n    \n}",
         "test_cases": [
-          {"input": [3], "expected": "9", "sample": true},
-          {"input": [5], "expected": "25", "sample": true},
-          {"input": [0], "expected": "0", "sample": false}
+          {
+            "input": [
+              10,
+              5
+            ],
+            "expected": "15",
+            "sample": true
+          },
+          {
+            "input": [
+              100,
+              25
+            ],
+            "expected": "125",
+            "sample": true
+          },
+          {
+            "input": [
+              0,
+              10
+            ],
+            "expected": "10",
+            "sample": false
+          },
+          {
+            "input": [
+              50,
+              0
+            ],
+            "expected": "50",
+            "sample": false
+          }
         ],
         "hints": [
-          "Calculate n * n",
-          "Return the squared value"
+          "In addDamage(): modify through pointer with *damage += bonus;",
+          "In enchantWeapon(): call addDamage(&baseDamage, bonus);",
+          "The & operator gets the address of baseDamage so addDamage can modify it",
+          "After calling addDamage, baseDamage will have the new value - return it!"
         ],
         "xp_reward": 40
       }
@@ -670,25 +1132,29 @@
     "id": "L07",
     "title": "The Damage Calculator",
     "theme": "L07_cavern",
-    "concept": "return values",
-    "description": "Master functions that compute and return values.",
+    "concept": "complex return expressions",
+    "description": "Master complex return expressions that combine multiple operations.",
     "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
     "hints": [],
     "xp_reward": 0,
-    "total_xp_reward": 100,
+    "total_xp_reward": 105,
     "map_file": "maps/L07_cavern.json",
     "challenges": [],
     "lesson": {
-      "title": "Functions with Return Values",
+      "title": "Complex Return Expressions",
       "content": [
-        "Functions can compute values and send them back using the return statement.",
-        "The return type (int, float, etc.) must match what you return.",
-        "Use returned values in expressions: int result = myFunction(5);"
+        "Return statements can contain complex expressions that combine multiple operations.",
+        "You can use if/else inside a function to conditionally return different values.",
+        "Calculations can be chained together: (a + b + c) * bonus / divisor"
       ],
       "examples": [
         {
-          "code": "int multiply(int a, int b) {\n    return a * b;\n}",
-          "explanation": "Returns the product of two numbers."
+          "code": "int netDamage(int attack, int defense) {\n    if (attack > defense)\n        return attack - defense;\n    return 0;\n}",
+          "explanation": "Returns the difference if positive, otherwise 0."
+        },
+        {
+          "code": "int bonusSum(int a, int b) {\n    return (a + b) * 11 / 10;\n}",
+          "explanation": "Adds values and applies a 10% bonus."
         }
       ]
     },
@@ -698,9 +1164,21 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 160, "y": 224, "quest_id": "L07_Q1"},
-        {"x": 288, "y": 224, "quest_id": "L07_Q2"},
-        {"x": 416, "y": 224, "quest_id": "L07_Q3"}
+        {
+          "x": 160,
+          "y": 224,
+          "quest_id": "L07_Q1"
+        },
+        {
+          "x": 288,
+          "y": 224,
+          "quest_id": "L07_Q2"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L07_Q3"
+        }
       ],
       "preset": "tutorial"
     },
@@ -709,77 +1187,202 @@
         "id": "L07_Q1",
         "order": 1,
         "title": "Calculate Damage",
-        "description": "Compute damage as base × multiplier.",
+        "description": "Return (base \u00d7 mult) - armor, but never below 0.",
         "recommended": true,
         "function_signature": {
           "name": "damage",
           "return_type": "int",
           "parameters": [
-            {"name": "base", "type": "int"},
-            {"name": "mult", "type": "int"}
+            {
+              "name": "base",
+              "type": "int"
+            },
+            {
+              "name": "mult",
+              "type": "int"
+            },
+            {
+              "name": "armor",
+              "type": "int"
+            }
           ]
         },
-        "user_template": "int damage(int base, int mult) {\n    // Return base * mult\n    \n}",
+        "user_template": "int damage(int base, int mult, int armor) {\n    // Calculate raw damage: base * mult\n    // If raw > armor, return raw - armor\n    // Otherwise return 0\n    \n}",
         "test_cases": [
-          {"input": [10, 3], "expected": "30", "sample": true},
-          {"input": [5, 5], "expected": "25", "sample": true},
-          {"input": [100, 0], "expected": "0", "sample": false}
+          {
+            "input": [
+              10,
+              3,
+              5
+            ],
+            "expected": "25",
+            "sample": true
+          },
+          {
+            "input": [
+              5,
+              2,
+              20
+            ],
+            "expected": "0",
+            "sample": true
+          },
+          {
+            "input": [
+              7,
+              4,
+              10
+            ],
+            "expected": "18",
+            "sample": false
+          },
+          {
+            "input": [
+              3,
+              3,
+              9
+            ],
+            "expected": "0",
+            "sample": false
+          }
         ],
         "hints": [
-          "Multiply the parameters",
-          "return base * mult;"
+          "First calculate: int raw = base * mult;",
+          "Then check: if (raw > armor) return raw - armor;",
+          "Don't forget to return 0 for the else case"
         ],
-        "xp_reward": 30
+        "xp_reward": 35
       },
       {
         "id": "L07_Q2",
         "order": 2,
-        "title": "Square Number",
-        "description": "Return n squared (n × n).",
+        "title": "Critical Hit",
+        "description": "If isCrit is non-zero, return damage \u00d7 3, else return damage unchanged.",
         "recommended": false,
         "function_signature": {
-          "name": "square",
+          "name": "criticalHit",
           "return_type": "int",
           "parameters": [
-            {"name": "n", "type": "int"}
+            {
+              "name": "damage",
+              "type": "int"
+            },
+            {
+              "name": "isCrit",
+              "type": "int"
+            }
           ]
         },
-        "user_template": "int square(int n) {\n    // Return n * n\n    \n}",
+        "user_template": "int criticalHit(int damage, int isCrit) {\n    // If isCrit != 0, return damage * 3\n    // Otherwise return damage\n    \n}",
         "test_cases": [
-          {"input": [4], "expected": "16", "sample": true},
-          {"input": [7], "expected": "49", "sample": true},
-          {"input": [0], "expected": "0", "sample": false}
+          {
+            "input": [
+              10,
+              1
+            ],
+            "expected": "30",
+            "sample": true
+          },
+          {
+            "input": [
+              10,
+              0
+            ],
+            "expected": "10",
+            "sample": true
+          },
+          {
+            "input": [
+              20,
+              5
+            ],
+            "expected": "60",
+            "sample": false
+          },
+          {
+            "input": [
+              15,
+              0
+            ],
+            "expected": "15",
+            "sample": false
+          }
         ],
         "hints": [
-          "Multiply n by itself",
-          "return n * n;"
+          "Use if (isCrit != 0) to check for critical",
+          "return damage * 3; for critical, damage for normal"
         ],
-        "xp_reward": 30
+        "xp_reward": 35
       },
       {
         "id": "L07_Q3",
         "order": 3,
-        "title": "Absolute Value",
-        "description": "Return the absolute value of n (make negative numbers positive).",
+        "title": "Combo Attack",
+        "description": "Return the sum of three hits with a 10% bonus: (hit1 + hit2 + hit3) \u00d7 11 \u00f7 10",
         "recommended": false,
         "function_signature": {
-          "name": "absolute",
+          "name": "combo",
           "return_type": "int",
           "parameters": [
-            {"name": "n", "type": "int"}
+            {
+              "name": "hit1",
+              "type": "int"
+            },
+            {
+              "name": "hit2",
+              "type": "int"
+            },
+            {
+              "name": "hit3",
+              "type": "int"
+            }
           ]
         },
-        "user_template": "int absolute(int n) {\n    // Return the absolute value of n\n    \n}",
+        "user_template": "int combo(int hit1, int hit2, int hit3) {\n    // Return (hit1 + hit2 + hit3) * 11 / 10\n    // This adds 10% bonus to the total\n    \n}",
         "test_cases": [
-          {"input": [5], "expected": "5", "sample": true},
-          {"input": [-5], "expected": "5", "sample": true},
-          {"input": [0], "expected": "0", "sample": false}
+          {
+            "input": [
+              10,
+              10,
+              10
+            ],
+            "expected": "33",
+            "sample": true
+          },
+          {
+            "input": [
+              5,
+              10,
+              15
+            ],
+            "expected": "33",
+            "sample": true
+          },
+          {
+            "input": [
+              20,
+              20,
+              20
+            ],
+            "expected": "66",
+            "sample": false
+          },
+          {
+            "input": [
+              7,
+              8,
+              9
+            ],
+            "expected": "26",
+            "sample": false
+          }
         ],
         "hints": [
-          "If n is negative, return -n",
-          "Otherwise return n as-is"
+          "Use parentheses: (hit1 + hit2 + hit3) to sum first",
+          "Multiply by 11, then divide by 10 for 10% bonus",
+          "Order matters: * before / due to integer division"
         ],
-        "xp_reward": 40
+        "xp_reward": 35
       }
     ]
   },
@@ -788,24 +1391,29 @@
     "title": "The Stack Spire",
     "theme": "L08_mountain",
     "concept": "stack frames",
-    "description": "Understand how functions call each other and return values.",
+    "description": "Understand how function calls create stack frames with private workspaces.",
     "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
     "hints": [],
     "xp_reward": 0,
-    "total_xp_reward": 70,
+    "total_xp_reward": 105,
     "map_file": "maps/L08_mountain.json",
     "challenges": [],
     "lesson": {
-      "title": "Function Calls and the Stack",
+      "title": "The Call Stack",
       "content": [
-        "When a function calls another function, execution 'pauses' the caller until the called function returns.",
-        "Functions can call other functions, building a 'stack' of active calls.",
-        "Each function's local variables live in its own 'stack frame'."
+        "When a function calls another function, the computer 'pauses' the caller and starts the new function.",
+        "Each function call creates a 'stack frame' - a private workspace with its own local variables.",
+        "When a function returns, its frame is removed and the caller resumes.",
+        "This is like stacking books - the last one added is the first one removed."
       ],
       "examples": [
         {
           "code": "int addOne(int n) {\n    return n + 1;\n}\n\nint addTwo(int n) {\n    return addOne(addOne(n));\n}",
-          "explanation": "addTwo calls addOne twice, chaining the results."
+          "explanation": "When addTwo calls addOne, it pauses. Each addOne call gets its own stack frame with its own 'n' parameter."
+        },
+        {
+          "code": "int count = 0;\n\nint increment() {\n    count++;\n    return count;\n}",
+          "explanation": "Global variables persist across all frames, while local variables live only in their frame."
         }
       ]
     },
@@ -815,8 +1423,21 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 192, "y": 224, "quest_id": "L08_Q1"},
-        {"x": 384, "y": 224, "quest_id": "L08_Q2"}
+        {
+          "x": 160,
+          "y": 224,
+          "quest_id": "L08_Q1"
+        },
+        {
+          "x": 288,
+          "y": 224,
+          "quest_id": "L08_Q2"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L08_Q3"
+        }
       ],
       "preset": "tutorial"
     },
@@ -831,14 +1452,35 @@
           "name": "addOne",
           "return_type": "int",
           "parameters": [
-            {"name": "n", "type": "int"}
+            {
+              "name": "n",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int addOne(int n) {\n    // Return n + 1\n    \n}",
         "test_cases": [
-          {"input": [5], "expected": "6", "sample": true},
-          {"input": [0], "expected": "1", "sample": true},
-          {"input": [-1], "expected": "0", "sample": false}
+          {
+            "input": [
+              5
+            ],
+            "expected": "6",
+            "sample": true
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "1",
+            "sample": true
+          },
+          {
+            "input": [
+              -1
+            ],
+            "expected": "0",
+            "sample": false
+          }
         ],
         "hints": [
           "Simply return n + 1"
@@ -855,18 +1497,93 @@
           "name": "doubleAddOne",
           "return_type": "int",
           "parameters": [
-            {"name": "n", "type": "int"}
+            {
+              "name": "n",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int addOne(int n) {\n    return n + 1;\n}\n\nint doubleAddOne(int n) {\n    // Call addOne twice to add 2\n    \n}",
         "test_cases": [
-          {"input": [5], "expected": "7", "sample": true},
-          {"input": [0], "expected": "2", "sample": true},
-          {"input": [-2], "expected": "0", "sample": false}
+          {
+            "input": [
+              5
+            ],
+            "expected": "7",
+            "sample": true
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "2",
+            "sample": true
+          },
+          {
+            "input": [
+              -2
+            ],
+            "expected": "0",
+            "sample": false
+          }
         ],
         "hints": [
           "Chain the calls: addOne(addOne(n))",
           "This adds 1, then adds 1 again"
+        ],
+        "xp_reward": 35
+      },
+      {
+        "id": "L08_Q3",
+        "order": 3,
+        "title": "Track Call Depth",
+        "description": "Use a global counter to track the maximum depth of recursive calls.",
+        "recommended": false,
+        "function_signature": {
+          "name": "getMaxDepth",
+          "return_type": "int",
+          "parameters": [
+            {
+              "name": "n",
+              "type": "int"
+            }
+          ]
+        },
+        "user_template": "int depth = 0;\nint maxDepth = 0;\n\nvoid trackDepth(int n) {\n    depth++;  // Enter new frame\n    if (depth > maxDepth) maxDepth = depth;\n    \n    if (n > 1) trackDepth(n - 1);  // Recurse\n    \n    depth--;  // Exit frame\n}\n\nint getMaxDepth(int n) {\n    // Reset counters, call trackDepth, return maxDepth\n    \n}",
+        "test_cases": [
+          {
+            "input": [
+              3
+            ],
+            "expected": "3",
+            "sample": true
+          },
+          {
+            "input": [
+              1
+            ],
+            "expected": "1",
+            "sample": true
+          },
+          {
+            "input": [
+              5
+            ],
+            "expected": "5",
+            "sample": false
+          },
+          {
+            "input": [
+              10
+            ],
+            "expected": "10",
+            "sample": false
+          }
+        ],
+        "hints": [
+          "Reset both globals: depth = 0; maxDepth = 0;",
+          "Call trackDepth(n) to build the stack",
+          "Return maxDepth to show how deep the stack went"
         ],
         "xp_reward": 40
       }
@@ -877,24 +1594,30 @@
     "title": "The Global Artifact",
     "theme": "L09_ice",
     "concept": "scope",
-    "description": "Understand global vs local variable visibility.",
+    "description": "Master variable scope: global, function, and block level visibility.",
     "code_template": "#include <stdio.h>\n\n// Write your function here\n\nint main() {\n    return 0;\n}",
     "hints": [],
     "xp_reward": 0,
-    "total_xp_reward": 70,
+    "total_xp_reward": 105,
     "map_file": "maps/L09_ice.json",
     "challenges": [],
     "lesson": {
       "title": "Variable Scope",
       "content": [
+        "C has three levels of scope: GLOBAL (file-level), FUNCTION (parameters and locals), and BLOCK (inside {}).",
         "Global variables (declared outside functions) are visible everywhere in the file.",
-        "Local variables (inside a function) are only visible within that function.",
-        "If a local variable has the same name as a global, the local 'shadows' the global."
+        "Function scope includes parameters and variables declared at function level - visible throughout the function.",
+        "Block scope variables (declared inside {} like loops) only exist within that block.",
+        "If a local variable has the same name as a global, the local 'shadows' the global within its scope."
       ],
       "examples": [
         {
           "code": "int power = 100; // global\n\nint getPower() {\n    return power; // reads global\n}",
-          "explanation": "Functions can access global variables directly."
+          "explanation": "Global scope: Functions can access global variables directly."
+        },
+        {
+          "code": "int blockScope(int n) {\n    int result = 0;\n    for (int i = 0; i < n; i++) {\n        int temp = i * 2;  // block scope\n        result += temp;\n    }\n    // temp doesn't exist here!\n    return result;\n}",
+          "explanation": "Block scope: temp only exists inside the loop's {}."
         }
       ]
     },
@@ -904,8 +1627,21 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 192, "y": 224, "quest_id": "L09_Q1"},
-        {"x": 384, "y": 224, "quest_id": "L09_Q2"}
+        {
+          "x": 160,
+          "y": 224,
+          "quest_id": "L09_Q1"
+        },
+        {
+          "x": 288,
+          "y": 224,
+          "quest_id": "L09_Q2"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L09_Q3"
+        }
       ],
       "preset": "tutorial"
     },
@@ -923,7 +1659,11 @@
         },
         "user_template": "int artifact = 100;  // Global variable\n\nint readGlobal() {\n    // Return the global artifact value\n    \n}",
         "test_cases": [
-          {"input": [], "expected": "100", "sample": true}
+          {
+            "input": [],
+            "expected": "100",
+            "sample": true
+          }
         ],
         "hints": [
           "Simply return artifact;",
@@ -941,18 +1681,93 @@
           "name": "localShadow",
           "return_type": "int",
           "parameters": [
-            {"name": "artifact", "type": "int"}
+            {
+              "name": "artifact",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int artifact = 100;  // Global (shadowed)\n\nint localShadow(int artifact) {\n    // Return the parameter (shadows global)\n    \n}",
         "test_cases": [
-          {"input": [50], "expected": "50", "sample": true},
-          {"input": [0], "expected": "0", "sample": true},
-          {"input": [999], "expected": "999", "sample": false}
+          {
+            "input": [
+              50
+            ],
+            "expected": "50",
+            "sample": true
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "0",
+            "sample": true
+          },
+          {
+            "input": [
+              999
+            ],
+            "expected": "999",
+            "sample": false
+          }
         ],
         "hints": [
           "The parameter 'artifact' shadows the global",
           "Return the parameter value"
+        ],
+        "xp_reward": 35
+      },
+      {
+        "id": "L09_Q3",
+        "order": 3,
+        "title": "Block Scope Accumulator",
+        "description": "Sum values using a block-scoped temp variable that only exists inside the loop.",
+        "recommended": false,
+        "function_signature": {
+          "name": "blockScope",
+          "return_type": "int",
+          "parameters": [
+            {
+              "name": "n",
+              "type": "int"
+            }
+          ]
+        },
+        "user_template": "int blockScope(int n) {\n    int result = 0;\n    for (int i = 0; i < n; i++) {\n        // Declare temp = i * 2 (block scope)\n        // Add temp to result\n    }\n    // temp doesn't exist here - only result remains\n    return result;\n}",
+        "test_cases": [
+          {
+            "input": [
+              3
+            ],
+            "expected": "6",
+            "sample": true
+          },
+          {
+            "input": [
+              5
+            ],
+            "expected": "20",
+            "sample": true
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              1
+            ],
+            "expected": "0",
+            "sample": false
+          }
+        ],
+        "hints": [
+          "Inside the loop: int temp = i * 2;",
+          "Add to result: result += temp;",
+          "temp only exists within the for loop's {}"
         ],
         "xp_reward": 40
       }
@@ -974,13 +1789,15 @@
       "title": "Recursion",
       "content": [
         "Recursion is when a function calls itself to solve smaller subproblems.",
-        "Every recursive function needs a BASE CASE to stop the recursion.",
-        "The recursive case breaks the problem into smaller pieces."
+        "Every recursive function needs a BASE CASE - the condition that stops recursion.",
+        "Ask yourself: 'What's the simplest case I can solve directly?' That's your base case.",
+        "Without a base case, recursion never stops - causing a stack overflow crash!",
+        "The recursive case breaks the problem into smaller pieces, moving toward the base case."
       ],
       "examples": [
         {
           "code": "int sumTo(int n) {\n    if (n <= 0) return 0;  // base\n    return n + sumTo(n - 1);  // recursive\n}",
-          "explanation": "Sums 1 to n by adding n to the sum of 1 to n-1."
+          "explanation": "Sums 1 to n by adding n to the sum of 1 to n-1. Base case: n <= 0 returns 0."
         }
       ]
     },
@@ -990,9 +1807,21 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 160, "y": 224, "quest_id": "L10_Q1"},
-        {"x": 288, "y": 224, "quest_id": "L10_Q2"},
-        {"x": 416, "y": 224, "quest_id": "L10_Q3"}
+        {
+          "x": 160,
+          "y": 224,
+          "quest_id": "L10_Q1"
+        },
+        {
+          "x": 288,
+          "y": 224,
+          "quest_id": "L10_Q2"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L10_Q3"
+        }
       ],
       "preset": "tutorial"
     },
@@ -1001,23 +1830,51 @@
         "id": "L10_Q1",
         "order": 1,
         "title": "Recursive Sum",
-        "description": "Sum 1 to n using recursion (not a loop).",
+        "description": "The mirror reflects your spell, adding its reflection to the original. Sum 1 to n using the mirror's recursive magic.",
         "recommended": true,
         "function_signature": {
           "name": "sumToN",
           "return_type": "int",
           "parameters": [
-            {"name": "n", "type": "int"}
+            {
+              "name": "n",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int sumToN(int n) {\n    // Base case: if n <= 0, return 0\n    // Recursive: return n + sumToN(n - 1)\n    \n}",
         "test_cases": [
-          {"input": [5], "expected": "15", "sample": true},
-          {"input": [1], "expected": "1", "sample": true},
-          {"input": [0], "expected": "0", "sample": false},
-          {"input": [10], "expected": "55", "sample": false}
+          {
+            "input": [
+              5
+            ],
+            "expected": "15",
+            "sample": true
+          },
+          {
+            "input": [
+              1
+            ],
+            "expected": "1",
+            "sample": true
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              10
+            ],
+            "expected": "55",
+            "sample": false
+          }
         ],
         "hints": [
+          "WARNING: Without a base case, the mirror reflects forever - stack overflow crash!",
           "Base case: if (n <= 0) return 0;",
           "Recursive: return n + sumToN(n - 1);"
         ],
@@ -1027,24 +1884,59 @@
         "id": "L10_Q2",
         "order": 2,
         "title": "Recursive Power",
-        "description": "Calculate base^exp using recursion.",
+        "description": "Each reflection multiplies - mirrors within mirrors create exponential power. Calculate base^exp recursively.",
         "recommended": false,
         "function_signature": {
           "name": "power",
           "return_type": "int",
           "parameters": [
-            {"name": "base", "type": "int"},
-            {"name": "exp", "type": "int"}
+            {
+              "name": "base",
+              "type": "int"
+            },
+            {
+              "name": "exp",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int power(int base, int exp) {\n    // Base case: if exp == 0, return 1\n    // Recursive: return base * power(base, exp - 1)\n    \n}",
         "test_cases": [
-          {"input": [2, 3], "expected": "8", "sample": true},
-          {"input": [3, 2], "expected": "9", "sample": true},
-          {"input": [5, 0], "expected": "1", "sample": false},
-          {"input": [2, 10], "expected": "1024", "sample": false}
+          {
+            "input": [
+              2,
+              3
+            ],
+            "expected": "8",
+            "sample": true
+          },
+          {
+            "input": [
+              3,
+              2
+            ],
+            "expected": "9",
+            "sample": true
+          },
+          {
+            "input": [
+              5,
+              0
+            ],
+            "expected": "1",
+            "sample": false
+          },
+          {
+            "input": [
+              2,
+              10
+            ],
+            "expected": "1024",
+            "sample": false
+          }
         ],
         "hints": [
+          "WARNING: Missing base case = infinite mirror loop = crash!",
           "Base case: any number to the power 0 is 1",
           "Recursive: multiply base by power(base, exp-1)"
         ],
@@ -1054,25 +1946,54 @@
         "id": "L10_Q3",
         "order": 3,
         "title": "Fibonacci",
-        "description": "Return the nth Fibonacci number (0, 1, 1, 2, 3, 5, 8...).",
+        "description": "The golden spiral emerges from the fibonacci mirrors. TWO base cases required: fib(0)=0 and fib(1)=1. What happens if you forget one?",
         "recommended": false,
         "function_signature": {
           "name": "fib",
           "return_type": "int",
           "parameters": [
-            {"name": "n", "type": "int"}
+            {
+              "name": "n",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int fib(int n) {\n    // Base cases: fib(0) = 0, fib(1) = 1\n    // Recursive: fib(n) = fib(n-1) + fib(n-2)\n    \n}",
         "test_cases": [
-          {"input": [6], "expected": "8", "sample": true},
-          {"input": [0], "expected": "0", "sample": true},
-          {"input": [1], "expected": "1", "sample": false},
-          {"input": [10], "expected": "55", "sample": false}
+          {
+            "input": [
+              6
+            ],
+            "expected": "8",
+            "sample": true
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "0",
+            "sample": true
+          },
+          {
+            "input": [
+              1
+            ],
+            "expected": "1",
+            "sample": false
+          },
+          {
+            "input": [
+              10
+            ],
+            "expected": "55",
+            "sample": false
+          }
         ],
         "hints": [
-          "Two base cases: n==0 returns 0, n==1 returns 1",
-          "Recursive: return fib(n-1) + fib(n-2)"
+          "CRITICAL: Fibonacci needs TWO base cases! Missing one causes infinite recursion!",
+          "Base case 1: if (n == 0) return 0;",
+          "Base case 2: if (n == 1) return 1;",
+          "Recursive: return fib(n-1) + fib(n-2);"
         ],
         "xp_reward": 45
       }
@@ -1114,8 +2035,16 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 224, "y": 224, "quest_id": "L11_Q1"},
-        {"x": 416, "y": 224, "quest_id": "L11_Q2"}
+        {
+          "x": 224,
+          "y": 224,
+          "quest_id": "L11_Q1"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L11_Q2"
+        }
       ],
       "preset": "tutorial"
     },
@@ -1130,15 +2059,42 @@
           "name": "readValue",
           "return_type": "int",
           "parameters": [
-            {"name": "ptr", "type": "int*"}
+            {
+              "name": "ptr",
+              "type": "int*"
+            }
           ]
         },
         "user_template": "int readValue(int *ptr) {\n    // Return the value at the address ptr points to\n    // Use *ptr to dereference the pointer\n    \n}",
         "test_cases": [
-          {"input": [42], "expected": "42", "sample": true},
-          {"input": [100], "expected": "100", "sample": true},
-          {"input": [0], "expected": "0", "sample": false},
-          {"input": [-5], "expected": "-5", "sample": false}
+          {
+            "input": [
+              42
+            ],
+            "expected": "42",
+            "sample": true
+          },
+          {
+            "input": [
+              100
+            ],
+            "expected": "100",
+            "sample": true
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              -5
+            ],
+            "expected": "-5",
+            "sample": false
+          }
         ],
         "hints": [
           "Use *ptr to get the value at the address",
@@ -1156,16 +2112,50 @@
           "name": "addValues",
           "return_type": "int",
           "parameters": [
-            {"name": "a", "type": "int*"},
-            {"name": "b", "type": "int*"}
+            {
+              "name": "a",
+              "type": "int*"
+            },
+            {
+              "name": "b",
+              "type": "int*"
+            }
           ]
         },
         "user_template": "int addValues(int *a, int *b) {\n    // Return the sum of values at addresses a and b\n    \n}",
         "test_cases": [
-          {"input": [3, 4], "expected": "7", "sample": true},
-          {"input": [10, 20], "expected": "30", "sample": true},
-          {"input": [0, 0], "expected": "0", "sample": false},
-          {"input": [-5, 5], "expected": "0", "sample": false}
+          {
+            "input": [
+              3,
+              4
+            ],
+            "expected": "7",
+            "sample": true
+          },
+          {
+            "input": [
+              10,
+              20
+            ],
+            "expected": "30",
+            "sample": true
+          },
+          {
+            "input": [
+              0,
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              -5,
+              5
+            ],
+            "expected": "0",
+            "sample": false
+          }
         ],
         "hints": [
           "Dereference both pointers: *a and *b",
@@ -1211,9 +2201,21 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 160, "y": 224, "quest_id": "L12_Q1"},
-        {"x": 288, "y": 224, "quest_id": "L12_Q2"},
-        {"x": 416, "y": 224, "quest_id": "L12_Q3"}
+        {
+          "x": 160,
+          "y": 224,
+          "quest_id": "L12_Q1"
+        },
+        {
+          "x": 288,
+          "y": 224,
+          "quest_id": "L12_Q2"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L12_Q3"
+        }
       ],
       "preset": "tutorial"
     },
@@ -1228,14 +2230,35 @@
           "name": "grab",
           "return_type": "int",
           "parameters": [
-            {"name": "hook", "type": "int*"}
+            {
+              "name": "hook",
+              "type": "int*"
+            }
           ]
         },
         "user_template": "int grab(int *hook) {\n    // Return the value that hook points to\n    \n}",
         "test_cases": [
-          {"input": [100], "expected": "100", "sample": true},
-          {"input": [42], "expected": "42", "sample": true},
-          {"input": [0], "expected": "0", "sample": false}
+          {
+            "input": [
+              100
+            ],
+            "expected": "100",
+            "sample": true
+          },
+          {
+            "input": [
+              42
+            ],
+            "expected": "42",
+            "sample": true
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          }
         ],
         "hints": [
           "Use *hook to dereference the pointer",
@@ -1253,14 +2276,35 @@
           "name": "doubleTreasure",
           "return_type": "int",
           "parameters": [
-            {"name": "ptr", "type": "int*"}
+            {
+              "name": "ptr",
+              "type": "int*"
+            }
           ]
         },
         "user_template": "int doubleTreasure(int *ptr) {\n    // Return the value at ptr multiplied by 2\n    \n}",
         "test_cases": [
-          {"input": [50], "expected": "100", "sample": true},
-          {"input": [7], "expected": "14", "sample": true},
-          {"input": [0], "expected": "0", "sample": false}
+          {
+            "input": [
+              50
+            ],
+            "expected": "100",
+            "sample": true
+          },
+          {
+            "input": [
+              7
+            ],
+            "expected": "14",
+            "sample": true
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          }
         ],
         "hints": [
           "Dereference and multiply: *ptr * 2",
@@ -1278,16 +2322,50 @@
           "name": "addToValue",
           "return_type": "int",
           "parameters": [
-            {"name": "ptr", "type": "int*"},
-            {"name": "add", "type": "int"}
+            {
+              "name": "ptr",
+              "type": "int*"
+            },
+            {
+              "name": "add",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int addToValue(int *ptr, int add) {\n    // Return the value at ptr plus the add amount\n    \n}",
         "test_cases": [
-          {"input": [10, 5], "expected": "15", "sample": true},
-          {"input": [100, 50], "expected": "150", "sample": true},
-          {"input": [0, 0], "expected": "0", "sample": false},
-          {"input": [10, -3], "expected": "7", "sample": false}
+          {
+            "input": [
+              10,
+              5
+            ],
+            "expected": "15",
+            "sample": true
+          },
+          {
+            "input": [
+              100,
+              50
+            ],
+            "expected": "150",
+            "sample": true
+          },
+          {
+            "input": [
+              0,
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              10,
+              -3
+            ],
+            "expected": "7",
+            "sample": false
+          }
         ],
         "hints": [
           "Mix pointer dereference with regular parameter",
@@ -1333,9 +2411,21 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 160, "y": 224, "quest_id": "L13_Q1"},
-        {"x": 288, "y": 224, "quest_id": "L13_Q2"},
-        {"x": 416, "y": 224, "quest_id": "L13_Q3"}
+        {
+          "x": 160,
+          "y": 224,
+          "quest_id": "L13_Q1"
+        },
+        {
+          "x": 288,
+          "y": 224,
+          "quest_id": "L13_Q2"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L13_Q3"
+        }
       ],
       "preset": "tutorial"
     },
@@ -1350,15 +2440,42 @@
           "name": "setAndRead",
           "return_type": "int",
           "parameters": [
-            {"name": "ptr", "type": "int*"},
-            {"name": "val", "type": "int"}
+            {
+              "name": "ptr",
+              "type": "int*"
+            },
+            {
+              "name": "val",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int setAndRead(int *ptr, int val) {\n    // Set *ptr to val, then return *ptr\n    \n}",
         "test_cases": [
-          {"input": [0, 42], "expected": "42", "sample": true},
-          {"input": [100, 200], "expected": "200", "sample": true},
-          {"input": [5, 5], "expected": "5", "sample": false}
+          {
+            "input": [
+              0,
+              42
+            ],
+            "expected": "42",
+            "sample": true
+          },
+          {
+            "input": [
+              100,
+              200
+            ],
+            "expected": "200",
+            "sample": true
+          },
+          {
+            "input": [
+              5,
+              5
+            ],
+            "expected": "5",
+            "sample": false
+          }
         ],
         "hints": [
           "First set: *ptr = val;",
@@ -1376,15 +2493,42 @@
           "name": "incrementAndRead",
           "return_type": "int",
           "parameters": [
-            {"name": "ptr", "type": "int*"}
+            {
+              "name": "ptr",
+              "type": "int*"
+            }
           ]
         },
         "user_template": "int incrementAndRead(int *ptr) {\n    // Add 1 to *ptr and return the new value\n    \n}",
         "test_cases": [
-          {"input": [10], "expected": "11", "sample": true},
-          {"input": [0], "expected": "1", "sample": true},
-          {"input": [-1], "expected": "0", "sample": false},
-          {"input": [99], "expected": "100", "sample": false}
+          {
+            "input": [
+              10
+            ],
+            "expected": "11",
+            "sample": true
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "1",
+            "sample": true
+          },
+          {
+            "input": [
+              -1
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              99
+            ],
+            "expected": "100",
+            "sample": false
+          }
         ],
         "hints": [
           "Modify: *ptr = *ptr + 1; or (*ptr)++;",
@@ -1402,15 +2546,42 @@
           "name": "doubleInPlace",
           "return_type": "int",
           "parameters": [
-            {"name": "ptr", "type": "int*"}
+            {
+              "name": "ptr",
+              "type": "int*"
+            }
           ]
         },
         "user_template": "int doubleInPlace(int *ptr) {\n    // Double the value at ptr and return it\n    \n}",
         "test_cases": [
-          {"input": [5], "expected": "10", "sample": true},
-          {"input": [7], "expected": "14", "sample": true},
-          {"input": [0], "expected": "0", "sample": false},
-          {"input": [50], "expected": "100", "sample": false}
+          {
+            "input": [
+              5
+            ],
+            "expected": "10",
+            "sample": true
+          },
+          {
+            "input": [
+              7
+            ],
+            "expected": "14",
+            "sample": true
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              50
+            ],
+            "expected": "100",
+            "sample": false
+          }
         ],
         "hints": [
           "Multiply: *ptr = *ptr * 2;",
@@ -1456,9 +2627,21 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 160, "y": 224, "quest_id": "L14_Q1"},
-        {"x": 288, "y": 224, "quest_id": "L14_Q2"},
-        {"x": 416, "y": 224, "quest_id": "L14_Q3"}
+        {
+          "x": 160,
+          "y": 224,
+          "quest_id": "L14_Q1"
+        },
+        {
+          "x": 288,
+          "y": 224,
+          "quest_id": "L14_Q2"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L14_Q3"
+        }
       ],
       "preset": "tutorial"
     },
@@ -1473,15 +2656,60 @@
           "name": "getAt",
           "return_type": "int",
           "parameters": [
-            {"name": "arr", "type": "int*"},
-            {"name": "i", "type": "int"}
+            {
+              "name": "arr",
+              "type": "int*"
+            },
+            {
+              "name": "i",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int getAt(int *arr, int i) {\n    // Return the element at index i\n    // Use *(arr + i) or arr[i]\n    \n}",
         "test_cases": [
-          {"input": [[10, 20, 30, 40, 50], 2], "expected": "30", "sample": true},
-          {"input": [[10, 20, 30, 40, 50], 0], "expected": "10", "sample": true},
-          {"input": [[10, 20, 30, 40, 50], 4], "expected": "50", "sample": false}
+          {
+            "input": [
+              [
+                10,
+                20,
+                30,
+                40,
+                50
+              ],
+              2
+            ],
+            "expected": "30",
+            "sample": true
+          },
+          {
+            "input": [
+              [
+                10,
+                20,
+                30,
+                40,
+                50
+              ],
+              0
+            ],
+            "expected": "10",
+            "sample": true
+          },
+          {
+            "input": [
+              [
+                10,
+                20,
+                30,
+                40,
+                50
+              ],
+              4
+            ],
+            "expected": "50",
+            "sample": false
+          }
         ],
         "hints": [
           "Use *(arr + i) to access the element",
@@ -1499,16 +2727,65 @@
           "name": "sumArray",
           "return_type": "int",
           "parameters": [
-            {"name": "arr", "type": "int*"},
-            {"name": "n", "type": "int"}
+            {
+              "name": "arr",
+              "type": "int*"
+            },
+            {
+              "name": "n",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int sumArray(int *arr, int n) {\n    // Sum all n elements using pointer arithmetic\n    int sum = 0;\n    \n    return sum;\n}",
         "test_cases": [
-          {"input": [[1, 2, 3], 3], "expected": "6", "sample": true},
-          {"input": [[10, 20, 30, 40], 4], "expected": "100", "sample": true},
-          {"input": [[5], 1], "expected": "5", "sample": false},
-          {"input": [[0, 0, 0], 3], "expected": "0", "sample": false}
+          {
+            "input": [
+              [
+                1,
+                2,
+                3
+              ],
+              3
+            ],
+            "expected": "6",
+            "sample": true
+          },
+          {
+            "input": [
+              [
+                10,
+                20,
+                30,
+                40
+              ],
+              4
+            ],
+            "expected": "100",
+            "sample": true
+          },
+          {
+            "input": [
+              [
+                5
+              ],
+              1
+            ],
+            "expected": "5",
+            "sample": false
+          },
+          {
+            "input": [
+              [
+                0,
+                0,
+                0
+              ],
+              3
+            ],
+            "expected": "0",
+            "sample": false
+          }
         ],
         "hints": [
           "Use a for loop: for(int i = 0; i < n; i++)",
@@ -1526,17 +2803,75 @@
           "name": "findIndex",
           "return_type": "int",
           "parameters": [
-            {"name": "arr", "type": "int*"},
-            {"name": "n", "type": "int"},
-            {"name": "target", "type": "int"}
+            {
+              "name": "arr",
+              "type": "int*"
+            },
+            {
+              "name": "n",
+              "type": "int"
+            },
+            {
+              "name": "target",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int findIndex(int *arr, int n, int target) {\n    // Find target in arr and return its index\n    // Return -1 if not found\n    \n}",
         "test_cases": [
-          {"input": [[5, 10, 15, 20], 4, 15], "expected": "2", "sample": true},
-          {"input": [[5, 10, 15, 20], 4, 5], "expected": "0", "sample": true},
-          {"input": [[5, 10, 15, 20], 4, 99], "expected": "-1", "sample": false},
-          {"input": [[42], 1, 42], "expected": "0", "sample": false}
+          {
+            "input": [
+              [
+                5,
+                10,
+                15,
+                20
+              ],
+              4,
+              15
+            ],
+            "expected": "2",
+            "sample": true
+          },
+          {
+            "input": [
+              [
+                5,
+                10,
+                15,
+                20
+              ],
+              4,
+              5
+            ],
+            "expected": "0",
+            "sample": true
+          },
+          {
+            "input": [
+              [
+                5,
+                10,
+                15,
+                20
+              ],
+              4,
+              99
+            ],
+            "expected": "-1",
+            "sample": false
+          },
+          {
+            "input": [
+              [
+                42
+              ],
+              1,
+              42
+            ],
+            "expected": "0",
+            "sample": false
+          }
         ],
         "hints": [
           "Loop through the array comparing each element",
@@ -1584,9 +2919,21 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 160, "y": 224, "quest_id": "L15_Q1"},
-        {"x": 288, "y": 224, "quest_id": "L15_Q2"},
-        {"x": 416, "y": 224, "quest_id": "L15_Q3"}
+        {
+          "x": 160,
+          "y": 224,
+          "quest_id": "L15_Q1"
+        },
+        {
+          "x": 288,
+          "y": 224,
+          "quest_id": "L15_Q2"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L15_Q3"
+        }
       ],
       "preset": "tutorial"
     },
@@ -1601,15 +2948,42 @@
           "name": "safeRead",
           "return_type": "int",
           "parameters": [
-            {"name": "ptr", "type": "int*"}
+            {
+              "name": "ptr",
+              "type": "int*"
+            }
           ]
         },
         "user_template": "int safeRead(int *ptr) {\n    // Return *ptr if valid, or -1 if NULL\n    \n}",
         "test_cases": [
-          {"input": [42], "expected": "42", "sample": true},
-          {"input": [100], "expected": "100", "sample": true},
-          {"input": ["NULL"], "expected": "-1", "sample": false},
-          {"input": [0], "expected": "0", "sample": false}
+          {
+            "input": [
+              42
+            ],
+            "expected": "42",
+            "sample": true
+          },
+          {
+            "input": [
+              100
+            ],
+            "expected": "100",
+            "sample": true
+          },
+          {
+            "input": [
+              "NULL"
+            ],
+            "expected": "-1",
+            "sample": false
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          }
         ],
         "hints": [
           "Check: if (ptr == NULL) return -1;",
@@ -1627,14 +3001,35 @@
           "name": "isValid",
           "return_type": "int",
           "parameters": [
-            {"name": "ptr", "type": "int*"}
+            {
+              "name": "ptr",
+              "type": "int*"
+            }
           ]
         },
         "user_template": "int isValid(int *ptr) {\n    // Return 1 if ptr is not NULL, 0 if NULL\n    \n}",
         "test_cases": [
-          {"input": [42], "expected": "1", "sample": true},
-          {"input": ["NULL"], "expected": "0", "sample": true},
-          {"input": [0], "expected": "1", "sample": false}
+          {
+            "input": [
+              42
+            ],
+            "expected": "1",
+            "sample": true
+          },
+          {
+            "input": [
+              "NULL"
+            ],
+            "expected": "0",
+            "sample": true
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "1",
+            "sample": false
+          }
         ],
         "hints": [
           "Compare ptr to NULL",
@@ -1652,16 +3047,50 @@
           "name": "safeAdd",
           "return_type": "int",
           "parameters": [
-            {"name": "a", "type": "int*"},
-            {"name": "b", "type": "int*"}
+            {
+              "name": "a",
+              "type": "int*"
+            },
+            {
+              "name": "b",
+              "type": "int*"
+            }
           ]
         },
         "user_template": "int safeAdd(int *a, int *b) {\n    // Return *a + *b if both valid, 0 if either is NULL\n    \n}",
         "test_cases": [
-          {"input": [3, 4], "expected": "7", "sample": true},
-          {"input": [10, 20], "expected": "30", "sample": true},
-          {"input": ["NULL", 5], "expected": "0", "sample": false},
-          {"input": [5, "NULL"], "expected": "0", "sample": false}
+          {
+            "input": [
+              3,
+              4
+            ],
+            "expected": "7",
+            "sample": true
+          },
+          {
+            "input": [
+              10,
+              20
+            ],
+            "expected": "30",
+            "sample": true
+          },
+          {
+            "input": [
+              "NULL",
+              5
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              5,
+              "NULL"
+            ],
+            "expected": "0",
+            "sample": false
+          }
         ],
         "hints": [
           "Check both: if (a == NULL || b == NULL)",
@@ -1707,9 +3136,21 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 160, "y": 224, "quest_id": "L16_Q1"},
-        {"x": 288, "y": 224, "quest_id": "L16_Q2"},
-        {"x": 416, "y": 224, "quest_id": "L16_Q3"}
+        {
+          "x": 160,
+          "y": 224,
+          "quest_id": "L16_Q1"
+        },
+        {
+          "x": 288,
+          "y": 224,
+          "quest_id": "L16_Q2"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L16_Q3"
+        }
       ],
       "preset": "tutorial"
     },
@@ -1724,15 +3165,42 @@
           "name": "getHP",
           "return_type": "int",
           "parameters": [
-            {"name": "hp", "type": "int"},
-            {"name": "level", "type": "int"}
+            {
+              "name": "hp",
+              "type": "int"
+            },
+            {
+              "name": "level",
+              "type": "int"
+            }
           ]
         },
         "user_template": "// struct Hero { int hp; int level; }; is provided\n\nint getHP(int hp, int level) {\n    // Simply return the hp value\n    \n}",
         "test_cases": [
-          {"input": [100, 5], "expected": "100", "sample": true},
-          {"input": [50, 10], "expected": "50", "sample": true},
-          {"input": [0, 1], "expected": "0", "sample": false}
+          {
+            "input": [
+              100,
+              5
+            ],
+            "expected": "100",
+            "sample": true
+          },
+          {
+            "input": [
+              50,
+              10
+            ],
+            "expected": "50",
+            "sample": true
+          },
+          {
+            "input": [
+              0,
+              1
+            ],
+            "expected": "0",
+            "sample": false
+          }
         ],
         "hints": [
           "Just return the hp parameter",
@@ -1750,15 +3218,42 @@
           "name": "isAlive",
           "return_type": "int",
           "parameters": [
-            {"name": "hp", "type": "int"}
+            {
+              "name": "hp",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int isAlive(int hp) {\n    // Return 1 if hp > 0, else 0\n    \n}",
         "test_cases": [
-          {"input": [100], "expected": "1", "sample": true},
-          {"input": [0], "expected": "0", "sample": true},
-          {"input": [1], "expected": "1", "sample": false},
-          {"input": [-5], "expected": "0", "sample": false}
+          {
+            "input": [
+              100
+            ],
+            "expected": "1",
+            "sample": true
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "0",
+            "sample": true
+          },
+          {
+            "input": [
+              1
+            ],
+            "expected": "1",
+            "sample": false
+          },
+          {
+            "input": [
+              -5
+            ],
+            "expected": "0",
+            "sample": false
+          }
         ],
         "hints": [
           "Compare hp to 0",
@@ -1770,22 +3265,56 @@
         "id": "L16_Q3",
         "order": 3,
         "title": "Calculate Power Level",
-        "description": "Return hp + (level × 10) as the hero's power level.",
+        "description": "Return hp + (level \u00d7 10) as the hero's power level.",
         "recommended": false,
         "function_signature": {
           "name": "powerLevel",
           "return_type": "int",
           "parameters": [
-            {"name": "hp", "type": "int"},
-            {"name": "level", "type": "int"}
+            {
+              "name": "hp",
+              "type": "int"
+            },
+            {
+              "name": "level",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int powerLevel(int hp, int level) {\n    // Return hp + level * 10\n    \n}",
         "test_cases": [
-          {"input": [100, 5], "expected": "150", "sample": true},
-          {"input": [50, 10], "expected": "150", "sample": true},
-          {"input": [0, 0], "expected": "0", "sample": false},
-          {"input": [200, 20], "expected": "400", "sample": false}
+          {
+            "input": [
+              100,
+              5
+            ],
+            "expected": "150",
+            "sample": true
+          },
+          {
+            "input": [
+              50,
+              10
+            ],
+            "expected": "150",
+            "sample": true
+          },
+          {
+            "input": [
+              0,
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              200,
+              20
+            ],
+            "expected": "400",
+            "sample": false
+          }
         ],
         "hints": [
           "Multiply level by 10 and add hp",
@@ -1831,9 +3360,21 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 160, "y": 224, "quest_id": "L17_Q1"},
-        {"x": 288, "y": 224, "quest_id": "L17_Q2"},
-        {"x": 416, "y": 224, "quest_id": "L17_Q3"}
+        {
+          "x": 160,
+          "y": 224,
+          "quest_id": "L17_Q1"
+        },
+        {
+          "x": 288,
+          "y": 224,
+          "quest_id": "L17_Q2"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L17_Q3"
+        }
       ],
       "preset": "tutorial"
     },
@@ -1848,16 +3389,49 @@
           "name": "getGold",
           "return_type": "int",
           "parameters": [
-            {"name": "gold", "type": "int"},
-            {"name": "gems", "type": "int"},
-            {"name": "keys", "type": "int"}
+            {
+              "name": "gold",
+              "type": "int"
+            },
+            {
+              "name": "gems",
+              "type": "int"
+            },
+            {
+              "name": "keys",
+              "type": "int"
+            }
           ]
         },
         "user_template": "// Chest has: gold, gems, keys\n\nint getGold(int gold, int gems, int keys) {\n    // Return the gold amount\n    \n}",
         "test_cases": [
-          {"input": [500, 10, 3], "expected": "500", "sample": true},
-          {"input": [100, 5, 2], "expected": "100", "sample": true},
-          {"input": [0, 0, 0], "expected": "0", "sample": false}
+          {
+            "input": [
+              500,
+              10,
+              3
+            ],
+            "expected": "500",
+            "sample": true
+          },
+          {
+            "input": [
+              100,
+              5,
+              2
+            ],
+            "expected": "100",
+            "sample": true
+          },
+          {
+            "input": [
+              0,
+              0,
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          }
         ],
         "hints": [
           "Simply return the gold parameter",
@@ -1869,23 +3443,64 @@
         "id": "L17_Q2",
         "order": 2,
         "title": "Total Chest Value",
-        "description": "Calculate total value: gold + gems×10 + keys×5.",
+        "description": "Calculate total value: gold + gems\u00d710 + keys\u00d75.",
         "recommended": false,
         "function_signature": {
           "name": "totalValue",
           "return_type": "int",
           "parameters": [
-            {"name": "gold", "type": "int"},
-            {"name": "gems", "type": "int"},
-            {"name": "keys", "type": "int"}
+            {
+              "name": "gold",
+              "type": "int"
+            },
+            {
+              "name": "gems",
+              "type": "int"
+            },
+            {
+              "name": "keys",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int totalValue(int gold, int gems, int keys) {\n    // Return gold + gems*10 + keys*5\n    \n}",
         "test_cases": [
-          {"input": [100, 5, 2], "expected": "160", "sample": true},
-          {"input": [500, 10, 3], "expected": "615", "sample": true},
-          {"input": [0, 0, 0], "expected": "0", "sample": false},
-          {"input": [0, 10, 10], "expected": "150", "sample": false}
+          {
+            "input": [
+              100,
+              5,
+              2
+            ],
+            "expected": "160",
+            "sample": true
+          },
+          {
+            "input": [
+              500,
+              10,
+              3
+            ],
+            "expected": "615",
+            "sample": true
+          },
+          {
+            "input": [
+              0,
+              0,
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              0,
+              10,
+              10
+            ],
+            "expected": "150",
+            "sample": false
+          }
         ],
         "hints": [
           "Multiply gems by 10, keys by 5",
@@ -1903,17 +3518,58 @@
           "name": "isEmpty",
           "return_type": "int",
           "parameters": [
-            {"name": "gold", "type": "int"},
-            {"name": "gems", "type": "int"},
-            {"name": "keys", "type": "int"}
+            {
+              "name": "gold",
+              "type": "int"
+            },
+            {
+              "name": "gems",
+              "type": "int"
+            },
+            {
+              "name": "keys",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int isEmpty(int gold, int gems, int keys) {\n    // Return 1 if all are 0, else 0\n    \n}",
         "test_cases": [
-          {"input": [0, 0, 0], "expected": "1", "sample": true},
-          {"input": [1, 0, 0], "expected": "0", "sample": true},
-          {"input": [0, 1, 0], "expected": "0", "sample": false},
-          {"input": [100, 50, 10], "expected": "0", "sample": false}
+          {
+            "input": [
+              0,
+              0,
+              0
+            ],
+            "expected": "1",
+            "sample": true
+          },
+          {
+            "input": [
+              1,
+              0,
+              0
+            ],
+            "expected": "0",
+            "sample": true
+          },
+          {
+            "input": [
+              0,
+              1,
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              100,
+              50,
+              10
+            ],
+            "expected": "0",
+            "sample": false
+          }
         ],
         "hints": [
           "Check all three: gold == 0 && gems == 0 && keys == 0",
@@ -1938,18 +3594,14 @@
     "lesson": {
       "title": "Struct Pointers and Arrow Operator",
       "content": [
-        "When you have a pointer to a struct, use -> to access members: ptr->field",
-        "The arrow operator is shorthand for (*ptr).field",
-        "This allows functions to modify struct data in the caller's scope"
+        "When you have a pointer to a struct, use -> to access members",
+        "ptr->field is shorthand for (*ptr).field",
+        "This lets functions modify struct data in the caller's scope"
       ],
       "examples": [
         {
-          "code": "int addGold(int *gold, int amt) {\n    *gold += amt;\n    return *gold;\n}",
-          "explanation": "Adds amount to gold through pointer and returns new total."
-        },
-        {
-          "code": "int heal(int *hp, int amt) {\n    *hp += amt;\n    return *hp;\n}",
-          "explanation": "Increases HP and returns the new value."
+          "code": "struct Chest { int gold; int gems; };\n\nint addGold(int gold, int amt) {\n    struct Chest c;\n    c.gold = gold;\n    struct Chest *ptr = &c;\n    ptr->gold += amt;\n    return ptr->gold;\n}",
+          "explanation": "Create a struct, get pointer to it, use -> to modify its members."
         }
       ]
     },
@@ -1959,9 +3611,21 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 160, "y": 224, "quest_id": "L18_Q1"},
-        {"x": 288, "y": 224, "quest_id": "L18_Q2"},
-        {"x": 416, "y": 224, "quest_id": "L18_Q3"}
+        {
+          "x": 160,
+          "y": 224,
+          "quest_id": "L18_Q1"
+        },
+        {
+          "x": 288,
+          "y": 224,
+          "quest_id": "L18_Q2"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L18_Q3"
+        }
       ],
       "preset": "tutorial"
     },
@@ -1969,78 +3633,162 @@
       {
         "id": "L18_Q1",
         "order": 1,
-        "title": "Add Gold",
-        "description": "Add amount to gold and return the new total.",
+        "title": "Add Gold via Arrow",
+        "description": "Create a Chest struct, use a pointer with -> to add gold, return the new total.",
         "recommended": true,
         "function_signature": {
           "name": "addGold",
           "return_type": "int",
           "parameters": [
-            {"name": "gold", "type": "int*"},
-            {"name": "amt", "type": "int"}
+            {
+              "name": "currentGold",
+              "type": "int"
+            },
+            {
+              "name": "addAmount",
+              "type": "int"
+            }
           ]
         },
-        "user_template": "int addGold(int *gold, int amt) {\n    // Add amt to *gold and return the new value\n    \n}",
+        "user_template": "struct Chest {\n    int gold;\n    int gems;\n};\n\nint addGold(int currentGold, int addAmount) {\n    // 1. Create a struct Chest and set gold = currentGold\n    // 2. Create a pointer to it: struct Chest *ptr = &c;\n    // 3. Use ptr->gold to add addAmount\n    // 4. Return ptr->gold\n    \n}",
         "test_cases": [
-          {"input": [100, 50], "expected": "150", "sample": true},
-          {"input": [0, 25], "expected": "25", "sample": true},
-          {"input": [200, 0], "expected": "200", "sample": false}
+          {
+            "input": [
+              100,
+              50
+            ],
+            "expected": "150",
+            "sample": true
+          },
+          {
+            "input": [
+              0,
+              25
+            ],
+            "expected": "25",
+            "sample": true
+          },
+          {
+            "input": [
+              200,
+              0
+            ],
+            "expected": "200",
+            "sample": false
+          }
         ],
         "hints": [
-          "Modify through pointer: *gold += amt;",
-          "Return the updated value: return *gold;"
+          "struct Chest c; c.gold = currentGold;",
+          "struct Chest *ptr = &c;",
+          "ptr->gold += addAmount; return ptr->gold;"
         ],
         "xp_reward": 30
       },
       {
         "id": "L18_Q2",
         "order": 2,
-        "title": "Heal Hero",
-        "description": "Add healing amount to HP and return new HP value.",
+        "title": "Modify Two Fields",
+        "description": "Use arrow operator to set both gold and gems, then return their sum.",
         "recommended": false,
         "function_signature": {
-          "name": "heal",
+          "name": "setTreasure",
           "return_type": "int",
           "parameters": [
-            {"name": "hp", "type": "int*"},
-            {"name": "amount", "type": "int"}
+            {
+              "name": "goldAmt",
+              "type": "int"
+            },
+            {
+              "name": "gemAmt",
+              "type": "int"
+            }
           ]
         },
-        "user_template": "int heal(int *hp, int amount) {\n    // Add amount to *hp and return new hp\n    \n}",
+        "user_template": "struct Chest {\n    int gold;\n    int gems;\n};\n\nint setTreasure(int goldAmt, int gemAmt) {\n    // Create Chest, get pointer, use -> to set both fields\n    // Return ptr->gold + ptr->gems\n    \n}",
         "test_cases": [
-          {"input": [50, 30], "expected": "80", "sample": true},
-          {"input": [100, 0], "expected": "100", "sample": true},
-          {"input": [0, 50], "expected": "50", "sample": false}
+          {
+            "input": [
+              100,
+              50
+            ],
+            "expected": "150",
+            "sample": true
+          },
+          {
+            "input": [
+              25,
+              25
+            ],
+            "expected": "50",
+            "sample": true
+          },
+          {
+            "input": [
+              0,
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          }
         ],
         "hints": [
-          "Add amount to what hp points to",
-          "*hp += amount; return *hp;"
+          "Create struct and pointer as before",
+          "ptr->gold = goldAmt; ptr->gems = gemAmt;",
+          "Return the sum using ptr-> for both"
         ],
         "xp_reward": 30
       },
       {
         "id": "L18_Q3",
         "order": 3,
-        "title": "Level Up",
-        "description": "Increase level by 1 and add 10 to HP. Return the new level.",
+        "title": "Upgrade Chest",
+        "description": "Double the gold value through pointer, add bonus gems, return new gold.",
         "recommended": false,
         "function_signature": {
-          "name": "levelUp",
+          "name": "upgradeChest",
           "return_type": "int",
           "parameters": [
-            {"name": "hp", "type": "int*"},
-            {"name": "level", "type": "int*"}
+            {
+              "name": "initialGold",
+              "type": "int"
+            },
+            {
+              "name": "bonusGems",
+              "type": "int"
+            }
           ]
         },
-        "user_template": "int levelUp(int *hp, int *level) {\n    // Increase *level by 1, add 10 to *hp\n    // Return the new level\n    \n}",
+        "user_template": "struct Chest {\n    int gold;\n    int gems;\n};\n\nint upgradeChest(int initialGold, int bonusGems) {\n    // Create Chest with gold = initialGold\n    // Use ptr-> to double gold and add bonusGems to gems\n    // Return ptr->gold\n    \n}",
         "test_cases": [
-          {"input": [100, 5], "expected": "6", "sample": true},
-          {"input": [50, 1], "expected": "2", "sample": true},
-          {"input": [0, 0], "expected": "1", "sample": false}
+          {
+            "input": [
+              50,
+              10
+            ],
+            "expected": "100",
+            "sample": true
+          },
+          {
+            "input": [
+              25,
+              5
+            ],
+            "expected": "50",
+            "sample": true
+          },
+          {
+            "input": [
+              0,
+              100
+            ],
+            "expected": "0",
+            "sample": false
+          }
         ],
         "hints": [
-          "Modify both: (*level)++; *hp += 10;",
-          "Return the new level value"
+          "ptr->gold *= 2; to double it",
+          "ptr->gems = bonusGems;",
+          "Arrow operator works for both reading and writing"
         ],
         "xp_reward": 35
       }
@@ -2061,14 +3809,14 @@
     "lesson": {
       "title": "Nested Structs",
       "content": [
-        "Structs can contain other structs, creating hierarchical data.",
+        "Structs can contain other structs, creating hierarchical data",
         "Access nested fields with chained dots: guild.leader.level",
-        "This models real-world relationships like 'Guild has a Leader who is a Hero'"
+        "Initialize with nested braces: struct Guild g = {{100, 5}, 10};"
       ],
       "examples": [
         {
-          "code": "// Guild has leaderLevel and memberCount\nint guildPower(int leaderLevel, int members) {\n    return leaderLevel * members;\n}",
-          "explanation": "Calculate guild power from nested data."
+          "code": "struct Hero { int hp; int level; };\nstruct Guild { struct Hero leader; int memberCount; };\n\nint guildPower(int leaderHp, int leaderLvl, int members) {\n    struct Hero h = {leaderHp, leaderLvl};\n    struct Guild g = {h, members};\n    return g.leader.level * g.memberCount;\n}",
+          "explanation": "Create nested structs and access members with chained dot notation."
         }
       ]
     },
@@ -2078,8 +3826,16 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 224, "y": 224, "quest_id": "L19_Q1"},
-        {"x": 416, "y": 224, "quest_id": "L19_Q2"}
+        {
+          "x": 224,
+          "y": 224,
+          "quest_id": "L19_Q1"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L19_Q2"
+        }
       ],
       "preset": "tutorial"
     },
@@ -2087,25 +3843,61 @@
       {
         "id": "L19_Q1",
         "order": 1,
-        "title": "Get Leader Level",
-        "description": "Return the leader's level from the guild data.",
+        "title": "Access Nested Level",
+        "description": "Create nested Hero/Guild structs, return the leader's level using chained dots.",
         "recommended": true,
         "function_signature": {
           "name": "leaderLevel",
           "return_type": "int",
           "parameters": [
-            {"name": "level", "type": "int"}
+            {
+              "name": "leaderHp",
+              "type": "int"
+            },
+            {
+              "name": "leaderLvl",
+              "type": "int"
+            },
+            {
+              "name": "members",
+              "type": "int"
+            }
           ]
         },
-        "user_template": "// Guild has a leader with a level\n\nint leaderLevel(int level) {\n    // Return the leader's level\n    \n}",
+        "user_template": "struct Hero {\n    int hp;\n    int level;\n};\n\nstruct Guild {\n    struct Hero leader;\n    int memberCount;\n};\n\nint leaderLevel(int leaderHp, int leaderLvl, int members) {\n    // 1. Create a Hero: struct Hero h = {leaderHp, leaderLvl};\n    // 2. Create a Guild: struct Guild g; g.leader = h; g.memberCount = members;\n    // 3. Return g.leader.level using chained dot notation\n    \n}",
         "test_cases": [
-          {"input": [50], "expected": "50", "sample": true},
-          {"input": [10], "expected": "10", "sample": true},
-          {"input": [1], "expected": "1", "sample": false}
+          {
+            "input": [
+              100,
+              50,
+              100
+            ],
+            "expected": "50",
+            "sample": true
+          },
+          {
+            "input": [
+              50,
+              10,
+              50
+            ],
+            "expected": "10",
+            "sample": true
+          },
+          {
+            "input": [
+              1,
+              1,
+              1
+            ],
+            "expected": "1",
+            "sample": false
+          }
         ],
         "hints": [
-          "Simply return the level parameter",
-          "return level;"
+          "Create Hero first, then assign to Guild's leader field",
+          "Access nested: g.leader.level",
+          "Chained dots for nested struct access"
         ],
         "xp_reward": 30
       },
@@ -2113,26 +3905,69 @@
         "id": "L19_Q2",
         "order": 2,
         "title": "Calculate Guild Power",
-        "description": "Return leaderLevel × memberCount as guild power.",
+        "description": "Use nested structs to compute power: leader.level \u00d7 memberCount.",
         "recommended": false,
         "function_signature": {
           "name": "guildPower",
           "return_type": "int",
           "parameters": [
-            {"name": "leaderLevel", "type": "int"},
-            {"name": "memberCount", "type": "int"}
+            {
+              "name": "leaderHp",
+              "type": "int"
+            },
+            {
+              "name": "leaderLvl",
+              "type": "int"
+            },
+            {
+              "name": "memberCount",
+              "type": "int"
+            }
           ]
         },
-        "user_template": "int guildPower(int leaderLevel, int memberCount) {\n    // Return leaderLevel * memberCount\n    \n}",
+        "user_template": "struct Hero {\n    int hp;\n    int level;\n};\n\nstruct Guild {\n    struct Hero leader;\n    int memberCount;\n};\n\nint guildPower(int leaderHp, int leaderLvl, int memberCount) {\n    // Create Hero and Guild using struct initialization\n    // Return g.leader.level * g.memberCount\n    \n}",
         "test_cases": [
-          {"input": [50, 100], "expected": "5000", "sample": true},
-          {"input": [10, 50], "expected": "500", "sample": true},
-          {"input": [1, 1], "expected": "1", "sample": false},
-          {"input": [0, 100], "expected": "0", "sample": false}
+          {
+            "input": [
+              100,
+              50,
+              100
+            ],
+            "expected": "5000",
+            "sample": true
+          },
+          {
+            "input": [
+              50,
+              10,
+              50
+            ],
+            "expected": "500",
+            "sample": true
+          },
+          {
+            "input": [
+              1,
+              1,
+              1
+            ],
+            "expected": "1",
+            "sample": false
+          },
+          {
+            "input": [
+              0,
+              0,
+              100
+            ],
+            "expected": "0",
+            "sample": false
+          }
         ],
         "hints": [
-          "Multiply the two values",
-          "return leaderLevel * memberCount;"
+          "struct Hero h = {leaderHp, leaderLvl};",
+          "struct Guild g = {h, memberCount};",
+          "Multiply g.leader.level * g.memberCount"
         ],
         "xp_reward": 35
       }
@@ -2153,14 +3988,14 @@
     "lesson": {
       "title": "Arrays of Structs",
       "content": [
-        "Arrays can hold structs just like they hold integers.",
+        "Arrays can hold structs just like they hold integers",
         "Access with: array[i].field (combines array indexing and struct access)",
         "Loop through to process all elements: for(int i = 0; i < n; i++)"
       ],
       "examples": [
         {
-          "code": "int totalStrength(int *strengths, int n) {\n    int sum = 0;\n    for(int i = 0; i < n; i++)\n        sum += strengths[i];\n    return sum;\n}",
-          "explanation": "Sum all strength values from the army."
+          "code": "struct Soldier { int strength; };\n\nint totalStrength(int s1, int s2, int s3) {\n    struct Soldier army[3];\n    army[0].strength = s1;\n    army[1].strength = s2;\n    army[2].strength = s3;\n    int sum = 0;\n    for(int i = 0; i < 3; i++) sum += army[i].strength;\n    return sum;\n}",
+          "explanation": "Create array of structs, populate, then iterate with array[i].field syntax."
         }
       ]
     },
@@ -2170,9 +4005,21 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 160, "y": 224, "quest_id": "L20_Q1"},
-        {"x": 288, "y": 224, "quest_id": "L20_Q2"},
-        {"x": 416, "y": 224, "quest_id": "L20_Q3"}
+        {
+          "x": 160,
+          "y": 224,
+          "quest_id": "L20_Q1"
+        },
+        {
+          "x": 288,
+          "y": 224,
+          "quest_id": "L20_Q2"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L20_Q3"
+        }
       ],
       "preset": "tutorial"
     },
@@ -2180,79 +4027,200 @@
       {
         "id": "L20_Q1",
         "order": 1,
-        "title": "Total Army Strength",
-        "description": "Sum all strength values from the soldiers array.",
+        "title": "Sum Army Strength",
+        "description": "Create array of Soldier structs, populate from parameters, sum using loop.",
         "recommended": true,
         "function_signature": {
           "name": "totalStrength",
           "return_type": "int",
           "parameters": [
-            {"name": "strengths", "type": "int*"},
-            {"name": "n", "type": "int"}
+            {
+              "name": "s1",
+              "type": "int"
+            },
+            {
+              "name": "s2",
+              "type": "int"
+            },
+            {
+              "name": "s3",
+              "type": "int"
+            }
           ]
         },
-        "user_template": "int totalStrength(int *strengths, int n) {\n    // Sum all n strength values\n    int sum = 0;\n    \n    return sum;\n}",
+        "user_template": "struct Soldier {\n    int strength;\n};\n\nint totalStrength(int s1, int s2, int s3) {\n    // 1. Create array: struct Soldier army[3];\n    // 2. Set values: army[0].strength = s1; etc.\n    // 3. Loop and sum: sum += army[i].strength;\n    \n}",
         "test_cases": [
-          {"input": [[10, 25, 50], 3], "expected": "85", "sample": true},
-          {"input": [[5, 5, 5, 5], 4], "expected": "20", "sample": true},
-          {"input": [[100], 1], "expected": "100", "sample": false}
+          {
+            "input": [
+              10,
+              25,
+              50
+            ],
+            "expected": "85",
+            "sample": true
+          },
+          {
+            "input": [
+              5,
+              5,
+              5
+            ],
+            "expected": "15",
+            "sample": true
+          },
+          {
+            "input": [
+              100,
+              0,
+              0
+            ],
+            "expected": "100",
+            "sample": false
+          }
         ],
         "hints": [
-          "Loop: for(int i = 0; i < n; i++)",
-          "Add each: sum += strengths[i];"
+          "struct Soldier army[3]; declares array of 3 Soldiers",
+          "army[0].strength = s1; to populate",
+          "Loop: for(int i = 0; i < 3; i++) sum += army[i].strength;"
         ],
         "xp_reward": 35
       },
       {
         "id": "L20_Q2",
         "order": 2,
-        "title": "Find Strongest Index",
-        "description": "Return the index of the soldier with highest strength.",
+        "title": "Find Strongest Soldier",
+        "description": "Create soldier array, find index with maximum strength.",
         "recommended": false,
         "function_signature": {
           "name": "strongestIndex",
           "return_type": "int",
           "parameters": [
-            {"name": "strengths", "type": "int*"},
-            {"name": "n", "type": "int"}
+            {
+              "name": "s1",
+              "type": "int"
+            },
+            {
+              "name": "s2",
+              "type": "int"
+            },
+            {
+              "name": "s3",
+              "type": "int"
+            }
           ]
         },
-        "user_template": "int strongestIndex(int *strengths, int n) {\n    // Find index of maximum strength\n    int maxIdx = 0;\n    \n    return maxIdx;\n}",
+        "user_template": "struct Soldier {\n    int strength;\n};\n\nint strongestIndex(int s1, int s2, int s3) {\n    // Create array, populate, find index with max strength\n    \n}",
         "test_cases": [
-          {"input": [[10, 50, 25], 3], "expected": "1", "sample": true},
-          {"input": [[100, 50, 25], 3], "expected": "0", "sample": true},
-          {"input": [[10, 25, 50], 3], "expected": "2", "sample": false}
+          {
+            "input": [
+              10,
+              50,
+              25
+            ],
+            "expected": "1",
+            "sample": true
+          },
+          {
+            "input": [
+              100,
+              50,
+              25
+            ],
+            "expected": "0",
+            "sample": true
+          },
+          {
+            "input": [
+              10,
+              25,
+              50
+            ],
+            "expected": "2",
+            "sample": false
+          }
         ],
         "hints": [
-          "Track max index, update when you find larger",
-          "if(strengths[i] > strengths[maxIdx]) maxIdx = i;"
+          "Track maxIdx starting at 0",
+          "Compare: if(army[i].strength > army[maxIdx].strength)",
+          "Update maxIdx when you find larger value"
         ],
         "xp_reward": 35
       },
       {
         "id": "L20_Q3",
         "order": 3,
-        "title": "Count Strong Soldiers",
-        "description": "Count soldiers with strength >= minStrength.",
+        "title": "Count Elite Soldiers",
+        "description": "Count soldiers with strength >= threshold using array iteration.",
         "recommended": false,
         "function_signature": {
-          "name": "countStrong",
+          "name": "countElite",
           "return_type": "int",
           "parameters": [
-            {"name": "strengths", "type": "int*"},
-            {"name": "n", "type": "int"},
-            {"name": "minStrength", "type": "int"}
+            {
+              "name": "s1",
+              "type": "int"
+            },
+            {
+              "name": "s2",
+              "type": "int"
+            },
+            {
+              "name": "s3",
+              "type": "int"
+            },
+            {
+              "name": "threshold",
+              "type": "int"
+            }
           ]
         },
-        "user_template": "int countStrong(int *strengths, int n, int minStrength) {\n    // Count soldiers with strength >= minStrength\n    int count = 0;\n    \n    return count;\n}",
+        "user_template": "struct Soldier {\n    int strength;\n};\n\nint countElite(int s1, int s2, int s3, int threshold) {\n    // Create array, populate, count how many meet threshold\n    \n}",
         "test_cases": [
-          {"input": [[10, 25, 50], 3, 20], "expected": "2", "sample": true},
-          {"input": [[10, 25, 50], 3, 100], "expected": "0", "sample": true},
-          {"input": [[10, 25, 50], 3, 10], "expected": "3", "sample": false}
+          {
+            "input": [
+              10,
+              25,
+              50,
+              20
+            ],
+            "expected": "2",
+            "sample": true
+          },
+          {
+            "input": [
+              10,
+              25,
+              50,
+              100
+            ],
+            "expected": "0",
+            "sample": true
+          },
+          {
+            "input": [
+              10,
+              25,
+              50,
+              10
+            ],
+            "expected": "3",
+            "sample": false
+          },
+          {
+            "input": [
+              5,
+              15,
+              25,
+              15
+            ],
+            "expected": "2",
+            "sample": false
+          }
         ],
         "hints": [
-          "Loop and check: if(strengths[i] >= minStrength)",
-          "Increment count for each match"
+          "Initialize count = 0",
+          "Loop: if(army[i].strength >= threshold) count++;",
+          "Combine array access with struct member access"
         ],
         "xp_reward": 40
       }
@@ -2274,13 +4242,14 @@
       "title": "Dynamic Memory with Malloc",
       "content": [
         "malloc (memory allocate) requests memory from the system at runtime.",
-        "Use: int *ptr = (int*)malloc(sizeof(int)); to allocate space for one integer.",
-        "Always check if malloc returned NULL (allocation failed) and always free() when done."
+        "CRITICAL: malloc can fail and return NULL if memory is exhausted!",
+        "ALWAYS check: int *ptr = malloc(...); if (ptr == NULL) { handle error }",
+        "Always free() when done to prevent memory leaks."
       ],
       "examples": [
         {
-          "code": "int mallocAndRead(int val) {\n    int *p = (int*)malloc(sizeof(int));\n    *p = val;\n    int result = *p;\n    free(p);\n    return result;\n}",
-          "explanation": "Allocate, store a value, read it back, free, and return."
+          "code": "int mallocRead(int val) {\n    int *p = (int*)malloc(sizeof(int));\n    if (p == NULL) return -1;  // Handle failure!\n    *p = val;\n    int result = *p;\n    free(p);\n    return result;\n}",
+          "explanation": "Safe malloc pattern: allocate, check NULL, use, free."
         }
       ]
     },
@@ -2290,8 +4259,16 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 224, "y": 224, "quest_id": "L21_Q1"},
-        {"x": 416, "y": 224, "quest_id": "L21_Q2"}
+        {
+          "x": 224,
+          "y": 224,
+          "quest_id": "L21_Q1"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L21_Q2"
+        }
       ],
       "preset": "tutorial"
     },
@@ -2306,17 +4283,45 @@
           "name": "mallocRead",
           "return_type": "int",
           "parameters": [
-            {"name": "val", "type": "int"}
+            {
+              "name": "val",
+              "type": "int"
+            }
           ]
         },
-        "user_template": "int mallocRead(int val) {\n    // 1. Allocate memory for one int\n    // 2. Store val in it\n    // 3. Read the value back\n    // 4. Free the memory\n    // 5. Return the value\n    \n}",
+        "user_template": "int mallocRead(int val) {\n    // 1. Allocate memory for one int\n    // 2. CHECK IF NULL - return -1 if allocation failed!\n    // 3. Store val in it\n    // 4. Read the value back\n    // 5. Free the memory\n    // 6. Return the value\n    \n}",
         "test_cases": [
-          {"input": [42], "expected": "42", "sample": true},
-          {"input": [100], "expected": "100", "sample": true},
-          {"input": [0], "expected": "0", "sample": false},
-          {"input": [-5], "expected": "-5", "sample": false}
+          {
+            "input": [
+              42
+            ],
+            "expected": "42",
+            "sample": true
+          },
+          {
+            "input": [
+              100
+            ],
+            "expected": "100",
+            "sample": true
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              -5
+            ],
+            "expected": "-5",
+            "sample": false
+          }
         ],
         "hints": [
+          "SAFETY: Check if malloc returns NULL!",
           "int *p = (int*)malloc(sizeof(int));",
           "*p = val; to store the value",
           "Don't forget to free(p) before returning!"
@@ -2333,16 +4338,50 @@
           "name": "mallocSum",
           "return_type": "int",
           "parameters": [
-            {"name": "a", "type": "int"},
-            {"name": "b", "type": "int"}
+            {
+              "name": "a",
+              "type": "int"
+            },
+            {
+              "name": "b",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int mallocSum(int a, int b) {\n    // Allocate, compute a+b, store, read, free, return\n    \n}",
         "test_cases": [
-          {"input": [3, 4], "expected": "7", "sample": true},
-          {"input": [10, 20], "expected": "30", "sample": true},
-          {"input": [0, 0], "expected": "0", "sample": false},
-          {"input": [100, -50], "expected": "50", "sample": false}
+          {
+            "input": [
+              3,
+              4
+            ],
+            "expected": "7",
+            "sample": true
+          },
+          {
+            "input": [
+              10,
+              20
+            ],
+            "expected": "30",
+            "sample": true
+          },
+          {
+            "input": [
+              0,
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              100,
+              -50
+            ],
+            "expected": "50",
+            "sample": false
+          }
         ],
         "hints": [
           "Compute a + b and store in allocated memory",
@@ -2369,12 +4408,13 @@
       "title": "Releasing Memory with Free",
       "content": [
         "Every malloc must have a matching free, or you create a memory leak.",
-        "Call free(ptr) to release memory. After freeing, the pointer is dangling - don't use it!",
-        "Good pattern: allocate, use, free, return result (not the pointer)."
+        "DANGER: After free(ptr), the pointer is 'dangling' - using it crashes!",
+        "Safe pattern: save result before freeing, then return the saved value.",
+        "Never return a freed pointer - it points to released memory!"
       ],
       "examples": [
         {
-          "code": "int computeAndFree(int a, int b) {\n    int *p = (int*)malloc(sizeof(int));\n    *p = a * b;\n    int result = *p;\n    free(p);\n    return result;\n}",
+          "code": "int computeAndFree(int a, int b) {\n    int *p = (int*)malloc(sizeof(int));\n    if (p == NULL) return -1;\n    *p = a * b;\n    int result = *p;\n    free(p);  // Pointer now dangling!\n    return result;  // Safe: returning the value, not the pointer\n}",
           "explanation": "Allocate, compute, save result, free, then return the saved result."
         }
       ]
@@ -2385,8 +4425,16 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 224, "y": 224, "quest_id": "L22_Q1"},
-        {"x": 416, "y": 224, "quest_id": "L22_Q2"}
+        {
+          "x": 224,
+          "y": 224,
+          "quest_id": "L22_Q1"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L22_Q2"
+        }
       ],
       "preset": "tutorial"
     },
@@ -2401,20 +4449,48 @@
           "name": "squareAndFree",
           "return_type": "int",
           "parameters": [
-            {"name": "n", "type": "int"}
+            {
+              "name": "n",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int squareAndFree(int n) {\n    // 1. Allocate an int\n    // 2. Compute n * n and store it\n    // 3. Save the result to a local variable\n    // 4. Free the memory\n    // 5. Return the saved result\n    \n}",
         "test_cases": [
-          {"input": [5], "expected": "25", "sample": true},
-          {"input": [3], "expected": "9", "sample": true},
-          {"input": [0], "expected": "0", "sample": false},
-          {"input": [10], "expected": "100", "sample": false}
+          {
+            "input": [
+              5
+            ],
+            "expected": "25",
+            "sample": true
+          },
+          {
+            "input": [
+              3
+            ],
+            "expected": "9",
+            "sample": true
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              10
+            ],
+            "expected": "100",
+            "sample": false
+          }
         ],
         "hints": [
           "Save result before freeing: int result = *p;",
           "Then free(p); and return result;",
-          "Never return a freed pointer!"
+          "Never return a freed pointer!",
+          "WARNING: After free(p), never use *p again! Save result first: int result = *p; free(p); return result;"
         ],
         "xp_reward": 30
       },
@@ -2428,16 +4504,50 @@
           "name": "allocTwoSum",
           "return_type": "int",
           "parameters": [
-            {"name": "a", "type": "int"},
-            {"name": "b", "type": "int"}
+            {
+              "name": "a",
+              "type": "int"
+            },
+            {
+              "name": "b",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int allocTwoSum(int a, int b) {\n    // Allocate two ints, store a and b, sum them\n    // Free both allocations, return the sum\n    \n}",
         "test_cases": [
-          {"input": [10, 20], "expected": "30", "sample": true},
-          {"input": [5, 5], "expected": "10", "sample": true},
-          {"input": [0, 0], "expected": "0", "sample": false},
-          {"input": [100, -50], "expected": "50", "sample": false}
+          {
+            "input": [
+              10,
+              20
+            ],
+            "expected": "30",
+            "sample": true
+          },
+          {
+            "input": [
+              5,
+              5
+            ],
+            "expected": "10",
+            "sample": true
+          },
+          {
+            "input": [
+              0,
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              100,
+              -50
+            ],
+            "expected": "50",
+            "sample": false
+          }
         ],
         "hints": [
           "int *p1 = malloc(...); int *p2 = malloc(...);",
@@ -2463,14 +4573,15 @@
     "lesson": {
       "title": "Avoiding Memory Leaks",
       "content": [
-        "A memory leak occurs when allocated memory is never freed - it stays 'lost' forever.",
-        "In loops: allocate and free within each iteration, OR allocate once before the loop.",
-        "In conditionals: ensure ALL branches free memory before returning."
+        "A memory leak is allocated memory that's never freed - lost forever!",
+        "In the game world, leaks spawn void creatures that consume your realm.",
+        "In loops: free each allocation before the next iteration.",
+        "In branches: ensure ALL code paths call free before returning."
       ],
       "examples": [
         {
           "code": "int loopNoLeak(int n) {\n    int sum = 0;\n    for(int i = 0; i < n; i++) {\n        int *p = malloc(sizeof(int));\n        *p = i;\n        sum += *p;\n        free(p);  // Free each iteration!\n    }\n    return sum;\n}",
-          "explanation": "Each allocation is freed within its iteration - no leaks."
+          "explanation": "Each allocation is freed within its iteration - no leaks. If free() were outside the loop, all but the last allocation would leak!"
         }
       ]
     },
@@ -2480,8 +4591,16 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 224, "y": 224, "quest_id": "L23_Q1"},
-        {"x": 416, "y": 224, "quest_id": "L23_Q2"}
+        {
+          "x": 224,
+          "y": 224,
+          "quest_id": "L23_Q1"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L23_Q2"
+        }
       ],
       "preset": "tutorial"
     },
@@ -2496,17 +4615,45 @@
           "name": "loopSum",
           "return_type": "int",
           "parameters": [
-            {"name": "n", "type": "int"}
+            {
+              "name": "n",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int loopSum(int n) {\n    int sum = 0;\n    for(int i = 0; i < n; i++) {\n        // Allocate, add i to sum, free\n        \n    }\n    return sum;\n}",
         "test_cases": [
-          {"input": [5], "expected": "10", "sample": true},
-          {"input": [3], "expected": "3", "sample": true},
-          {"input": [1], "expected": "0", "sample": false},
-          {"input": [10], "expected": "45", "sample": false}
+          {
+            "input": [
+              5
+            ],
+            "expected": "10",
+            "sample": true
+          },
+          {
+            "input": [
+              3
+            ],
+            "expected": "3",
+            "sample": true
+          },
+          {
+            "input": [
+              1
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              10
+            ],
+            "expected": "45",
+            "sample": false
+          }
         ],
         "hints": [
+          "SAFETY: Every malloc inside a loop must have a matching free inside that same loop!",
           "int *p = malloc(sizeof(int)); *p = i;",
           "sum += *p; then free(p);",
           "Free inside the loop, not after!"
@@ -2523,18 +4670,53 @@
           "name": "branchClean",
           "return_type": "int",
           "parameters": [
-            {"name": "val", "type": "int"},
-            {"name": "flag", "type": "int"}
+            {
+              "name": "val",
+              "type": "int"
+            },
+            {
+              "name": "flag",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int branchClean(int val, int flag) {\n    int *p = (int*)malloc(sizeof(int));\n    *p = val;\n    // If flag != 0, return *p doubled\n    // Otherwise return *p as-is\n    // IMPORTANT: Free memory on ALL paths!\n    \n}",
         "test_cases": [
-          {"input": [5, 1], "expected": "10", "sample": true},
-          {"input": [5, 0], "expected": "5", "sample": true},
-          {"input": [10, 1], "expected": "20", "sample": false},
-          {"input": [10, 0], "expected": "10", "sample": false}
+          {
+            "input": [
+              5,
+              1
+            ],
+            "expected": "10",
+            "sample": true
+          },
+          {
+            "input": [
+              5,
+              0
+            ],
+            "expected": "5",
+            "sample": true
+          },
+          {
+            "input": [
+              10,
+              1
+            ],
+            "expected": "20",
+            "sample": false
+          },
+          {
+            "input": [
+              10,
+              0
+            ],
+            "expected": "10",
+            "sample": false
+          }
         ],
         "hints": [
+          "SAFETY: Test BOTH paths (flag=0 and flag=1) to ensure proper cleanup!",
           "Save result before freeing: int result = ...;",
           "free(p); must happen before EVERY return",
           "Or: compute result first, free, then return"
@@ -2577,8 +4759,16 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 224, "y": 224, "quest_id": "L24_Q1"},
-        {"x": 416, "y": 224, "quest_id": "L24_Q2"}
+        {
+          "x": 224,
+          "y": 224,
+          "quest_id": "L24_Q1"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L24_Q2"
+        }
       ],
       "preset": "tutorial"
     },
@@ -2593,16 +4783,50 @@
           "name": "growSum",
           "return_type": "int",
           "parameters": [
-            {"name": "a", "type": "int"},
-            {"name": "b", "type": "int"}
+            {
+              "name": "a",
+              "type": "int"
+            },
+            {
+              "name": "b",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int growSum(int a, int b) {\n    // 1. Malloc space for 1 int, store a\n    // 2. Realloc to 2 ints, store b in [1]\n    // 3. Sum arr[0] + arr[1]\n    // 4. Free and return sum\n    \n}",
         "test_cases": [
-          {"input": [10, 20], "expected": "30", "sample": true},
-          {"input": [5, 5], "expected": "10", "sample": true},
-          {"input": [0, 0], "expected": "0", "sample": false},
-          {"input": [100, -50], "expected": "50", "sample": false}
+          {
+            "input": [
+              10,
+              20
+            ],
+            "expected": "30",
+            "sample": true
+          },
+          {
+            "input": [
+              5,
+              5
+            ],
+            "expected": "10",
+            "sample": true
+          },
+          {
+            "input": [
+              0,
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              100,
+              -50
+            ],
+            "expected": "50",
+            "sample": false
+          }
         ],
         "hints": [
           "int *arr = malloc(sizeof(int)); arr[0] = a;",
@@ -2621,17 +4845,58 @@
           "name": "tripleGrow",
           "return_type": "int",
           "parameters": [
-            {"name": "a", "type": "int"},
-            {"name": "b", "type": "int"},
-            {"name": "c", "type": "int"}
+            {
+              "name": "a",
+              "type": "int"
+            },
+            {
+              "name": "b",
+              "type": "int"
+            },
+            {
+              "name": "c",
+              "type": "int"
+            }
           ]
         },
         "user_template": "int tripleGrow(int a, int b, int c) {\n    // Malloc(1), store a\n    // Realloc(2), store b\n    // Realloc(3), store c\n    // Sum all three, free, return\n    \n}",
         "test_cases": [
-          {"input": [1, 2, 3], "expected": "6", "sample": true},
-          {"input": [10, 20, 30], "expected": "60", "sample": true},
-          {"input": [0, 0, 0], "expected": "0", "sample": false},
-          {"input": [100, 200, 300], "expected": "600", "sample": false}
+          {
+            "input": [
+              1,
+              2,
+              3
+            ],
+            "expected": "6",
+            "sample": true
+          },
+          {
+            "input": [
+              10,
+              20,
+              30
+            ],
+            "expected": "60",
+            "sample": true
+          },
+          {
+            "input": [
+              0,
+              0,
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              100,
+              200,
+              300
+            ],
+            "expected": "600",
+            "sample": false
+          }
         ],
         "hints": [
           "Each realloc grows by one element",
@@ -2674,9 +4939,21 @@
       "spawn_x": 64,
       "spawn_y": 224,
       "terminals": [
-        {"x": 160, "y": 224, "quest_id": "L25_Q1"},
-        {"x": 288, "y": 224, "quest_id": "L25_Q2"},
-        {"x": 416, "y": 224, "quest_id": "L25_Q3"}
+        {
+          "x": 160,
+          "y": 224,
+          "quest_id": "L25_Q1"
+        },
+        {
+          "x": 288,
+          "y": 224,
+          "quest_id": "L25_Q2"
+        },
+        {
+          "x": 416,
+          "y": 224,
+          "quest_id": "L25_Q3"
+        }
       ],
       "preset": "tutorial"
     },
@@ -2691,15 +4968,42 @@
           "name": "createNode",
           "return_type": "int",
           "parameters": [
-            {"name": "val", "type": "int"}
+            {
+              "name": "val",
+              "type": "int"
+            }
           ]
         },
         "user_template": "struct Node {\n    int value;\n    struct Node *next;\n};\n\nint createNode(int val) {\n    // Allocate a Node, set value=val, next=NULL\n    // Return the stored value, then free\n    \n}",
         "test_cases": [
-          {"input": [42], "expected": "42", "sample": true},
-          {"input": [100], "expected": "100", "sample": true},
-          {"input": [0], "expected": "0", "sample": false},
-          {"input": [-5], "expected": "-5", "sample": false}
+          {
+            "input": [
+              42
+            ],
+            "expected": "42",
+            "sample": true
+          },
+          {
+            "input": [
+              100
+            ],
+            "expected": "100",
+            "sample": true
+          },
+          {
+            "input": [
+              0
+            ],
+            "expected": "0",
+            "sample": false
+          },
+          {
+            "input": [
+              -5
+            ],
+            "expected": "-5",
+            "sample": false
+          }
         ],
         "hints": [
           "struct Node *n = malloc(sizeof(struct Node));",
@@ -2718,16 +5022,49 @@
           "name": "countList",
           "return_type": "int",
           "parameters": [
-            {"name": "a", "type": "int"},
-            {"name": "b", "type": "int"},
-            {"name": "c", "type": "int"}
+            {
+              "name": "a",
+              "type": "int"
+            },
+            {
+              "name": "b",
+              "type": "int"
+            },
+            {
+              "name": "c",
+              "type": "int"
+            }
           ]
         },
         "user_template": "struct Node {\n    int value;\n    struct Node *next;\n};\n\nint countList(int a, int b, int c) {\n    // Create 3 nodes: a -> b -> c -> NULL\n    // Count nodes by traversing, free all, return count\n    \n}",
         "test_cases": [
-          {"input": [1, 2, 3], "expected": "3", "sample": true},
-          {"input": [10, 20, 30], "expected": "3", "sample": true},
-          {"input": [0, 0, 0], "expected": "3", "sample": false}
+          {
+            "input": [
+              1,
+              2,
+              3
+            ],
+            "expected": "3",
+            "sample": true
+          },
+          {
+            "input": [
+              10,
+              20,
+              30
+            ],
+            "expected": "3",
+            "sample": true
+          },
+          {
+            "input": [
+              0,
+              0,
+              0
+            ],
+            "expected": "3",
+            "sample": false
+          }
         ],
         "hints": [
           "Create 3 nodes and link them: n1->next = n2; n2->next = n3; n3->next = NULL;",
@@ -2746,17 +5083,58 @@
           "name": "lastValue",
           "return_type": "int",
           "parameters": [
-            {"name": "a", "type": "int"},
-            {"name": "b", "type": "int"},
-            {"name": "c", "type": "int"}
+            {
+              "name": "a",
+              "type": "int"
+            },
+            {
+              "name": "b",
+              "type": "int"
+            },
+            {
+              "name": "c",
+              "type": "int"
+            }
           ]
         },
         "user_template": "struct Node {\n    int value;\n    struct Node *next;\n};\n\nint lastValue(int a, int b, int c) {\n    // Create list: a -> b -> c -> NULL\n    // Traverse to find last node (where next == NULL)\n    // Return its value, free all nodes\n    \n}",
         "test_cases": [
-          {"input": [1, 2, 3], "expected": "3", "sample": true},
-          {"input": [10, 20, 30], "expected": "30", "sample": true},
-          {"input": [100, 200, 300], "expected": "300", "sample": false},
-          {"input": [5, 5, 5], "expected": "5", "sample": false}
+          {
+            "input": [
+              1,
+              2,
+              3
+            ],
+            "expected": "3",
+            "sample": true
+          },
+          {
+            "input": [
+              10,
+              20,
+              30
+            ],
+            "expected": "30",
+            "sample": true
+          },
+          {
+            "input": [
+              100,
+              200,
+              300
+            ],
+            "expected": "300",
+            "sample": false
+          },
+          {
+            "input": [
+              5,
+              5,
+              5
+            ],
+            "expected": "5",
+            "sample": false
+          }
         ],
         "hints": [
           "Traverse: while(curr->next != NULL) curr = curr->next;",
