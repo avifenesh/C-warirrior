@@ -337,9 +337,14 @@
 </div>
 
 <style>
-    /* Focus outline for accessibility */
+    /* A4: Focus outline for accessibility - visible focus indicator */
     div:focus {
         outline: none;
+    }
+
+    div:focus-visible .game-frame {
+        outline: 3px solid var(--color-accent-cyan, #67e8f9);
+        outline-offset: 4px;
     }
 
     /* Pixel art game frame */

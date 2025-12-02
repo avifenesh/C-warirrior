@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount, onDestroy } from 'svelte';
+    import { onMount, onDestroy, tick } from 'svelte';
     import type { LevelInfo } from '$lib/types';
     import { getConceptPreview } from '$lib/data/concept-previews';
 
@@ -27,8 +27,10 @@
         return 'ready';
     });
 
-    // Accessibility: Reference for focus management
+    // Accessibility: References for focus management and focus trap
     let startButton: HTMLButtonElement | undefined;
+    let cancelButton: HTMLButtonElement | undefined;
+    let modalContainer: HTMLDivElement | undefined;
 
     // Handle keyboard events (Escape to close) - window level for reliability
     function handleGlobalKeydown(event: KeyboardEvent) {
@@ -38,10 +40,47 @@
         }
     }
 
+    // Focus trap handler (A2) - keeps focus within modal
+    function handleModalKeydown(event: KeyboardEvent) {
+        if (event.key !== 'Tab') return;
+
+        const focusableElements = modalContainer?.querySelectorAll<HTMLElement>(
+            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+
+        if (!focusableElements || focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (event.shiftKey) {
+            // Shift+Tab: if on first element, go to last
+            if (document.activeElement === firstElement) {
+                event.preventDefault();
+                lastElement.focus();
+            }
+        } else {
+            // Tab: if on last element, go to first
+            if (document.activeElement === lastElement) {
+                event.preventDefault();
+                firstElement.focus();
+            }
+        }
+    }
+
     // Focus the start button when modal opens and bind escape handler
     onMount(() => {
-        startButton?.focus();
+        // Store the previously focused element to restore later
+        const previouslyFocused = document.activeElement as HTMLElement;
+
+        tick().then(() => startButton?.focus());
         window.addEventListener('keydown', handleGlobalKeydown);
+
+        return () => {
+            window.removeEventListener('keydown', handleGlobalKeydown);
+            // Restore focus when modal closes
+            previouslyFocused?.focus?.();
+        };
     });
 
     onDestroy(() => {
@@ -51,8 +90,17 @@
 
 <!-- Keyboard events handled via window-level listener for Escape key -->
 <div class="modal-backdrop" onclick={onCancel} role="presentation">
-    <!-- svelte-ignore a11y_no_noninteractive_tabindex a11y_click_events_have_key_events -->
-    <div class="preview-modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="preview-title" tabindex="0">
+    <!-- Focus trap and keyboard handler for modal (A1, A2) -->
+    <div
+        bind:this={modalContainer}
+        class="preview-modal"
+        onclick={(e) => e.stopPropagation()}
+        onkeydown={handleModalKeydown}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="preview-title"
+        tabindex="-1"
+    >
         <!-- Header -->
         <header class="preview-header">
             <div class="level-badge">{level.id.replace('L', '')}</div>
@@ -98,7 +146,7 @@
 
         <!-- Actions -->
         <div class="actions">
-            <button type="button" class="btn-cancel" onclick={onCancel}>
+            <button type="button" class="btn-cancel" bind:this={cancelButton} onclick={onCancel}>
                 <span aria-hidden="true">←</span> Back
             </button>
             <button type="button" class="btn-start" bind:this={startButton} onclick={onStart}>
@@ -133,10 +181,18 @@
         box-shadow: 8px 8px 0 #0a0a1e;
         padding: 0;
         width: 90%;
+        min-width: 320px; /* M4: Ensure readability on landscape mobile */
         max-width: 420px;
         font-family: 'Press Start 2P', monospace;
         image-rendering: pixelated;
         animation: slideUp 0.2s ease-out;
+    }
+
+    /* Focus visible for buttons (V5) */
+    .btn-cancel:focus-visible,
+    .btn-start:focus-visible {
+        outline: 2px solid var(--color-accent-cyan, #67e8f9);
+        outline-offset: 2px;
     }
 
     @keyframes slideUp {
@@ -276,7 +332,7 @@
 
     .stat-label {
         font-size: 6px;
-        color: #64748b;
+        color: #a1a1aa; /* A3: Higher contrast for small text */
         text-transform: uppercase;
     }
 

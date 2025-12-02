@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-
     export interface ToastMessage {
         id: string;
         type: 'success' | 'error' | 'info';
@@ -15,21 +13,25 @@
 
     let { messages = [], onDismiss }: Props = $props();
 
-    onMount(() => {
-        // Auto-dismiss toasts after 3 seconds
+    // Track which toasts we've already scheduled for auto-dismiss
+    let scheduledDismissIds = $state<Set<string>>(new Set());
+
+    // Auto-dismiss effect - watches for new messages
+    $effect(() => {
         messages.forEach((msg) => {
-            setTimeout(() => {
-                if (onDismiss) {
-                    onDismiss(msg.id);
-                }
-            }, 3000);
+            if (!scheduledDismissIds.has(msg.id)) {
+                scheduledDismissIds.add(msg.id);
+                setTimeout(() => {
+                    onDismiss?.(msg.id);
+                    // Clean up the tracking set
+                    scheduledDismissIds.delete(msg.id);
+                }, 3000);
+            }
         });
     });
 
     function dismiss(id: string) {
-        if (onDismiss) {
-            onDismiss(id);
-        }
+        onDismiss?.(id);
     }
 
     function getIcon(type: string): string {
@@ -44,15 +46,23 @@
     }
 </script>
 
-<div class="pointer-events-none fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+<!-- aria-live for screen reader announcements (A5) -->
+<div
+    class="pointer-events-none fixed bottom-4 right-4 z-50 flex flex-col gap-2"
+    role="region"
+    aria-label="Notifications"
+    aria-live="polite"
+    aria-atomic="false"
+>
     {#each messages as toast (toast.id)}
         <div
             class="pixel-toast pointer-events-auto animate-slide-in {toast.type} shadow-md"
+            role="alert"
         >
             <div class="flex items-start justify-between gap-2">
                 <div class="flex-1">
                     <p class="flex items-center">
-                        <span class="pixel-icon">{getIcon(toast.type)}</span>
+                        <span class="pixel-icon" aria-hidden="true">{getIcon(toast.type)}</span>
                         <span class="pixel-text">{toast.message}</span>
                     </p>
                     {#if toast.details}
@@ -63,8 +73,8 @@
                 </div>
                 <button
                     onclick={() => dismiss(toast.id)}
-                    class="pixel-close-btn"
-                    aria-label="Dismiss"
+                    class="pixel-close-btn touch-target"
+                    aria-label="Dismiss notification"
                 >
                     ✕
                 </button>

@@ -91,6 +91,14 @@
         showMissionBriefing = true;
     }
 
+    // Handle keyboard on mission briefing overlay (U4)
+    function handleMissionBriefingKeydown(event: KeyboardEvent) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            dismissMissionBriefing();
+        }
+    }
+
     function escapeHtml(str: string) {
         return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
@@ -346,10 +354,11 @@
 
         <!-- Body -->
         <div class="grimoire-body">
-            <!-- Mission Briefing Modal / Lesson Display -->
+            <!-- Mission Briefing Modal / Lesson Display (U4: keyboard dismiss) -->
             {#if showMissionBriefing && (challenge || lesson)}
-                <div class="mission-briefing-overlay">
-                    <div class="mission-briefing-modal {lesson ? 'lesson-modal' : ''}">
+                <!-- svelte-ignore a11y_no_static_element_interactions -->
+                <div class="mission-briefing-overlay" onkeydown={handleMissionBriefingKeydown}>
+                    <div class="mission-briefing-modal {lesson ? 'lesson-modal' : ''}" role="dialog" aria-modal="true">
                         <div class="mission-briefing-header">
                             <span class="mission-icon">{lesson ? '📚' : '📜'}</span>
                             <h2 class="mission-briefing-title">{lesson ? lesson.title : 'MISSION BRIEFING'}</h2>
@@ -714,10 +723,20 @@
         border: none;
         cursor: pointer;
         padding: 4px 8px;
+        min-width: 44px; /* M2: Touch target */
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .close-btn:hover {
         color: #f87171;
+    }
+
+    .close-btn:focus-visible {
+        outline: 2px solid var(--color-accent-cyan, #67e8f9);
+        outline-offset: 2px;
     }
 
     /* Body */
@@ -1540,5 +1559,54 @@
         background: #450a0a;
         border: 2px solid #7f1d1d;
         color: #fca5a5;
+    }
+
+    /* M1: Responsive styles for mobile */
+    @media (max-width: 640px) {
+        .grimoire-container {
+            max-height: 95vh;
+        }
+
+        .code-parchment {
+            min-height: 200px;
+        }
+
+        .code-input,
+        .code-highlight {
+            font-size: 11px;
+            line-height: 17.6px; /* 11px * 1.6 */
+        }
+
+        .grimoire-title {
+            font-size: 10px;
+        }
+
+        .grimoire-header {
+            padding: 10px 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .grimoire-body {
+            padding: 12px;
+        }
+
+        .grimoire-footer {
+            flex-direction: column;
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        .action-buttons {
+            justify-content: center;
+        }
+
+        .controls-hint {
+            text-align: center;
+        }
+
+        .quest-scroll {
+            padding: 10px 12px;
+        }
     }
 </style>

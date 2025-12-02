@@ -94,12 +94,15 @@
         <span class="level-num">{levelNum}</span>
     </div>
 
-    <!-- Tooltip on hover -->
+    <!-- Tooltip on hover (I3: Added progress ring explanation) -->
     <div class="tooltip">
         <strong class="tooltip-title">{level.title}</strong>
         <span class="tooltip-concept">{level.concept}</span>
         {#if hasQuests}
-            <span class="tooltip-quests">{level.completed_quests}/{level.total_quests} quests</span>
+            <span class="tooltip-quests">{level.completed_quests}/{level.total_quests} quests completed</span>
+            {#if progressPercent > 0 && progressPercent < 100}
+                <span class="tooltip-progress">Ring shows {Math.round(progressPercent)}% progress</span>
+            {/if}
         {/if}
         {#if level.locked}
             <span class="tooltip-locked">Complete previous level</span>
@@ -129,6 +132,12 @@
         transform: translate(-50%, -100%) scale(1.2);
         z-index: 20;
         filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8));
+    }
+
+    /* V5: Focus visible for keyboard users */
+    .level-marker:focus-visible {
+        outline: 3px solid var(--color-accent-cyan, #67e8f9);
+        outline-offset: 4px;
     }
 
     .level-marker.locked {
@@ -293,9 +302,16 @@
     }
 
     .tooltip-concept {
-        color: #94a3b8;
+        color: #a1a1aa; /* A3: Higher contrast for small text */
         font-size: 7px;
         text-transform: uppercase;
+    }
+
+    /* I3: Progress ring explanation */
+    .tooltip-progress {
+        color: #67e8f9;
+        font-size: 6px;
+        font-style: italic;
     }
 
     .tooltip-locked {

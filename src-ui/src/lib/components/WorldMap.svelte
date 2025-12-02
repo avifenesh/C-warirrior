@@ -119,7 +119,7 @@
 
     .map-subtitle {
         font-size: 9px;
-        color: #94a3b8;
+        color: #a1a1aa; /* A3: Higher contrast for small text */
         margin: 0;
         letter-spacing: 2px;
     }
@@ -248,7 +248,7 @@
 
     .stat-label {
         font-size: 7px;
-        color: #64748b;
+        color: #a1a1aa; /* A3: Higher contrast for small text */
         text-transform: uppercase;
     }
 
@@ -278,6 +278,12 @@
         border-color: #00fff5;
         color: #00fff5;
         box-shadow: 0 0 10px rgba(0, 255, 245, 0.3);
+    }
+
+    /* V5: Focus visible for keyboard users */
+    .settings-btn:focus-visible {
+        outline: 2px solid var(--color-accent-cyan, #67e8f9);
+        outline-offset: 2px;
     }
 
     /* Responsive adjustments */
