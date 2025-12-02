@@ -6,10 +6,14 @@
         level: LevelInfo;
         position: LevelPosition;
         isCurrentLevel: boolean;
+        currentXP: number;
         onClick: () => void;
     }
 
-    let { level, position, isCurrentLevel, onClick }: Props = $props();
+    let { level, position, isCurrentLevel, currentXP, onClick }: Props = $props();
+
+    // Calculate XP needed to unlock this level
+    let xpNeeded = $derived(Math.max(0, level.xp_required - currentXP));
 
     // Determine visual state (now includes 'in_progress' for partial quest completion)
     let state = $derived.by(() => {
@@ -55,7 +59,7 @@
     style="left: {position.x}%; top: {position.y}%"
     onclick={onClick}
     disabled={level.locked}
-    title={level.locked ? 'Complete previous level to unlock' : level.title}
+    title={level.locked ? `Need ${xpNeeded} more XP to unlock` : level.title}
 >
     <!-- Progress ring at flag base (only for multi-quest levels) -->
     {#if hasQuests && !level.locked}
@@ -105,7 +109,7 @@
             {/if}
         {/if}
         {#if level.locked}
-            <span class="tooltip-locked">Complete previous level</span>
+            <span class="tooltip-locked">Need {xpNeeded} XP to unlock</span>
         {:else if level.completed}
             <span class="tooltip-completed">+{level.xp_reward} XP earned</span>
         {:else}

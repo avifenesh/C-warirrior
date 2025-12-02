@@ -253,7 +253,14 @@ async fn device_id_middleware(
 async fn get_or_create_session(app: &Arc<AppState>, device_id: &str) -> Result<GameState, String> {
     // Fast path: in-memory session
     if let Some(entry) = app.sessions.get(device_id) {
-        return Ok(entry.value().clone());
+        let gs = entry.value();
+        tracing::info!(
+            "DEBUG get_or_create_session: cache hit for {}, completed_quests: {:?}, total_xp: {}",
+            device_id,
+            gs.progression.completed_quests,
+            gs.progression.total_xp
+        );
+        return Ok(gs.clone());
     }
 
     // Fallback: load from database or create a new session
@@ -492,6 +499,14 @@ async fn get_available_levels(
         level.completed_quests = completed_count;
         if level.total_quests > 0 {
             level.completion_percentage = (completed_count as f32 / level.total_quests as f32) * 100.0;
+        }
+
+        // Debug logging for first few levels
+        if level.id == "L01" || level.id == "L02" {
+            tracing::info!(
+                "DEBUG get_available_levels: {} - completed={}, locked={}, quests={}/{}, xp={}",
+                level.id, level.completed, level.locked, level.completed_quests, level.total_quests, game_state.progression.total_xp
+            );
         }
     }
 
@@ -921,6 +936,7 @@ async fn submit_quest_code(
 ) -> Result<Json<SubmitCodeResponse>, (StatusCode, String)> {
     tracing::info!("Submitting quest code for device: {}, quest: {}, test_only: {}",
         device_id.0, payload.quest_id, payload.test_only);
+    tracing::info!("DEBUG: Quest submission started for quest_id={}", payload.quest_id);
 
     let mut game_state = get_or_create_session(&state, &device_id.0)
         .await
@@ -1021,10 +1037,13 @@ async fn submit_quest_code(
 
     // Only complete quest on SUBMIT (not TEST) and if all passed
     if all_passed && !payload.test_only {
+        tracing::info!("DEBUG: All tests passed, completing quest {} for level {}", payload.quest_id, level_id);
         let xp = game_state.complete_quest(&level_id, &payload.quest_id, quest.xp_reward);
         xp_earned = Some(xp);
+        tracing::info!("DEBUG: Quest completed, XP earned: {}", xp);
 
         let completed_count = game_state.get_completed_quest_count(&level_id);
+        tracing::info!("DEBUG: Completed quest count for {}: {}/{}", level_id, completed_count, total_quests);
         quests_remaining = total_quests.saturating_sub(completed_count);
 
         // Check if all quests completed → level complete
@@ -1044,6 +1063,12 @@ async fn submit_quest_code(
         persist_session(&state, &device_id.0, &game_state)
             .await
             .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
+        tracing::info!(
+            "DEBUG: Session persisted for {}, completed_quests for {}: {:?}",
+            device_id.0,
+            level_id,
+            game_state.progression.completed_quests.get(&level_id)
+        );
     }
 
     let feedback = if all_passed {

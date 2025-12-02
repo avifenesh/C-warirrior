@@ -154,8 +154,9 @@ class WasmBackend implements Backend {
     // === Levels ===
 
     async getAvailableLevels(): Promise<LevelInfo[]> {
-        const wasm = await this.ensureWasm();
-        return wasm.get_available_levels() as LevelInfo[];
+        // Use HTTP API to get levels with quest completion data from server
+        // WASM local state doesn't track quest completions (handled server-side)
+        return apiRequest<LevelInfo[]>('/api/levels');
     }
 
     async loadLevel(levelId: string): Promise<void> {

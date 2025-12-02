@@ -324,6 +324,8 @@ pub struct LevelInfo {
     pub completed: bool,
     pub locked: bool,
     pub xp_reward: u32,
+    /// XP required to unlock this level
+    pub xp_required: u32,
     // Quest progress fields
     pub total_quests: usize,
     pub completed_quests: usize,
@@ -370,6 +372,11 @@ impl LevelRegistry {
             .filter_map(|id| self.levels.get(id))
             .map(|l| {
                 let total_quests = l.quest_count();
+                let xp_required = self
+                    .prerequisites
+                    .get(&l.id)
+                    .map(|p| p.min_xp)
+                    .unwrap_or(0);
                 LevelInfo {
                     id: l.id.clone(),
                     title: l.title.clone(),
@@ -377,6 +384,7 @@ impl LevelRegistry {
                     completed: false, // Placeholder, logic for this belongs in GameState
                     locked: false,    // Placeholder
                     xp_reward: l.get_total_xp(),
+                    xp_required,
                     total_quests,
                     completed_quests: 0, // Placeholder
                     completion_percentage: 0.0,

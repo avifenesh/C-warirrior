@@ -81,6 +81,7 @@
                             {level}
                             position={LEVEL_POSITIONS[level.id]}
                             isCurrentLevel={progress?.current_level === level.id}
+                            currentXP={totalXP}
                             onClick={() => handleLevelClick(level)}
                         />
                     {/if}

@@ -236,6 +236,8 @@ export interface LevelInfo {
     completed: boolean;
     locked: boolean;
     xp_reward: number;
+    /** XP required to unlock this level */
+    xp_required: number;
     // Quest progress fields
     total_quests: number;
     completed_quests: number;

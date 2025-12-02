@@ -1297,7 +1297,6 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
       "min_xp": 0
     }
@@ -2716,9 +2715,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 50
+      "min_xp": 55
     }
   },
   {
@@ -4128,9 +4126,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 120
+      "min_xp": 110
     }
   },
   {
@@ -5523,9 +5520,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 200
+      "min_xp": 175
     }
   },
   {
@@ -6854,9 +6850,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 300
+      "min_xp": 250
     }
   },
   {
@@ -8167,9 +8162,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 380
+      "min_xp": 315
     }
   },
   {
@@ -9596,9 +9590,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 470
+      "min_xp": 345
     }
   },
   {
@@ -10970,9 +10963,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 560
+      "min_xp": 415
     }
   },
   {
@@ -12325,9 +12317,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 650
+      "min_xp": 480
     }
   },
   {
@@ -13722,9 +13713,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 750
+      "min_xp": 545
     }
   },
   {
@@ -15061,9 +15051,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 900
+      "min_xp": 620
     }
   },
   {
@@ -16438,9 +16427,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 1000
+      "min_xp": 645
     }
   },
   {
@@ -17827,9 +17815,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 1100
+      "min_xp": 700
     }
   },
   {
@@ -19289,9 +19276,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 1200
+      "min_xp": 765
     }
   },
   {
@@ -20678,9 +20664,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 1300
+      "min_xp": 830
     }
   },
   {
@@ -22086,9 +22071,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 1400
+      "min_xp": 890
     }
   },
   {
@@ -23517,9 +23501,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 1500
+      "min_xp": 945
     }
   },
   {
@@ -24903,9 +24886,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 1600
+      "min_xp": 1010
     }
   },
   {
@@ -26253,9 +26235,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 1700
+      "min_xp": 1070
     }
   },
   {
@@ -27677,9 +27658,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 1800
+      "min_xp": 1100
     }
   },
   {
@@ -29014,9 +28994,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 1900
+      "min_xp": 1170
     }
   },
   {
@@ -30351,9 +30330,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 2000
+      "min_xp": 1200
     }
   },
   {
@@ -31689,9 +31667,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 2050
+      "min_xp": 1230
     }
   },
   {
@@ -33042,9 +33019,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 2100
+      "min_xp": 1260
     }
   },
   {
@@ -34451,9 +34427,8 @@
       }
     ],
     "prerequisites": {
-      "requires_all": [],
       "requires_any": [],
-      "min_xp": 2200
+      "min_xp": 1295
     }
   }
 ]
