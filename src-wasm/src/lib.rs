@@ -53,7 +53,8 @@ impl WasmGame {
                 self.state.game_phase = GamePhase::Paused;
             }
             PlayerAction::Resume => {
-                if matches!(self.state.game_phase, GamePhase::Paused | GamePhase::Coding) {
+                // Allow resuming from Paused, Coding, or LevelComplete (to continue exploring)
+                if matches!(self.state.game_phase, GamePhase::Paused | GamePhase::Coding | GamePhase::LevelComplete) {
                     self.state.game_phase = GamePhase::Playing;
                 }
             }

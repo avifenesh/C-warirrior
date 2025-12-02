@@ -217,20 +217,15 @@ class WasmBackend implements Backend {
     }
 
     async submitQuestCode(code: string, questId: string, testOnly: boolean = false): Promise<CodeResult> {
-        const wasm = await this.ensureWasm();
-
-        const result = await apiRequest<CodeResult & { xp_earned?: number }>(
+        const result = await apiRequest<CodeResult & { xp_earned?: number; render_state?: RenderState }>(
             '/api/code/submit-quest',
             { method: 'POST', body: JSON.stringify({ code, quest_id: questId, test_only: testOnly }) }
         );
 
-        // If code succeeded and not test-only, update local state
-        if (result.success && !testOnly && result.xp_earned) {
-            wasm.complete_level(result.xp_earned);
-            this.syncToServer().catch(err =>
-                console.warn('[WASM] Post-quest-complete sync failed:', err)
-            );
-        }
+        // Server is source of truth for quest completion - it already persisted the state
+        // DO NOT sync WASM to server here - WASM doesn't track quest completion,
+        // so syncing would overwrite server's correct state with stale data
+        // The frontend uses result.render_state from HTTP directly
 
         return result;
     }
