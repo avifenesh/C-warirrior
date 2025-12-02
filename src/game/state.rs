@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use std::time::Duration;
 
 use super::constants::TILE_SIZE;
-use super::inventory::Inventory;
 use super::map::{ObjectRender, TileMapRender};
 use super::physics;
 use super::player::{Direction, Player};
@@ -40,7 +39,6 @@ pub enum GamePhase {
 pub struct GameState {
     pub player: Player,
     pub world: World,
-    pub inventory: Inventory,
     pub current_level_id: Option<String>,
     pub game_phase: GamePhase,
     pub progression: ProgressionState,
@@ -59,7 +57,6 @@ impl Default for GameState {
         Self {
             player: Player::default(),
             world: World::new(20, 15),
-            inventory: Inventory::new(10),
             current_level_id: None,
             game_phase: GamePhase::MainMenu,
             progression: ProgressionState::new(),
@@ -97,9 +94,6 @@ impl GameState {
         // Sync legacy fields for backwards compatibility
         self.total_xp = self.progression.total_xp;
         self.levels_completed = self.progression.completed_levels.iter().cloned().collect();
-
-        // Unlock all doors in the current level
-        self.world.unlock_all_doors();
 
         self.game_phase = GamePhase::LevelComplete;
         xp_earned
@@ -158,7 +152,6 @@ impl GameState {
                 // Mark level as complete (but don't double-award XP - quests already awarded it)
                 self.progression.completed_levels.insert(level_id.clone());
                 self.levels_completed = self.progression.completed_levels.iter().cloned().collect();
-                self.world.unlock_all_doors();
                 self.game_phase = GamePhase::LevelComplete;
                 return Some(0); // XP already awarded per-quest
             }
@@ -225,10 +218,6 @@ impl GameState {
                     self.active_quest_id = quest_id;
                     self.enter_coding_mode();
                     return Some(TileType::Terminal);
-                }
-                TileType::Door => {
-                    // Door interaction logic would go here
-                    return Some(TileType::Door);
                 }
                 _ => {}
             }

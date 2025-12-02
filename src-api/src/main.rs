@@ -83,6 +83,7 @@ struct QuestInfoResponse {
     function_signature: code_warrior::levels::FunctionSignature,
     hints: Vec<String>,
     test_cases: Vec<code_warrior::levels::TestCase>,
+    teaching: Option<code_warrior::levels::QuestTeaching>,
 }
 
 #[derive(Debug, Serialize)]
@@ -429,7 +430,8 @@ async fn process_action(
             game_state.game_phase = GamePhase::Paused;
         }
         PlayerAction::Resume => {
-            if matches!(game_state.game_phase, GamePhase::Paused | GamePhase::Coding) {
+            // Allow resuming from Paused, Coding, or LevelComplete (to continue exploring)
+            if matches!(game_state.game_phase, GamePhase::Paused | GamePhase::Coding | GamePhase::LevelComplete) {
                 game_state.game_phase = GamePhase::Playing;
             }
         }
@@ -828,6 +830,7 @@ async fn get_level_quests(
             function_signature: q.function_signature.clone(),
             hints: q.hints.clone(),
             test_cases: q.test_cases.clone(),
+            teaching: q.teaching.clone(),
         }
     }).collect();
 
@@ -879,6 +882,7 @@ async fn get_quest(
         function_signature: quest.function_signature.clone(),
         hints: quest.hints.clone(),
         test_cases: quest.test_cases.clone(),
+        teaching: quest.teaching.clone(),
     }))
 }
 
@@ -999,9 +1003,10 @@ async fn submit_quest_code(
         if quests_remaining == 0 {
             if let Some(_) = game_state.maybe_complete_level(total_quests) {
                 doors_unlocked = true;
-                game_state.update_unlocked_levels(state.levels.get_prerequisites());
             }
         }
+        // Refresh unlocked levels after any quest completion
+        game_state.update_unlocked_levels(state.levels.get_prerequisites());
 
         // Persist state
         persist_session(&state, &device_id.0, &game_state)

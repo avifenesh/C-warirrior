@@ -15,7 +15,7 @@ PORT=8080 cargo run
 RUST_LOG=debug cargo run
 ```
 
-The server will start on `http://127.0.0.1:3000` by default.
+The server will start on `http://127.0.0.1:3000` by default. Set `DATABASE_URL` to a Postgres connection string before running (Neon/localhost both work).
 
 ## Endpoints
 
@@ -23,20 +23,29 @@ The server will start on `http://127.0.0.1:3000` by default.
 - `GET /health` - Returns server status and version
 
 ### Game Management
-- `POST /api/game/init` - Initialize a new game session
+- `POST /api/game/init` - Initialize or resume a session (creates DB row if missing)
+- `POST /api/game/sync` - Persist the provided `GameState`
 - `GET /api/game/state` - Get current game state
-- `GET /api/game/render-state` - Get render state for UI
-- `POST /api/game/action` - Execute a game action
-- `POST /api/game/complete-level` - Mark a level as complete
+- `GET /api/game/render-state` - Get render-ready `RenderState`
+- `POST /api/game/action` - Apply `PlayerAction` (move, interact, pause/resume)
 
 ### Level Management
-- `GET /api/levels` - List all available levels
-- `POST /api/levels/:id/load` - Load a specific level
-- `GET /api/levels/current` - Get current level info
+- `GET /api/levels` - List levels with locked/completed flags
+- `POST /api/levels/:id/load` - Load a level, update unlocks, cache session
+- `GET /api/levels/current/quests` - List quests for the active level
+- `GET /api/levels/current/quests/:quest_id` - Get a single quest
 
 ### Code Challenges
-- `POST /api/code/submit` - Submit C code for validation
-- `GET /api/code/hint` - Get a hint for current challenge
+- `POST /api/code/submit` - Submit single-challenge code (completes level)
+- `POST /api/code/submit-quest` - Submit quest code (per-test harness)
+- `GET /api/code/hint/:index` - Get hint by index for current challenge/quest
+
+### Progress & Saves
+- `GET /api/player/progress` - Aggregate XP + completed levels
+- `GET /api/saves` - List save slots
+- `POST /api/saves/:slot` - Upsert a save slot
+- `GET /api/saves/:slot` - Load a save slot
+- `DELETE /api/saves/:slot` - Delete a save slot
 
 ## Architecture
 
@@ -47,14 +56,7 @@ This server follows the **Backend Authority** principle:
 
 ## Current Status
 
-This is a placeholder implementation. All endpoints return mock data.
-
-Next steps:
-1. Integrate game engine logic from `src/` directory
-2. Connect to level definitions from `src/assets/levels.json`
-3. Add C code compilation/validation using MCP tool
-4. Add authentication and session management
-5. Add database persistence (SQLite via Diesel)
+Fully wired to the shared `code-warrior` game library, SQLx/Postgres persistence (sessions + saves), and the C compiler sandbox. Authentication is not implemented; device ID is passed via `X-Device-ID` header.
 
 ## Development
 
@@ -74,5 +76,6 @@ cargo build --release
 
 ## Environment Variables
 
+- `DATABASE_URL` - Postgres connection string (required)
 - `PORT` - Server port (default: 3000)
 - `RUST_LOG` - Logging level (default: `code_warrior_api=debug,tower_http=debug`)

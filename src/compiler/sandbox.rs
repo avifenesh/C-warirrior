@@ -43,10 +43,6 @@ pub fn is_bwrap_available() -> bool {
         .unwrap_or(false)
 }
 
-/// Legacy alias for compatibility
-pub fn is_nsjail_available() -> bool {
-    is_bwrap_available()
-}
 
 /// Execute a command inside bubblewrap sandbox.
 ///
@@ -143,7 +139,7 @@ pub async fn sandbox_execute(
     }
 }
 
-/// Fallback execution without sandbox (for development/Tauri).
+/// Fallback execution without sandbox (for development).
 /// Uses basic string filtering and timeout but NO OS-level isolation.
 ///
 /// WARNING: This is NOT secure for untrusted code. Only use in development
@@ -195,8 +191,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_nsjail_availability_check() {
+    fn test_bwrap_availability_check() {
         // This test just verifies the function runs without panic
-        let _ = is_nsjail_available();
+        let _ = is_bwrap_available();
     }
 }

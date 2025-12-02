@@ -54,6 +54,15 @@ fn default_quest_xp() -> u32 {
     25
 }
 
+/// Progressive teaching content for each quest
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct QuestTeaching {
+    pub concept: String,
+    pub explanation: String,
+    #[serde(default)]
+    pub tip: Option<String>,
+}
+
 /// A quest is a single challenge within a level
 /// Each level can have multiple quests that must all be completed
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -72,6 +81,9 @@ pub struct Quest {
     pub hints: Vec<String>,
     #[serde(default = "default_quest_xp")]
     pub xp_reward: u32,
+    /// Progressive teaching content for this quest
+    #[serde(default)]
+    pub teaching: Option<QuestTeaching>,
 }
 
 /// Quest info for frontend display (includes completion status)
@@ -84,6 +96,9 @@ pub struct QuestInfo {
     pub recommended: bool,
     pub completed: bool,
     pub xp_reward: u32,
+    /// Progressive teaching content for this quest
+    #[serde(default)]
+    pub teaching: Option<QuestTeaching>,
 }
 
 // ============================================================================
@@ -108,6 +123,15 @@ pub struct TerminalConfig {
     pub quest_id: Option<String>,
 }
 
+/// Individual tile configuration for custom layouts
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TileConfig {
+    pub x: usize,
+    pub y: usize,
+    #[serde(rename = "type")]
+    pub tile_type: String,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WorldConfig {
     pub width: usize,
@@ -122,7 +146,12 @@ pub struct WorldConfig {
     /// Multiple terminals with quest links (preferred)
     #[serde(default)]
     pub terminals: Vec<TerminalConfig>,
-    pub preset: WorldPreset,
+    /// Custom tile placements (water, walls, doors, etc.)
+    #[serde(default)]
+    pub tiles: Option<Vec<TileConfig>>,
+    /// Preset - now optional, ignored when tiles are provided
+    #[serde(default)]
+    pub preset: Option<WorldPreset>,
 }
 
 impl Default for WorldConfig {
@@ -135,7 +164,8 @@ impl Default for WorldConfig {
             terminal_x: 10.0 * 32.0,
             terminal_y: 7.0 * 32.0,
             terminals: vec![],
-            preset: WorldPreset::Tutorial,
+            tiles: None,
+            preset: Some(WorldPreset::Tutorial),
         }
     }
 }
@@ -232,6 +262,7 @@ impl LevelData {
                 test_cases: self.test_cases.clone(),
                 hints: self.hints.clone(),
                 xp_reward: self.xp_reward,
+                teaching: None,
             }]
         } else {
             // Legacy output-based level - no quests

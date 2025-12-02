@@ -2,7 +2,6 @@
 // All game types and logic should go here
 
 pub mod constants;
-pub mod inventory;
 pub mod map;
 pub mod physics;
 pub mod player;
@@ -12,7 +11,6 @@ pub mod world;
 
 // Re-export commonly used types for convenience
 pub use constants::*;
-pub use inventory::{Inventory, Item, ItemType};
 pub use map::{MapObject, ObjectRender, ObjectType, TileMap, TileMapRender};
 pub use player::{Direction, Player};
 pub use progression::{LevelPrerequisites, ProgressionState};

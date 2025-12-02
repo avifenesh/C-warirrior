@@ -9,9 +9,18 @@ pub enum TileType {
     Floor,
     Wall,
     Water,
-    Void, // NULL/danger zone
+    Void,     // NULL/danger zone
     Door,
     Terminal, // Code submission point
+    // Environmental tiles for atmospheric levels
+    Tree,     // Forest obstacle (walkable=false)
+    Rock,     // Rocky obstacle (walkable=false)
+    Lava,     // Fire/danger zone (walkable=false)
+    Ice,      // Frozen ground (walkable=true)
+    Bridge,   // Cross over water (walkable=true)
+    Grass,    // Decorative (walkable=true)
+    Path,     // Decorative trail (walkable=true)
+    Pit,      // Dark hole/void (walkable=false)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -79,6 +88,79 @@ impl Tile {
             quest_id: None,
         }
     }
+
+    // Environmental tile constructors
+    pub fn tree() -> Self {
+        Self {
+            tile_type: TileType::Tree,
+            walkable: false,
+            interactable: false,
+            quest_id: None,
+        }
+    }
+
+    pub fn rock() -> Self {
+        Self {
+            tile_type: TileType::Rock,
+            walkable: false,
+            interactable: false,
+            quest_id: None,
+        }
+    }
+
+    pub fn lava() -> Self {
+        Self {
+            tile_type: TileType::Lava,
+            walkable: false,
+            interactable: false,
+            quest_id: None,
+        }
+    }
+
+    pub fn ice() -> Self {
+        Self {
+            tile_type: TileType::Ice,
+            walkable: true,
+            interactable: false,
+            quest_id: None,
+        }
+    }
+
+    pub fn bridge() -> Self {
+        Self {
+            tile_type: TileType::Bridge,
+            walkable: true,
+            interactable: false,
+            quest_id: None,
+        }
+    }
+
+    pub fn grass() -> Self {
+        Self {
+            tile_type: TileType::Grass,
+            walkable: true,
+            interactable: false,
+            quest_id: None,
+        }
+    }
+
+    pub fn path() -> Self {
+        Self {
+            tile_type: TileType::Path,
+            walkable: true,
+            interactable: false,
+            quest_id: None,
+        }
+    }
+
+    pub fn pit() -> Self {
+        Self {
+            tile_type: TileType::Pit,
+            walkable: false,
+            interactable: false,
+            quest_id: None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -116,11 +198,6 @@ impl World {
             tiles[spawn_tile_y][15] = Tile::terminal();
         }
 
-        // Add locked door at tile (18, 7) - right edge (before wall at x=19)
-        if spawn_tile_y < height && 18 < width {
-            tiles[spawn_tile_y][18] = Tile::door();
-        }
-
         // Add some decorative water patches
         if 5 < height && 5 < width {
             tiles[3][5] = Tile::water();
@@ -144,16 +221,78 @@ impl World {
         self.get_tile(x, y).map(|t| t.walkable).unwrap_or(false)
     }
 
-    /// Unlock a door at the specified tile coordinates
-    pub fn unlock_door(&mut self, x: usize, y: usize) {
-        if let Some(tile) = self.tiles.get_mut(y).and_then(|row| row.get_mut(x)) {
-            if tile.tile_type == TileType::Door {
-                tile.walkable = true;
+    pub fn from_config(config: &WorldConfig) -> Self {
+        let width = config.width;
+        let height = config.height;
+
+        // Start with empty floor grid (NOT the hardcoded template)
+        let mut tiles = vec![vec![Tile::floor(); width]; height];
+
+        // Add wall border
+        for x in 0..width {
+            tiles[0][x] = Tile::wall();
+            tiles[height - 1][x] = Tile::wall();
+        }
+        for y in 0..height {
+            tiles[y][0] = Tile::wall();
+            tiles[y][width - 1] = Tile::wall();
+        }
+
+        // Parse tiles array from config (water, walls, doors, etc.)
+        if let Some(ref tile_configs) = config.tiles {
+            for tile_config in tile_configs {
+                let x = tile_config.x;
+                let y = tile_config.y;
+                if y < height && x < width {
+                    match tile_config.tile_type.as_str() {
+                        "water" => tiles[y][x] = Tile::water(),
+                        "wall" => tiles[y][x] = Tile::wall(),
+                        "door" => tiles[y][x] = Tile::door(),
+                        "floor" => tiles[y][x] = Tile::floor(),
+                        // Environmental tiles
+                        "tree" => tiles[y][x] = Tile::tree(),
+                        "rock" => tiles[y][x] = Tile::rock(),
+                        "lava" => tiles[y][x] = Tile::lava(),
+                        "ice" => tiles[y][x] = Tile::ice(),
+                        "bridge" => tiles[y][x] = Tile::bridge(),
+                        "grass" => tiles[y][x] = Tile::grass(),
+                        "path" => tiles[y][x] = Tile::path(),
+                        "pit" => tiles[y][x] = Tile::pit(),
+                        _ => {}
+                    }
+                }
             }
+        }
+
+        // Place terminals from config
+        for terminal in &config.terminals {
+            let tx = (terminal.x / 32.0) as usize;
+            let ty = (terminal.y / 32.0) as usize;
+            if ty < height && tx < width {
+                if let Some(ref quest_id) = terminal.quest_id {
+                    tiles[ty][tx] = Tile::terminal_with_quest(quest_id.clone());
+                } else {
+                    tiles[ty][tx] = Tile::terminal();
+                }
+            }
+        }
+
+        let spawn_point = Position::new(config.spawn_x, config.spawn_y);
+
+        Self {
+            width,
+            height,
+            tiles,
+            spawn_point,
         }
     }
 
-    /// Unlock all doors in the world
+    /// Get the quest_id for a tile at given coordinates
+    pub fn get_tile_quest_id(&self, x: usize, y: usize) -> Option<&str> {
+        self.get_tile(x, y).and_then(|t| t.quest_id.as_deref())
+    }
+
+    /// Unlock all doors in the world (called when level is completed)
     pub fn unlock_all_doors(&mut self) {
         for row in &mut self.tiles {
             for tile in row {
@@ -162,39 +301,5 @@ impl World {
                 }
             }
         }
-    }
-
-    pub fn from_config(config: &WorldConfig) -> Self {
-        let mut world = Self::new(config.width, config.height);
-        world.spawn_point = Position::new(config.spawn_x, config.spawn_y);
-
-        // Place terminals from the terminals array (preferred)
-        if !config.terminals.is_empty() {
-            for terminal in &config.terminals {
-                let tx = (terminal.x / 32.0) as usize;
-                let ty = (terminal.y / 32.0) as usize;
-                if ty < config.height && tx < config.width {
-                    if let Some(ref quest_id) = terminal.quest_id {
-                        world.tiles[ty][tx] = Tile::terminal_with_quest(quest_id.clone());
-                    } else {
-                        world.tiles[ty][tx] = Tile::terminal();
-                    }
-                }
-            }
-        } else {
-            // Legacy: single terminal at configured position
-            let tx = (config.terminal_x / 32.0) as usize;
-            let ty = (config.terminal_y / 32.0) as usize;
-            if ty < config.height && tx < config.width {
-                world.tiles[ty][tx] = Tile::terminal();
-            }
-        }
-
-        world
-    }
-
-    /// Get the quest_id for a tile at given coordinates
-    pub fn get_tile_quest_id(&self, x: usize, y: usize) -> Option<&str> {
-        self.get_tile(x, y).and_then(|t| t.quest_id.as_deref())
     }
 }

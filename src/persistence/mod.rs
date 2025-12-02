@@ -178,7 +178,16 @@ impl SaveManager {
 #[cfg(not(target_arch = "wasm32"))]
 impl Default for SaveManager {
     fn default() -> Self {
-        Self::new().expect("Failed to create SaveManager")
+        Self::new().unwrap_or_else(|_| {
+            // Fallback to system temp directory if default save directory fails
+            let temp_dir = std::env::temp_dir().join("code-warrior").join("saves");
+            std::fs::create_dir_all(&temp_dir).expect("Failed to create temp save directory");
+
+            // Log a warning (in a production app, use a proper logging framework)
+            eprintln!("Warning: Could not create default save directory. Falling back to temp directory: {:?}", temp_dir);
+
+            SaveManager { save_dir: temp_dir }
+        })
     }
 }
 

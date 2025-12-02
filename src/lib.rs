@@ -11,9 +11,9 @@ pub mod persistence;
 
 // Re-export commonly used types at the crate root
 pub use game::{
-    Direction, GamePhase, GameState, Inventory, Item, ItemType, LevelPrerequisites, Player,
-    PlayerAction, Position, ProgressionState, RenderState, Tile, TileType, World, PLAYER_SPEED,
-    TICK_RATE, TILE_SIZE, VIEWPORT_HEIGHT, VIEWPORT_WIDTH, XP_PER_LEVEL,
+    Direction, GamePhase, GameState, LevelPrerequisites, Player, PlayerAction, Position,
+    ProgressionState, RenderState, Tile, TileType, World, PLAYER_SPEED, TICK_RATE, TILE_SIZE,
+    VIEWPORT_HEIGHT, VIEWPORT_WIDTH, XP_PER_LEVEL,
 };
 
 #[cfg(feature = "compiler")]
