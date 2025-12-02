@@ -30,9 +30,6 @@
     });
     let currentHintIndex = $state(0);
     let tickUnsub: (() => void) | null = null;
-    let errorUnsub: (() => void) | null = null;
-    let codeUnsub: (() => void) | null = null;
-    let levelCompleteUnsub: (() => void) | null = null;
 
     let codeDraft = $state('// Write your C spell here...\n#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}');
     let toastMessages = $state<ToastMessage[]>([]);
@@ -273,9 +270,6 @@
     async function bindEvents() {
         if (!backend) return;
         if (!tickUnsub) tickUnsub = await backend.onGameTick((state) => (renderState = state));
-        if (!errorUnsub) errorUnsub = await backend.onGameError((error) => (uiStatus = { ...uiStatus, error: error.message }));
-        if (!codeUnsub) codeUnsub = await backend.onCodeOutput((_o) => {});
-        if (!levelCompleteUnsub) levelCompleteUnsub = await backend.onLevelComplete((_e) => {});
     }
 
     async function startLevel(levelId: string) {
@@ -370,9 +364,6 @@
 
     function cleanup() {
         tickUnsub?.();
-        errorUnsub?.();
-        codeUnsub?.();
-        levelCompleteUnsub?.();
         backend?.cleanup();
     }
 

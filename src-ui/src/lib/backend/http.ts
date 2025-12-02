@@ -18,9 +18,6 @@ import type {
     LevelData,
     LevelInfo,
     CodeResult,
-    CodeOutput,
-    LevelCompleteEvent,
-    GameError,
     SaveSlot,
     PlayerProgress,
     QuestInfo,
@@ -422,7 +419,6 @@ class HttpBackend implements Backend {
     }
 
     // Events (using polling)
-    // Polling stops after 30s of inactivity to save resources; resumes on user action
     async onGameTick(cb: (state: RenderState) => void): Promise<UnsubscribeFn> {
         return this.poller.subscribe(
             'game-tick',
@@ -431,21 +427,6 @@ class HttpBackend implements Backend {
             () => this.shouldContinuePolling(),
             () => this.getRenderState()
         );
-    }
-
-    async onCodeOutput(_cb: (output: CodeOutput) => void): Promise<UnsubscribeFn> {
-        // Not implemented for HTTP backend - code output comes from submit response
-        return () => {};
-    }
-
-    async onLevelComplete(_cb: (event: LevelCompleteEvent) => void): Promise<UnsubscribeFn> {
-        // Not implemented for HTTP backend - level complete comes from submit response
-        return () => {};
-    }
-
-    async onGameError(_cb: (error: GameError) => void): Promise<UnsubscribeFn> {
-        // Not implemented for HTTP backend - errors come from API responses
-        return () => {};
     }
 
     // Cleanup

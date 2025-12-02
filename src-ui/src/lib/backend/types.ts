@@ -12,9 +12,6 @@ import type {
     LevelData,
     LevelInfo,
     CodeResult,
-    CodeOutput,
-    LevelCompleteEvent,
-    GameError,
     SaveSlot,
     PlayerProgress,
     QuestInfo,
@@ -54,9 +51,6 @@ export interface Backend {
 
     // Events (returns unsubscribe function)
     onGameTick(cb: (state: RenderState) => void): Promise<UnsubscribeFn>;
-    onCodeOutput(cb: (output: CodeOutput) => void): Promise<UnsubscribeFn>;
-    onLevelComplete(cb: (event: LevelCompleteEvent) => void): Promise<UnsubscribeFn>;
-    onGameError(cb: (error: GameError) => void): Promise<UnsubscribeFn>;
 
     // Cleanup
     cleanup(): void;
@@ -70,9 +64,6 @@ export type {
     LevelData,
     LevelInfo,
     CodeResult,
-    CodeOutput,
-    LevelCompleteEvent,
-    GameError,
     SaveSlot,
     PlayerProgress,
     QuestInfo,

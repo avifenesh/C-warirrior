@@ -2,12 +2,12 @@
  * WASM Backend Implementation
  *
  * Hybrid backend that uses local WASM for instant game logic (movement, interaction)
- * and HTTP for C compilation, saves, and persistence.
+ * and HTTP for C compilation, quest completion, and persistence.
  *
- * Design decisions:
- * - Level data embedded in WASM (no fetch needed)
- * - Periodic sync every 30s + on key events
- * - No HTTP fallback (WASM-only for web)
+ * Architecture:
+ * - Server is source of truth for ALL progression (levels, quests, XP)
+ * - WASM handles local game state (player position, game phase)
+ * - State flows: Server → WASM on init/load, HTTP → Server on code submit
  */
 
 import type {
@@ -19,9 +19,6 @@ import type {
     LevelData,
     LevelInfo,
     CodeResult,
-    CodeOutput,
-    LevelCompleteEvent,
-    GameError,
     SaveSlot,
     PlayerProgress,
     QuestInfo,
@@ -50,8 +47,6 @@ declare const __API_URL__: string | undefined;
 const API_URL = typeof __API_URL__ !== 'undefined' ? __API_URL__ : 'http://localhost:3000';
 
 const DEVICE_ID_KEY = 'code-warrior-device-id';
-const SYNC_INTERVAL_MS = 30000; // 30 seconds
-const SYNC_DEBOUNCE_MS = 5000;  // 5 second debounce
 
 function getOrCreateDeviceId(): string {
     if (typeof localStorage === 'undefined') return 'ssr-device';
@@ -84,8 +79,6 @@ class WasmBackend implements Backend {
     private wasmGame: WasmGameInstance | null = null;
     private wasmModule: WasmGameModule | null = null;
     private initPromise: Promise<void> | null = null;
-    private syncInterval: ReturnType<typeof setInterval> | null = null;
-    private lastSyncTime: number = 0;
 
     constructor() {
         this.initPromise = this.initWasm();
@@ -93,16 +86,13 @@ class WasmBackend implements Backend {
 
     private async initWasm(): Promise<void> {
         try {
-            // Dynamic import of WASM module from src/lib/wasm
             const wasmModule = await import('../wasm/code_warrior_wasm.js') as WasmGameModule;
-            // Initialize the WASM module (wasm-bindgen handles the .wasm file location)
             if (wasmModule.default) {
                 await wasmModule.default();
             }
             this.wasmModule = wasmModule;
             this.wasmGame = new wasmModule.WasmGame();
             console.log('[WASM] Game engine initialized');
-            this.startPeriodicSync();
         } catch (error) {
             console.error('[WASM] Failed to initialize:', error);
             throw error;
@@ -120,36 +110,12 @@ class WasmBackend implements Backend {
         return this.wasmGame;
     }
 
-    private startPeriodicSync(): void {
-        if (this.syncInterval) return;
-        this.syncInterval = setInterval(() => {
-            this.syncToServer().catch(err =>
-                console.warn('[WASM] Periodic sync failed:', err)
-            );
-        }, SYNC_INTERVAL_MS);
-    }
-
-    private async syncToServer(): Promise<void> {
-        const now = Date.now();
-        if (now - this.lastSyncTime < SYNC_DEBOUNCE_MS) return;
-
-        const wasm = await this.ensureWasm();
-        const state = wasm.get_game_state();
-
-        await apiRequest('/api/game/sync', {
-            method: 'POST',
-            body: JSON.stringify({ game_state: state })
-        }).catch(err => console.warn('[WASM] Sync failed:', err));
-
-        this.lastSyncTime = now;
-    }
-
     // === Game Lifecycle ===
 
     async initGame(): Promise<RenderState> {
         const wasm = await this.ensureWasm();
 
-        // Try to get existing state from server
+        // Load existing state from server into WASM
         try {
             const response = await apiRequest<{ game_state: GameState }>('/api/game/init', {
                 method: 'POST',
@@ -206,7 +172,7 @@ class WasmBackend implements Backend {
         return wasm.get_level_data() as LevelData;
     }
 
-    // === Quests (HTTP for quest info, code compilation on server) ===
+    // === Quests (HTTP handles quest completion tracking) ===
 
     async getLevelQuests(): Promise<QuestInfo[]> {
         return apiRequest<QuestInfo[]>('/api/levels/current/quests');
@@ -217,20 +183,15 @@ class WasmBackend implements Backend {
     }
 
     async submitQuestCode(code: string, questId: string, testOnly: boolean = false): Promise<CodeResult> {
-        const result = await apiRequest<CodeResult & { xp_earned?: number; render_state?: RenderState }>(
-            '/api/code/submit-quest',
-            { method: 'POST', body: JSON.stringify({ code, quest_id: questId, test_only: testOnly }) }
-        );
-
-        // Server is source of truth for quest completion - it already persisted the state
-        // DO NOT sync WASM to server here - WASM doesn't track quest completion,
-        // so syncing would overwrite server's correct state with stale data
-        // The frontend uses result.render_state from HTTP directly
-
-        return result;
+        // Server handles quest completion and XP tracking
+        // Frontend uses result.render_state from HTTP response
+        return apiRequest<CodeResult>('/api/code/submit-quest', {
+            method: 'POST',
+            body: JSON.stringify({ code, quest_id: questId, test_only: testOnly })
+        });
     }
 
-    // === Code (HTTP only - can't compile C in browser) ===
+    // === Code (HTTP handles compilation and level completion) ===
 
     async submitCode(code: string, testOnly: boolean = false): Promise<CodeResult> {
         const wasm = await this.ensureWasm();
@@ -240,13 +201,10 @@ class WasmBackend implements Backend {
             { method: 'POST', body: JSON.stringify({ code, test_only: testOnly }) }
         );
 
-        // If code succeeded and not test-only, update local state
+        // Update local WASM state for single-challenge levels
+        // Server already persisted the completion via HTTP
         if (result.success && !testOnly && result.xp_earned) {
             wasm.complete_level(result.xp_earned);
-            // Sync immediately after level complete
-            this.syncToServer().catch(err =>
-                console.warn('[WASM] Post-complete sync failed:', err)
-            );
         }
 
         return result;
@@ -257,27 +215,29 @@ class WasmBackend implements Backend {
         return wasm.get_hint(hintIndex);
     }
 
-    // === Save/Load (HTTP only - persistence on server) ===
+    // === Save/Load (Server is source of truth) ===
 
     async listSaves(): Promise<SaveSlot[]> {
         return apiRequest<SaveSlot[]>('/api/saves');
     }
 
     async saveGame(slotId: string): Promise<void> {
-        // Sync current state first
-        await this.syncToServer();
+        // Server saves current session state (already correct from HTTP calls)
         await apiRequest(`/api/saves/${slotId}`, { method: 'POST' });
     }
 
     async loadGame(slotId: string): Promise<RenderState> {
         const wasm = await this.ensureWasm();
 
-        const response = await apiRequest<{ game_state: GameState }>(
-            `/api/saves/${slotId}`
-        );
+        const response = await apiRequest<{ render_state: RenderState }>(`/api/saves/${slotId}`);
 
-        if (response.game_state) {
-            wasm.init_from_state(response.game_state);
+        // Load server state into WASM
+        if (response.render_state) {
+            // Re-init from server to get full state
+            const fullState = await apiRequest<{ game_state: GameState }>('/api/game/state');
+            if (fullState.game_state) {
+                wasm.init_from_state(fullState.game_state);
+            }
         }
 
         return wasm.get_render_state() as RenderState;
@@ -287,47 +247,24 @@ class WasmBackend implements Backend {
         await apiRequest(`/api/saves/${slotId}`, { method: 'DELETE' });
     }
 
-    // === Progress ===
+    // === Progress (from server) ===
 
     async getProgress(): Promise<PlayerProgress> {
-        const wasm = await this.ensureWasm();
-        const state = wasm.get_game_state() as GameState;
-
-        return {
-            total_xp: state.total_xp ?? 0,
-            completed_levels: state.levels_completed ?? [],
-            current_level: state.current_level_id ?? null,
-        };
+        // Get progress from server (source of truth)
+        return apiRequest<PlayerProgress>('/api/player/progress');
     }
 
-    // === Events (no-op for WASM - state is local) ===
+    // === Events ===
 
     async onGameTick(_cb: (state: RenderState) => void): Promise<UnsubscribeFn> {
-        // No polling needed - state is local
-        return () => {};
-    }
-
-    async onCodeOutput(_cb: (output: CodeOutput) => void): Promise<UnsubscribeFn> {
-        return () => {};
-    }
-
-    async onLevelComplete(_cb: (event: LevelCompleteEvent) => void): Promise<UnsubscribeFn> {
-        return () => {};
-    }
-
-    async onGameError(_cb: (error: GameError) => void): Promise<UnsubscribeFn> {
+        // WASM is synchronous - state is fetched on demand, no polling needed
         return () => {};
     }
 
     // === Cleanup ===
 
     cleanup(): void {
-        if (this.syncInterval) {
-            clearInterval(this.syncInterval);
-            this.syncInterval = null;
-        }
-        // Final sync on cleanup
-        this.syncToServer().catch(() => {});
+        // No cleanup needed - server maintains state
     }
 }
 
