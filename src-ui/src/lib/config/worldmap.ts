@@ -8,7 +8,7 @@ export interface LevelPosition {
 }
 
 export const LEVEL_POSITIONS: Record<string, LevelPosition> = {
-    'L01': { x: 23, y: 80 },
+    'L01': { x: 22, y: 81 },
     'L02': { x: 26, y: 78 },
     'L03': { x: 34, y: 72 },
     'L04': { x: 39, y: 65 },
