@@ -154,7 +154,7 @@
     }
 
     .level-marker.completed {
-        filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.8)) drop-shadow(0 0 20px rgba(251, 191, 36, 0.4)) drop-shadow(0 3px 6px rgba(0,0,0,0.8));
+        filter: drop-shadow(0 0 12px rgba(34, 197, 94, 0.8)) drop-shadow(0 0 20px rgba(34, 197, 94, 0.4)) drop-shadow(0 3px 6px rgba(0,0,0,0.8));
     }
 
     .level-marker.in_progress {
@@ -237,11 +237,11 @@
     }
 
     .completed .flag-banner {
-        background: linear-gradient(180deg, #fcd34d 0%, #fbbf24 100%);
-        border-color: rgba(253, 224, 71, 0.7);
+        background: linear-gradient(180deg, #4ade80 0%, #22c55e 100%);
+        border-color: rgba(74, 222, 128, 0.7);
     }
     .completed .level-num {
-        color: #451a03;
+        color: #052e16;
     }
 
     .in_progress .flag-banner {

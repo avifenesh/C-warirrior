@@ -262,9 +262,9 @@ async fn get_or_create_session(app: &Arc<AppState>, device_id: &str) -> Result<G
             let mut game_state: GameState = serde_json::from_value(session.game_state)
                 .map_err(|e| format!("Failed to parse game state: {}", e))?;
 
-            // Refresh unlocked levels based on current prerequisites
-            // This ensures level locks are enforced even if prerequisites changed
-            game_state.update_unlocked_levels(app.levels.get_prerequisites());
+            // Recalculate unlocked levels from scratch based on current prerequisites
+            // This removes levels that shouldn't be unlocked and adds those that should be
+            game_state.recalculate_unlocked_levels(app.levels.get_prerequisites());
 
             app.sessions
                 .insert(device_id.to_string(), game_state.clone());
@@ -274,7 +274,7 @@ async fn get_or_create_session(app: &Arc<AppState>, device_id: &str) -> Result<G
             let mut new_state = GameState::new();
 
             // Initialize unlocked levels based on prerequisites
-            new_state.update_unlocked_levels(app.levels.get_prerequisites());
+            new_state.recalculate_unlocked_levels(app.levels.get_prerequisites());
 
             let session_json = serde_json::to_value(&new_state)
                 .map_err(|e| format!("Failed to serialize game state: {}", e))?;
@@ -470,10 +470,17 @@ async fn get_available_levels(
 
     let mut levels_info = state.levels.get_all_info();
 
-    // Update lock/completed status based on game state
+    // Update lock/completed status and quest progress based on game state
     for level in &mut levels_info {
         level.locked = !game_state.is_level_unlocked(&level.id);
         level.completed = game_state.is_level_completed(&level.id);
+
+        // Populate quest completion progress
+        let completed_count = game_state.get_completed_quest_count(&level.id);
+        level.completed_quests = completed_count;
+        if level.total_quests > 0 {
+            level.completion_percentage = (completed_count as f32 / level.total_quests as f32) * 100.0;
+        }
     }
 
     Ok(Json(levels_info))
