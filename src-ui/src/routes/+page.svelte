@@ -374,7 +374,33 @@
         if (err instanceof Error) return err.message;
         return typeof err === 'string' ? err : 'Unknown error';
     }
+
+    function handleGlobalKeydown(event: KeyboardEvent) {
+        // Level Complete Modal
+        if (isLevelComplete) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                handleNextLevel();
+            } else if (event.key === 'Escape') {
+                event.preventDefault();
+                handleTerminalClose();
+            }
+            return;
+        }
+
+        // Quest Complete Modal (Multi-quest level)
+        // Shown when terminal is open, multi-quest level, but no active quest state
+        if (showTerminal && isMultiQuestLevel && !activeQuest && !activeQuestId && !questLoadingInProgress) {
+            if (event.key === 'Enter' || event.key === 'Escape') {
+                event.preventDefault();
+                handleTerminalClose();
+            }
+            return;
+        }
+    }
 </script>
+
+<svelte:window onkeydown={handleGlobalKeydown} />
 
 <svelte:head>
     <title>Code Warrior: C Mastery</title>

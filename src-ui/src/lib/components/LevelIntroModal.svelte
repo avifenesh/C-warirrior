@@ -22,7 +22,16 @@
             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
             .join(' ');
     }
+
+    function handleKeydown(event: KeyboardEvent) {
+        if (event.key === 'Enter' || event.key === 'Escape') {
+            event.preventDefault();
+            onStart();
+        }
+    }
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 {#if level}
 <div class="intro-overlay">

@@ -38,6 +38,10 @@
             event.preventDefault();
             onCancel();
         }
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            onStart();
+        }
     }
 
     // Focus trap handler (A2) - keeps focus within modal

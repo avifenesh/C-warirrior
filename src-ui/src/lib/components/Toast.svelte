@@ -13,25 +13,21 @@
 
     let { messages = [], onDismiss }: Props = $props();
 
-    // Track which toasts we've already scheduled for auto-dismiss
-    let scheduledDismissIds = $state<Set<string>>(new Set());
-
-    // Auto-dismiss effect - watches for new messages
-    $effect(() => {
-        messages.forEach((msg) => {
-            if (!scheduledDismissIds.has(msg.id)) {
-                scheduledDismissIds.add(msg.id);
-                setTimeout(() => {
-                    onDismiss?.(msg.id);
-                    // Clean up the tracking set
-                    scheduledDismissIds.delete(msg.id);
-                }, 3000);
-            }
-        });
-    });
-
     function dismiss(id: string) {
         onDismiss?.(id);
+    }
+
+    // Action to handle auto-dismissal when the toast mounts
+    function autoDismiss(node: HTMLElement, id: string) {
+        const timer = setTimeout(() => {
+            dismiss(id);
+        }, 5000); // Increased to 5s for better readability
+
+        return {
+            destroy() {
+                clearTimeout(timer);
+            }
+        };
     }
 
     function getIcon(type: string): string {
@@ -58,6 +54,7 @@
         <div
             class="pixel-toast pointer-events-auto animate-slide-in {toast.type} shadow-md"
             role="alert"
+            use:autoDismiss={toast.id}
         >
             <div class="flex items-start justify-between gap-2">
                 <div class="flex-1">
