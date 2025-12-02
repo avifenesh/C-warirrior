@@ -13,7 +13,7 @@ This document records significant technical decisions made during Code Warrior d
 
 ### Context
 
-Need to choose architectural pattern for game state management in a Tauri desktop app with Svelte frontend.
+Need to choose architectural pattern for game state management in an Axum-backed web app with Svelte frontend.
 
 ### Decision
 
@@ -33,7 +33,7 @@ Implement **backend-authoritative pattern** where Rust backend is the single sou
 |-------------|------------------|
 | **Client-side game logic** | Cannot safely execute C code in browser; performance concerns |
 | **Shared state (Redux-like)** | Too complex to synchronize; prone to race conditions |
-| **Traditional client-server** | Unnecessary network overhead for desktop app |
+| **Traditional client-server** | Unnecessary round-trips; prefer shared logic via WASM |
 
 ### Consequences
 
@@ -136,48 +136,72 @@ Use **Wave Function Collapse (WFC)** algorithm for procedural map generation.
 
 ---
 
-## ADR-004: GCC + Timeout for C Execution
+## ADR-004: Seccomp-BPF Sandbox for C Execution
 
 **Date**: 2024-01-04
-**Status**: Accepted
+**Status**: Accepted (Updated 2024-12)
 
 ### Context
 
-Need to safely execute untrusted C code submitted by players.
+Need to safely execute untrusted C code submitted by players in containerized environments (Railway, Docker) where namespace-based isolation (bubblewrap) fails.
 
 ### Decision
 
-Use **GCC compilation + timeout-enforced execution** with 2-second limit.
+Use **seccomp-BPF syscall filtering** as primary sandbox, with bubblewrap as fallback.
+
+**Sandbox priority:**
+1. **seccomp-bpf** (Linux, works in containers without privileges)
+2. **bubblewrap** (Linux, requires namespace support)
+3. **Fail hard** (panic if no sandbox available in production)
 
 ### Rationale
 
-1. **Simplicity**: GCC already installed on most systems
-2. **Educational**: Players see real compiler errors
-3. **Safety**: Timeout prevents infinite loops
-4. **Performance**: Native execution is fast
+1. **Container-Compatible**: seccomp only needs `PR_SET_NO_NEW_PRIVS`, no namespace privileges
+2. **Threading Support**: Allows pthreads (clone with CLONE_THREAD, futex)
+3. **Security**: Blocks execve, fork, networking at kernel level
+4. **Fail-Safe**: Refuses to start without sandbox (no silent fallback)
+
+### Implementation
+
+```rust
+// Syscall whitelist (allow)
+read, write, close, mmap, mprotect, brk,
+clone (CLONE_THREAD only), futex,  // Threading
+exit, exit_group, getpid, gettid
+
+// Blocked (kill process)
+execve, fork, vfork,                // No shell/processes
+socket, connect, bind, accept,       // No networking
+ptrace                               // No debugging
+```
+
+### Environment Variables
+
+| Variable | Value | Effect |
+|----------|-------|--------|
+| `ALLOW_INSECURE_SANDBOX` | `1` | Enable fallback (dev only) |
+| `ALLOW_INSECURE_SANDBOX` | unset | Panic if no sandbox |
 
 ### Alternatives Considered
 
 | Alternative | Rejected Because |
 |-------------|------------------|
-| **WASM (emscripten)** | Doesn't support all C features; added complexity |
-| **Sandboxed VM** | Overkill for educational context; slow |
-| **Docker container** | Production option; too heavy for dev environment |
-| **JavaScript interpreter** | Not real C; defeats educational purpose |
+| **bubblewrap only** | Fails in containers: "Creating new namespace failed: Operation not permitted" |
+| **WASM (wasi)** | Threading support experimental; not production-ready |
+| **Docker-in-Docker** | Requires privileged mode; complex setup |
+| **External service (Judge0)** | Added latency; external dependency |
 
 ### Consequences
 
 **Positive**:
-- Simple implementation
-- Real C compilation experience
-- Fast execution
+- Works in Railway/Docker without special permissions
+- Supports threading for advanced C lessons
+- Explicit security model (fail-safe)
+- Real C compilation with GCC
 
 **Negative**:
-- Requires GCC installed
-- Limited sandboxing (acceptable for single-player educational game)
-- OS-specific differences
-
-**Future Enhancement**: Add Docker option for production/online version.
+- Linux-only (macOS dev requires ALLOW_INSECURE_SANDBOX=1)
+- Must maintain syscall whitelist as C lessons evolve
 
 ---
 

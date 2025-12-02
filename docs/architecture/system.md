@@ -1,9 +1,8 @@
 # Code Warrior: Technical Architecture
 
 ## For AI agents and developers
-- Use this to understand the Rust/Tauri/Svelte architecture and backend‑authoritative model.
+- Use this to understand the Rust/Axum/WASM/Svelte architecture and backend‑authoritative model.
 - When in doubt, put game logic and C execution in Rust, and keep Svelte as a visualization layer.
-- Do not introduce patterns that contradict the command/event IPC model described here.
 - Keep runtime flow in sync with [`docs/logic-mindmap.md`](../logic-mindmap.md); it is the source of truth for how Axum routes, game state helpers, and the Svelte page wire together in code.
 
 ## Table of Contents
@@ -11,21 +10,19 @@
 2. [Technology Stack](#technology-stack)
 3. [Backend-Authoritative Model](#backend-authoritative-model)
 4. [Component Responsibilities](#component-responsibilities)
-5. [IPC Communication Protocol](#ipc-communication-protocol)
-6. [Game Loop Architecture](#game-loop-architecture)
-7. [C Runtime Sandbox](#c-runtime-sandbox)
-8. [State Management](#state-management)
-9. [Performance Considerations](#performance-considerations)
+5. [Game Loop Architecture](#game-loop-architecture)
+6. [C Runtime Sandbox](#c-runtime-sandbox)
+7. [State Management](#state-management)
+8. [Performance Considerations](#performance-considerations)
 
 ---
 
 ## Architectural Overview
 
-Code Warrior implements a **hybrid desktop application** architecture where:
+Code Warrior implements a **web-first architecture** where:
 
-- **Rust** acts as the authoritative game engine and systems layer
-- **Svelte 5** provides reactive visualization and UI
-- **Tauri 2.0** bridges the two as a desktop application framework
+- **Rust (Axum)** acts as the authoritative game engine and systems layer exposed over HTTP
+- **Svelte 5 + WASM** provide reactive visualization and optional local state projection for low-latency actions
 
 ### Core Principle: Backend-Authoritative Pattern
 
@@ -43,7 +40,6 @@ Standard web development patterns (React state management, frontend routing, cli
 | Component | Version | Purpose | Key Features |
 |-----------|---------|---------|--------------|
 | **Rust** | 2021+ | Core language | Memory safety, performance, concurrency |
-| **Tauri** | 2.0 | Desktop framework | IPC bridge, window management, OS integration |
 | **Axum** | 0.7+ | HTTP API | Web frontend communication |
 | **Tokio** | 1.x | Async runtime | Game loop threading, async I/O |
 | **SQLx** | 0.7+ | Database | Type-safe PostgreSQL operations |
@@ -73,7 +69,7 @@ Standard web development patterns (React state management, frontend routing, cli
 ### The Dungeon Master Pattern
 
 The Rust process acts as a "Dungeon Master" that:
-1. **Owns** all game state (player position, inventory, quest flags)
+1. **Owns** all game state (player position, quest flags)
 2. **Calculates** all game logic (physics, collisions, combat)
 3. **Validates** all actions (can the player move here? do they have the key?)
 4. **Executes** C code in a sandboxed environment
@@ -88,12 +84,11 @@ The Rust process acts as a "Dungeon Master" that:
 │  │  • Renders game world to Canvas     │        │
 │  │  • Displays UI overlays             │        │
 │  │  • Captures keyboard/mouse input    │        │
-│  │  • Sends commands via Tauri IPC     │        │
-│  │  • Listens for state update events  │        │
+│  │  • Sends actions via HTTP/WASM      │        │
+│  │  • Polls/receives state snapshots   │        │
 │  └─────────────────────────────────────┘        │
 └─────────────┬───────────────────────────────────┘
-              │ Tauri IPC Bridge
-              │ (Commands ↓ / Events ↑)
+              │ HTTP / WASM bridge
 ┌─────────────┴───────────────────────────────────┐
 │              RUST BACKEND                        │
 │  ┌─────────────────────────────────────┐        │
@@ -138,7 +133,7 @@ The Rust process acts as a "Dungeon Master" that:
 |--------|------------------------|----------|
 | **Rendering** | Canvas drawing, sprite rendering, animations | `drawTile(x, y, sprite)` |
 | **Input** | Keyboard/mouse capture, send to Rust | `onKeyPress → invoke('move', dir)` |
-| **UI** | Health bars, inventory grid, dialogue boxes | Pure visual components |
+| **UI** | Health bars, dialogue boxes | Pure visual components |
 | **Interpolation** | Smooth animations between game ticks | Lerp player position for 60fps |
 
 ### Critical Constraint for AI Agents
@@ -156,70 +151,36 @@ The Rust process acts as a "Dungeon Master" that:
 
 ---
 
-## IPC Communication Protocol
+## Communication Protocol (Web)
 
-### The Command-Event Pattern
+### HTTP Request/Response + Polling
 
-Tauri provides two communication primitives:
+**Purpose**: Frontend requests actions and state snapshots from the backend over HTTP.
 
-#### 1. Commands (Frontend → Backend)
-
-**Purpose**: Frontend requests an action from the backend.
-
-**Pattern**: Async function calls that return results.
-
-```rust
-// Rust: Define command
-#[tauri::command]
-async fn move_player(direction: String) -> Result<bool, String> {
-    // Validate move
-    // Update state
-    // Return success
-    Ok(true)
-}
-
-// Register in main.rs
-tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![move_player])
-```
+**Pattern**: REST-ish routes; frontend polls render state on an interval and also receives updated state in action responses.
 
 ```typescript
-// TypeScript: Invoke command
-import { invoke } from '@tauri-apps/api/core';
+// Send action
+await apiRequest('/api/game/action', {
+  method: 'POST',
+  body: JSON.stringify({ type: 'move', direction: 'up' })
+});
 
-async function handleMove(dir: string) {
-    const success = await invoke<boolean>('move_player', { direction: dir });
-    if (!success) console.error('Invalid move');
-}
-```
-
-#### 2. Events (Backend → Frontend)
-
-**Purpose**: Backend pushes state updates to frontend.
-
-**Pattern**: Pub/sub with typed payloads.
-
-```rust
-// Rust: Emit event
-use tauri::Manager;
-
-fn game_loop_tick(app: &AppHandle, state: &GameState) {
-    app.emit_all("game_tick", GameTickPayload {
-        player_pos: state.player.position,
-        visible_entities: state.get_visible(),
-    }).unwrap();
-}
-```
-
-```typescript
-// TypeScript: Listen for event
-import { listen } from '@tauri-apps/api/event';
-
-await listen<GameTickPayload>('game_tick', (event) => {
-    gameState.playerPos = event.payload.player_pos;
-    // Trigger Svelte reactivity
+// Poll render state
+const poll = async () => {
+  const state = await apiRequest('/api/game/render-state');
+  updateUI(state);
+};
+const interval = setInterval(poll, 500);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) clearInterval(interval);
 });
 ```
+
+**Guidelines**
+- Keep payloads small; send only the action + minimal state.
+- Pause or slow polling when the tab is hidden; resume on visibility.
+- Prefer sharing render snapshots over per-entity diffs to keep the contract simple.
 
 ### Type Safety Contract
 
@@ -252,7 +213,6 @@ export interface PlayerState {
 |---------|-----------|---------|---------|
 | `move_player` | FE → BE | Request movement | `bool` (success) |
 | `submit_code` | FE → BE | Submit C code | `ExecutionResult` |
-| `use_item` | FE → BE | Use inventory item | `ItemEffect` |
 | `save_game` | FE → BE | Trigger save | `Result<(), Error>` |
 | `load_game` | FE → BE | Load save slot | `GameState` |
 
@@ -271,7 +231,7 @@ The web build talks to the Axum API defined in `src-api/src/main.rs`; update thi
 | `/api/game/init` | POST | Create session, seed state | Bootstraps DB/migrations, caches session, then frontend fetches `/api/game/render-state`. |
 | `/api/game/state` | GET | Full `GameState` snapshot | Used rarely; render path prefers `/render-state`. |
 | `/api/game/render-state` | GET | Render-ready `RenderState` | Polling target for map view and play mode. |
-| `/api/game/action` | POST | Apply `PlayerAction` | Routes movement, interaction, pause/resume, TODO: inventory actions. |
+| `/api/game/action` | POST | Apply `PlayerAction` | Routes movement, interaction, pause/resume. |
 | `/api/levels` | GET | List `LevelInfo` | Merges registry with unlock/completion flags. |
 | `/api/levels/{id}/load` | POST | Load level | Validates unlock, builds `World`, updates progression, returns `{ level_data, render_state }`. |
 | `/api/code/submit` | POST | Compile/run C, validate | Completes level on success and returns feedback + render state. |
@@ -285,8 +245,6 @@ The web build talks to the Axum API defined in `src-api/src/main.rs`; update thi
 | `/api/saves/{slot}` | GET | Load a specific save slot | Restores `GameState` from the specified slot. |
 | `/api/saves/{slot}` | DELETE | Delete a save slot | Removes the specified save slot. |
 
-Frontends that embed via Tauri continue to use command/event IPC for realtime ticks, but should mirror the same state transitions documented in the Axum routes.
-
 ---
 
 ## Game Loop Architecture
@@ -296,16 +254,16 @@ Frontends that embed via Tauri continue to use command/event IPC for realtime ti
 Code Warrior uses a **multi-threaded** architecture to prevent UI blocking:
 
 ```
-Main Thread (Tauri)
-├─ Handles OS window events
-├─ Processes IPC commands
-└─ Delegates to worker threads
+HTTP Server (Tokio)
+├─ Handles requests (actions, render-state, levels, code submit)
+├─ Manages sessions/cache
+└─ Spawns async tasks as needed
 
-Game Loop Thread (Tokio)
+Game Loop Thread (future)
 ├─ Fixed tick rate (20-60 TPS)
 ├─ Updates physics
 ├─ Runs NPC AI
-└─ Emits state to frontend
+└─ Emits state snapshots
 
 C Runtime Thread (std::thread)
 ├─ Spawned per code execution
@@ -315,40 +273,24 @@ C Runtime Thread (std::thread)
 
 ### Implementation Pattern
 
+The game uses a request/response model where the frontend polls for state:
+
 ```rust
-use std::sync::{Arc, Mutex};
-use std::time::{Duration, Instant};
-use tauri::Manager;
+// State is updated on each action request
+async fn process_action(
+    State(state): State<Arc<AppState>>,
+    Json(action): Json<PlayerAction>,
+) -> Result<Json<RenderState>, StatusCode> {
+    let mut session = state.sessions.get_mut(&action.session_id)
+        .ok_or(StatusCode::NOT_FOUND)?;
 
-pub fn start_game_loop(app: AppHandle, state: Arc<Mutex<GameState>>) {
-    std::thread::spawn(move || {
-        let tick_duration = Duration::from_millis(50); // 20 TPS
-        let mut last_tick = Instant::now();
+    // Update game logic based on action
+    session.apply_action(&action)?;
+    session.update_physics();
+    session.check_collisions();
 
-        loop {
-            let now = Instant::now();
-            let delta = now - last_tick;
-
-            if delta >= tick_duration {
-                // Lock state briefly
-                let mut game_state = state.lock().unwrap();
-
-                // Update game logic
-                game_state.update_physics(delta);
-                game_state.update_npcs(delta);
-                game_state.check_collisions();
-
-                // Emit to frontend
-                app.emit_all("game_tick", game_state.get_render_state())
-                    .unwrap();
-
-                last_tick = now;
-            }
-
-            // Prevent busy-wait
-            std::thread::sleep(Duration::from_millis(1));
-        }
-    });
+    // Return updated render state
+    Ok(Json(session.get_render_state()))
 }
 ```
 
@@ -365,78 +307,86 @@ pub fn start_game_loop(app: AppHandle, state: Arc<Mutex<GameState>>) {
 ### Security Requirements
 
 User-submitted C code is **untrusted** and must be:
-1. **Isolated** from the game process
+1. **Isolated** from the game process via syscall filtering
 2. **Time-limited** to prevent infinite loops
 3. **Resource-constrained** to prevent memory bombs
+4. **Threading-capable** for advanced C lessons (pthreads)
 
-### Implementation Strategy
+### Implementation: Seccomp-BPF Sandbox
 
-#### Option 1: Docker Container (Production)
-```rust
-async fn execute_c_code(source: &str) -> Result<Output, Error> {
-    let container = Command::new("docker")
-        .args(["run", "--rm", "--network=none", "--memory=128m",
-               "gcc:alpine", "sh", "-c",
-               &format!("echo '{}' | gcc -x c - -o /tmp/prog && timeout 2s /tmp/prog", source)])
-        .output()
-        .await?;
+The sandbox uses **seccomp-BPF syscall filtering** which works in containerized environments (Railway, Docker) without requiring namespace privileges.
 
-    Ok(Output {
-        stdout: String::from_utf8_lossy(&container.stdout).to_string(),
-        stderr: String::from_utf8_lossy(&container.stderr).to_string(),
-    })
-}
+#### Sandbox Priority
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Sandbox Detection Flow                                          │
+├─────────────────────────────────────────────────────────────────┤
+│  1. Try seccomp-bpf  ──→  ✅ Use it (production-safe)           │
+│          ↓ fail                                                  │
+│  2. Try bubblewrap   ──→  ✅ Use it (production-safe)           │
+│          ↓ fail                                                  │
+│  3. Check ALLOW_INSECURE_SANDBOX=1                               │
+│          ↓ not set                                               │
+│  4. PANIC! ❌ Refuse to start                                    │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-#### Option 2: Local GCC (Development)
-```rust
-use std::process::{Command, Stdio};
-use tokio::time::timeout;
+#### Syscall Policy
 
-async fn execute_c_code_simple(source: &str) -> Result<Output, Error> {
-    // Write to temp file
-    let temp_file = "/tmp/user_code.c";
-    std::fs::write(temp_file, source)?;
+| Category | Allowed | Blocked |
+|----------|---------|---------|
+| **I/O** | read, write, close, fstat | - |
+| **Memory** | mmap, mprotect, munmap, brk | - |
+| **Threading** | clone (CLONE_THREAD), futex | fork, vfork |
+| **Process** | exit, exit_group, getpid | execve, ptrace, kill |
+| **Network** | - | socket, connect, bind, accept |
 
-    // Compile
-    let compile = Command::new("gcc")
-        .args([temp_file, "-o", "/tmp/user_prog"])
-        .output()?;
+#### Environment Variables
 
-    if !compile.status.success() {
-        return Err(Error::CompileError(String::from_utf8_lossy(&compile.stderr).to_string()));
-    }
+| Variable | Value | Effect |
+|----------|-------|--------|
+| `ALLOW_INSECURE_SANDBOX` | `1` | Enable insecure fallback (dev only) |
+| `ALLOW_INSECURE_SANDBOX` | unset | Panic if no sandbox available |
 
-    // Execute with timeout
-    let execution = timeout(
-        Duration::from_secs(2),
-        Command::new("/tmp/user_prog").output()
-    ).await??;
+#### Code Location
 
-    Ok(Output {
-        stdout: String::from_utf8_lossy(&execution.stdout).to_string(),
-        stderr: String::from_utf8_lossy(&execution.stderr).to_string(),
-    })
-}
-```
+- **Seccomp filter**: `src/compiler/seccomp_sandbox.rs`
+- **Sandbox detection**: `src/compiler/mod.rs` → `detect_sandbox_mode()`
+- **Bubblewrap fallback**: `src/compiler/sandbox.rs`
 
 ### Validation Pipeline
 
 ```
 User C Code
     ↓
-Syntax Check (optional linting)
+Size Check (max 10KB)
     ↓
-Compilation (gcc/clang)
+Compilation (gcc -Wall -lpthread)
     ↓ (success)
-Execution (timeout enforced)
+Fork child process
     ↓
-Output Capture
+Apply seccomp filter (PR_SET_NO_NEW_PRIVS + BPF)
+    ↓
+Execute binary (timeout enforced)
+    ↓
+Output Capture (stdout/stderr)
     ↓
 Result Parsing
     ↓
 Game Event Trigger
 ```
+
+### Local Development (macOS)
+
+Since seccomp is Linux-only, local development on macOS requires:
+
+```bash
+export ALLOW_INSECURE_SANDBOX=1
+cargo run -p code-warrior-api
+```
+
+**Warning**: This runs C code without sandboxing. Only use for local development.
 
 ---
 
@@ -450,7 +400,6 @@ pub struct GameState {
     pub world: WorldMap,
     pub entities: Vec<Entity>,
     pub quests: QuestLog,
-    pub inventory: Inventory,
 }
 
 impl GameState {
@@ -476,7 +425,7 @@ impl GameState {
 
 ```svelte
 <script lang="ts">
-import { listen } from '@tauri-apps/api/event';
+import { getBackend } from '$lib/backend';
 
 // Reactive state using Runes
 let gameState = $state({
@@ -490,13 +439,15 @@ let playerTile = $derived(
     Math.floor(gameState.playerPos.x / TILE_SIZE)
 );
 
-// Effect for event listening
+// Poll for state updates
 $effect(() => {
-    const unlisten = listen('game_tick', (event) => {
-        gameState = event.payload; // Triggers reactivity
-    });
+    const interval = setInterval(async () => {
+        const backend = await getBackend();
+        const state = await backend.getRenderState();
+        gameState = state;
+    }, 500);
 
-    return () => unlisten.then(fn => fn());
+    return () => clearInterval(interval);
 });
 </script>
 ```
@@ -588,7 +539,6 @@ struct AppState {
 
 ## References
 
-- [Tauri IPC Documentation](https://tauri.app/v2/guides/inter-process-communication/)
 - [Svelte 5 Runes](https://svelte.dev/docs/runes)
 - [Diesel ORM Guide](https://diesel.rs/guides/getting-started)
 - [Tokio Tutorial](https://tokio.rs/tokio/tutorial)

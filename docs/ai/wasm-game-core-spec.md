@@ -12,7 +12,6 @@ Audience: smart coding agent implementing a WebAssembly (WASM) build of the Rust
 **Key constraints (from CONSTRAINTS.md):**
 - All game logic must be in Rust. Frontend JS/Svelte is rendering + input only.
 - No gameplay rules are re‑implemented in TypeScript; JS can only call into Rust/WASM.
-- Tauri/desktop continues to use native Rust logic; WASM only applies to the browser/web build.
 
 ## 2. Current Architecture (Relevant Pieces)
 
@@ -24,12 +23,11 @@ Rust core (`src/`):
 
 Backends:
 - HTTP: `src-api/src/main.rs` with routes for `init`, `process_action`, `render-state`, `levels`, `submit_code`, progress, saves.
-- Tauri: `src-tauri/src/main.rs` + `src-tauri/src/commands/*.rs` using `GameStateWrapper` and `LevelRegistry` directly.
 
 Frontend:
 - `src-ui/src/lib/backend/http.ts` – HTTP implementation of `Backend` interface.
-- `src-ui/src/lib/backend/tauri.ts` – Tauri implementation of `Backend` interface.
-- `src-ui/src/lib/backend/index.ts` – `getBackend()` picks HTTP vs Tauri.
+- `src-ui/src/lib/backend/wasm.ts` – WASM implementation of `Backend` interface.
+- `src-ui/src/lib/backend/index.ts` – `getBackend()` picks WASM then HTTP fallback.
 - `src-ui/src/routes/+page.svelte` – binds `renderState` from backend to `GameWorld.svelte`.
 - `src-ui/src/lib/components/GameWorld.svelte` – canvas rendering & input.
 
@@ -49,7 +47,7 @@ For the **web** build:
     - `submitCode` (C compiler + validator),
     - persistence (`/api/saves*`, `/api/player/progress`),
     - possibly loading level JSON and assets.
-- Keep Tauri and HTTP backends as they are for now; WASM only replaces web move/level/state flow.
+    - WASM replaces web move/level/state flow; HTTP remains for code, saves, and sync.
 
 This gives “instant” local movement but keeps backend as source of truth for puzzle correctness and stored progression.
 
@@ -102,7 +100,7 @@ impl WasmGame {
 
     #[wasm_bindgen]
     pub fn load_level(&mut self, level_id: String) -> Result<JsValue, JsValue> {
-        // same logic as HTTP/Tauri load_level, but without DB
+        // same logic as HTTP load_level, but without DB
         // return RenderState as JsValue (via serde_wasm_bindgen)
     }
 
@@ -201,11 +199,9 @@ export async function createWasmBackend(): Promise<Backend> {
 ```
 
 **Tasks:**
-- [ ] Configure Vite/Tauri to build and load the WASM module (probably via `vite-plugin-wasm` or similar).
+- [ ] Configure Vite to build and load the WASM module (e.g., `vite-plugin-wasm`).
 - [ ] Implement `createWasmBackend()` as above.
-- [ ] In `src-ui/src/lib/backend/index.ts`, decide when to use WASM backend:
-  - For web (non‑Tauri), prefer WASM.
-  - Keep HTTP backend as an optional fallback (e.g., feature flag or environment variable).
+- [ ] In `src-ui/src/lib/backend/index.ts`, prefer WASM for web; keep HTTP as fallback.
 
 ### 5.2 Frontend Changes for Instant Movement
 
@@ -221,7 +217,7 @@ Once WASM backend is in place:
 
 Even with local WASM state, you still need to persist progress:
 - **Sessions / progress:** continue to use HTTP `/api/player/progress` and existing DB tables. Periodically send `PlayerProgress` from WASM (serialized) so backend can save it.
-- **Save/Load:** keep using the existing HTTP/Tauri save system. In a second phase, you can add WASM support to directly load/save `GameState` snapshots to/from backend responses.
+- **Save/Load:** keep using the existing HTTP save system. In a second phase, you can add WASM support to directly load/save `GameState` snapshots to/from backend responses.
 
 **Tasks:**
 - [ ] Add an easy way to export `PlayerProgress` from WASM (e.g., `get_progress()` returning a JSON blob) and use it in the web backend for syncing.
@@ -229,10 +225,10 @@ Even with local WASM state, you still need to persist progress:
 
 ## 7. Risks & Re-Evaluation Points
 
-- **Duplication of logic between WASM and HTTP/Tauri:**  
+- **Duplication of logic between WASM and HTTP:**  
   For some time, you may have both server-side and client-side simulations. Make sure tests assert they stay in sync (see below).
 - **Complexity in build pipeline:**  
-  WASM introduces a new build target and bundling step. Ensure local build scripts/dev commands (Vite and Tauri) are updated and documented.
+  WASM introduces a new build target and bundling step. Ensure local build scripts/dev commands (Vite) are updated and documented.
 - **Security/cheating (low risk here):**  
   For an educational single-player game, trusting client-side movement and progression is acceptable. If you later add competitive features, you might need server-side verification.
 
@@ -249,7 +245,7 @@ To be confident in WASM correctness:
 - For web:
   - Write a small debug view that logs `RenderState` from WASM vs HTTP backend for the same seed input, just during development.
 
-This spec should give a future agent all the relevant context and a clear, staged set of tasks to implement WASM‑based local game logic without violating the “Rust-only logic” constraint or breaking existing Tauri/HTTP flows.  Using WASM in this way is the most robust path to “press → move feels instant” on the web.
+This spec should give a future agent all the relevant context and a clear, staged set of tasks to implement WASM‑based local game logic without violating the “Rust-only logic” constraint or breaking existing HTTP flows.  Using WASM in this way is the most robust path to “press → move feels instant” on the web.
 
 ## 9. Post-Implementation Cleanup Checklist
 
@@ -267,7 +263,7 @@ Once the WASM backend is implemented, tested, and stable, do a focused cleanup p
   - [ ] Clean up any unused types or helper functions in TS that were only needed during the migration (e.g., experimental action queues).
 
 - **Docs & specs**
-  - [ ] Update `docs/interfaces/tauri-commands.md` and any frontend API docs to reflect the final architecture (WASM for web, Tauri/native for desktop).
+  - [ ] Update frontend API docs to reflect the final architecture (WASM for web, HTTP backend).
   - [ ] Mark older HTTP-based movement flows as legacy or remove them from docs if they are no longer supported.
   - [ ] Revisit `cleanup-*`, performance, and WASM specs and tick off completed items or prune sections that are now obsolete.
 
@@ -279,4 +275,4 @@ Once the WASM backend is implemented, tested, and stable, do a focused cleanup p
   - [ ] Ensure there is a simple local command or script to build the WASM target and run at least a basic WASM smoke test in a browser or headless environment.
   - [ ] Remove temporary test harnesses that were only for manual comparison, or convert them into permanent regression tests that can be run locally before merging changes.
 
-Doing this cleanup after WASM is stable will keep the project maintainable and avoid confusion between legacy HTTP movement, Tauri/native flows, and the new WASM-driven web path.
+Doing this cleanup after WASM is stable will keep the project maintainable and avoid confusion between legacy HTTP movement and the new WASM-driven web path.

@@ -29,21 +29,7 @@ impl NewFeature {
 }
 ```
 
-### Step 4: Create Tauri Command (for desktop) or Axum Route (for web)
-
-**For Tauri (desktop):**
-```rust
-// src-tauri/src/commands/game.rs
-#[tauri::command]
-async fn feature_action(
-    state: State<'_, AppState>,
-) -> Result<Response, String> {
-    let mut game = state.game.lock().await;
-    game.feature.do_something()
-}
-```
-
-**For Axum (web API):**
+### Step 4: Create Axum Route (web API)
 ```rust
 // src-api/src/main.rs
 async fn feature_action(
@@ -53,17 +39,9 @@ async fn feature_action(
 }
 ```
 
-### Step 5: Register Command/Route
+### Step 5: Register Route
 
-**For Tauri** - Add to `src-tauri/src/main.rs`:
-```rust
-.invoke_handler(tauri::generate_handler![
-    feature_action,
-    // ... other commands
-])
-```
-
-**For Axum** - Add to router in `src-api/src/main.rs`:
+Add to router in `src-api/src/main.rs`:
 ```rust
 .route("/api/feature/action", post(feature_action))
 ```
@@ -93,7 +71,7 @@ $effect(() => {
 
 ### Step 8: Test
 - Rust: Unit tests for logic
-- Integration: Test Tauri command
+- Integration: Test Axum route
 - Manual: Test in UI
 
 ---
@@ -174,7 +152,7 @@ Call generate_drunkard_map(width=40, height=30, fill=0.4)
 ### Step 1: Identify Layer
 - **Backend issue**: Check Rust logs
 - **Frontend issue**: Check browser console
-- **Communication issue**: Check Tauri command/event flow
+- **Communication issue**: Check HTTP calls / backend responses
 
 ### Step 2: Read Relevant Docs
 - Architecture: `docs/architecture/system.md`
@@ -193,7 +171,7 @@ console.log('DEBUG:', variable);
 ### Step 4: Test in Isolation
 - Rust: Write unit test
 - Svelte: Test component independently
-- Integration: Test Tauri command
+- Integration: Hit the Axum route via HTTP client or frontend flow
 
 ### Step 5: Verify Fix
 - Run tests
@@ -332,11 +310,11 @@ Use compile_and_run_c tool with test cases
 
 ### Manual UI Tests
 ```bash
-# Development mode
-cargo tauri dev
+# Run API server
+cd src-api && cargo run
 
-# Build and test
-cargo tauri build
+# Run frontend (separate terminal)
+cd src-ui && API_URL=http://localhost:3000 npm run dev
 ```
 
 ---
@@ -376,12 +354,6 @@ git commit -m "feat: add [description]"
 cargo build              # Build project
 cargo test               # Run tests
 cargo run                # Run backend only
-```
-
-### Tauri
-```bash
-cargo tauri dev          # Development mode with hot reload
-cargo tauri build        # Production build
 ```
 
 ### Tools

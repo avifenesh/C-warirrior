@@ -20,9 +20,6 @@ src/                  # Rust shared library (game logic + types)
 src-api/             # Axum HTTP API server (for web frontend)
 └── src/             # API routes and handlers
 
-src-tauri/           # Tauri desktop app (IPC bridge)
-└── src/             # Tauri commands for desktop
-
 src-ui/              # Svelte frontend (UI only)
 ├── src/lib/         # Shared components, backend abstraction, types
 └── src/routes/      # Pages
@@ -34,11 +31,11 @@ tools/               # MCP servers and scripts
 
 ## Where to Implement Things
 
-- **Architecture & IPC patterns**
+- **Architecture & communication patterns**
   - See `docs/ARCHITECTURE.md` → `docs/architecture/system.md` for:
     - Backend‑authoritative model (Rust owns game state and logic).
     - Game loop threading (Tokio / std threads).
-    - Axum route flow and Tauri commands/events (frontend `invoke`, backend `emit_all`).
+    - Axum route flow; frontend communicates via HTTP/WASM.
     - Cross-reference `docs/logic-mindmap.md` for the current HTTP endpoints, session lifecycle, and frontend polling cadence.
 
 - **Game mechanics & metaphors**  
@@ -67,10 +64,6 @@ When you need concrete examples, copy from these existing patterns instead of in
   - Routes are defined in `src-api/src/main.rs`
   - Use `State<Arc<AppState>>` for shared state access
 
-- **Tauri command pattern**  
-  - Commands live in `src-tauri/src/commands/`
-  - Register in `src-tauri/src/main.rs`
-
 - **Svelte 5 Runes usage**  
   - Use `$state`, `$derived`, `$effect` as shown in `src-ui/src/routes/+page.svelte`
   - Use backend abstraction: `import { getBackend } from '$lib/backend'`
@@ -82,9 +75,54 @@ When you need concrete examples, copy from these existing patterns instead of in
 
 ---
 
+## Local Development Setup
+
+### Prerequisites
+
+- **Rust** (2021 edition)
+- **Node.js** (for Svelte frontend)
+- **GCC** (for C code compilation)
+- **PostgreSQL** (or use Neon cloud)
+
+### Environment Variables
+
+Create `.env` in the project root:
+
+```bash
+# Database (required)
+DATABASE_URL=postgres://user:pass@host/dbname
+
+# Sandbox (required for macOS development)
+ALLOW_INSECURE_SANDBOX=1
+```
+
+### Sandbox Security Note
+
+The C code sandbox uses **seccomp-BPF** on Linux (production). On macOS:
+
+| Environment | Sandbox | Notes |
+|-------------|---------|-------|
+| **Railway/Docker** | seccomp-bpf | Automatic, secure |
+| **Linux (native)** | seccomp-bpf | Automatic, secure |
+| **macOS (dev)** | None | Requires `ALLOW_INSECURE_SANDBOX=1` |
+
+**Warning**: Never set `ALLOW_INSECURE_SANDBOX=1` in production. The API will panic on startup if no secure sandbox is available and this variable is not set.
+
+### Running Locally
+
+```bash
+# Terminal 1: API server
+export ALLOW_INSECURE_SANDBOX=1  # macOS only
+cargo run -p code-warrior-api
+
+# Terminal 2: Frontend
+cd src-ui && npm run dev
+```
+
+---
+
 ## Next Steps
 
 1. For any new feature, start by checking `docs/ARCHITECTURE.md` and `docs/GAME_DESIGN.md`.
 2. When adding levels, follow the schemas in `docs/CURRICULUM.md` and update `src/assets/levels.json`.
 3. Use the AI documentation in `docs/ai/` and `docs/core/` for agent-specific guidance.
-

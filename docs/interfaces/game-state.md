@@ -95,85 +95,6 @@ export interface Player {
 
 ---
 
-### Item & Inventory
-
-```rust
-// Rust
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Item {
-    pub id: String,
-    pub name: String,
-    pub item_type: ItemType,
-    pub description: String,
-    pub quantity: u32,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub enum ItemType {
-    Key,
-    Weapon,
-    Consumable,
-    QuestItem,
-}
-
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct Inventory {
-    pub items: Vec<Item>,
-    pub max_slots: usize,
-}
-
-impl Inventory {
-    pub fn new(max_slots: usize) -> Self {
-        Self {
-            items: Vec::new(),
-            max_slots,
-        }
-    }
-
-    pub fn add_item(&mut self, item: Item) -> bool {
-        if self.items.len() < self.max_slots {
-            // Check if item already exists (stack)
-            if let Some(existing) = self.items.iter_mut().find(|i| i.id == item.id) {
-                existing.quantity += item.quantity;
-            } else {
-                self.items.push(item);
-            }
-            true
-        } else {
-            false
-        }
-    }
-
-    pub fn remove_item(&mut self, item_id: &str) -> Option<Item> {
-        if let Some(pos) = self.items.iter().position(|i| i.id == item_id) {
-            Some(self.items.remove(pos))
-        } else {
-            None
-        }
-    }
-}
-```
-
-```typescript
-// TypeScript
-export type ItemType = 'key' | 'weapon' | 'consumable' | 'quest_item';
-
-export interface Item {
-    id: string;
-    name: string;
-    item_type: ItemType;
-    description: string;
-    quantity: number;
-}
-
-export interface Inventory {
-    items: Item[];
-    max_slots: number;
-}
-```
-
----
-
 ### Tile & World
 
 ```rust
@@ -266,7 +187,6 @@ export interface World {
 pub struct GameState {
     pub player: Player,
     pub world: World,
-    pub inventory: Inventory,
     pub current_level_id: Option<String>,
     pub game_phase: GamePhase,
     pub progression: ProgressionState,
@@ -294,7 +214,6 @@ impl Default for GameState {
         Self {
             player: Player::default(),
             world: World::new(20, 15),
-            inventory: Inventory::new(10),
             current_level_id: None,
             game_phase: GamePhase::MainMenu,
             progression: ProgressionState::new(),
@@ -328,7 +247,6 @@ export type GamePhase = 'main_menu' | 'playing' | 'coding' | 'paused' | 'level_c
 export interface GameState {
     player: Player;
     world: World;
-    inventory: Inventory;
     current_level_id: string | null;
     game_phase: GamePhase;
     total_xp: number;
@@ -390,8 +308,6 @@ pub enum PlayerAction {
     Move { direction: Direction },
     Interact,
     SubmitCode { code: String },
-    OpenInventory,
-    UseItem { item_id: String },
     Pause,
     Resume,
 }
@@ -403,8 +319,6 @@ export type PlayerAction =
     | { type: 'move'; direction: Direction }
     | { type: 'interact' }
     | { type: 'submit_code'; code: string }
-    | { type: 'open_inventory' }
-    | { type: 'use_item'; item_id: string }
     | { type: 'pause' }
     | { type: 'resume' };
 ```
@@ -441,7 +355,6 @@ export const XP_PER_LEVEL = 100;
 |-----------|-----------|-----------------|
 | Position | `src/game/state.rs` | `src-ui/src/lib/types.ts` |
 | Player | `src/game/player.rs` | `src-ui/src/lib/types.ts` |
-| Item, Inventory | `src/game/inventory.rs` | `src-ui/src/lib/types.ts` |
 | Tile, World | `src/game/world.rs` | `src-ui/src/lib/types.ts` |
 | GameState | `src/game/state.rs` | `src-ui/src/lib/types.ts` |
 | RenderState | `src/game/state.rs` | `src-ui/src/lib/types.ts` |

@@ -1,6 +1,6 @@
 # Rendering & Loading Performance Spec (Frontend-Focused)
 
-Audience: smart coding agent implementing performance improvements for web + Tauri frontends.  
+Audience: smart coding agent implementing performance improvements for the web frontend.  
 Scope: Svelte/TS and rendering engine under `src-ui/src/lib`, **without** changing core game rules in Rust.
 
 ## 1. Goal & Constraints
@@ -8,7 +8,7 @@ Scope: Svelte/TS and rendering engine under `src-ui/src/lib`, **without** changi
 **Goal:** Reduce frame rendering cost and perceived loading time, especially on low/mid devices, while preserving visual quality and gameplay semantics.
 
 **Key constraints (from AGENTS.md / CONSTRAINTS.md):**
-- All game logic and authoritative state live in Rust (`src/`, `src-api`, `src-tauri`); frontend is rendering + input only.
+- All game logic and authoritative state live in Rust (`src/`, `src-api`); frontend is rendering + input only.
 - Do not change Rust APIs in this spec; if you need backend changes, they must go through a separate backend spec.
 - Keep existing art pipeline and asset formats; changes should be about *how* we load and render, not asset content.
 
@@ -17,7 +17,7 @@ Scope: Svelte/TS and rendering engine under `src-ui/src/lib`, **without** changi
 **Frontend rendering pipeline:**
 - `src-ui/src/routes/+page.svelte`
   - Owns high-level game state (`renderState`, `levels`, `playerProgress`).
-  - Uses `backend` abstraction (`$lib/backend`) for HTTP/Tauri.
+  - Uses `backend` abstraction (`$lib/backend`) for HTTP/WASM.
   - Passes `renderState`, flags, and callbacks into `GameWorld.svelte`.
 - `src-ui/src/lib/components/GameWorld.svelte`
   - Handles keyboard input and dispatches `move` / `interact` events up.
@@ -43,8 +43,6 @@ Scope: Svelte/TS and rendering engine under `src-ui/src/lib`, **without** changi
 - HTTP: `src-ui/src/lib/backend/http.ts`
   - Polls `/api/game/render-state` every 500ms via `EventPoller` when a level is active.
   - Fetches snapshots for movement updates; also gets `render_state` in responses to `/api/code/submit` and `/api/saves/:slot`.
-- Tauri: `src-ui/src/lib/backend/tauri.ts`
-  - Listens to events like `game_tick` only if emitted on Rust side (currently not heavily used).
 
 ## 3. Key Performance Opportunities
 
@@ -266,6 +264,6 @@ When editing, keep these boundaries in mind:
 - **Do** reuse existing abstractions (`getBackend`, `GameRenderer`, `EventPoller`) instead of introducing parallel systems.
 - **Prefer** small, incremental changes (e.g., introduce caching behind flags) over large rewrites; the goal is performance, not a new engine.
 
-If further backend changes (Rust/HTTP/Tauri) seem necessary for performance (e.g., server-side throttling, compressed render snapshots), capture them in a separate backend performance spec rather than mixing them into this frontend-focused document.  
+If further backend changes (Rust/HTTP/WASM) seem necessary for performance (e.g., server-side throttling, compressed render snapshots), capture them in a separate backend performance spec rather than mixing them into this frontend-focused document.  
 
 This spec should give another smart coding agent enough focused context to design and implement the improvements, with clear spots flagged for re-evaluation and validation.*** End Patch ***!

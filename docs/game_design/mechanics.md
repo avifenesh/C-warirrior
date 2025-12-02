@@ -327,18 +327,6 @@ pub enum ItemType {
 }
 ```
 
-**Metaphor**: Inventory slots = declared variables
-
-```c
-// Player declares inventory slots
-int slot1;
-char slot2;
-Item *slot3;
-
-// Now they can store items
-slot1 = pick_up_key();
-```
-
 ### Quest System
 
 **Structure**: JSON-based quest definitions
@@ -421,7 +409,7 @@ for (int i = 0; i < 10; i++) {  // Correct bound
 
 **The Grappling Hook**:
 
-1. **Equip Pointer**: Player gains `int *p` in inventory
+1. **Equip Pointer**: Player gains `int *p` ability
 2. **Target Object**: Click on distant object
 3. **Attach Hook**: Visual line appears from player to object
 4. **Interact Options**:

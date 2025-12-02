@@ -94,6 +94,5 @@ curl https://code-warrior-api-production.up.railway.app/health
 - Agent C should coordinate if modifying shared state files
 
 ## Notes
-- Don't break Tauri IPC - test desktop after changes
-- Don't break HTTP API - test web after changes
-- Keep interfaces identical for both backends
+- Test HTTP API after changes
+- Verify frontend works with local API server

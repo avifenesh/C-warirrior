@@ -5,15 +5,15 @@
 ## When Asked About... → Read This
 
 ### Architecture & System Design
-**Keywords**: structure, Tauri, Rust backend, Svelte frontend, how it works
+**Keywords**: structure, Rust backend, Axum, WASM, Svelte frontend, how it works
 
 **Primary Source**: `docs/architecture/system.md`
 **Flow Map**: `docs/logic-mindmap.md` (backend routes, frontend entry points)
 
 **Key Topics**:
-- Rust/Tauri/Svelte stack details
+- Rust/Axum/Svelte+WASM stack details
 - Backend-authoritative pattern
-- Command/Event flow
+- HTTP contract and frontend flow
 - State management
 - Database schema
 
@@ -55,10 +55,10 @@
 
 **Available Tools**:
 - `c_compiler_mcp.py` → Compile and run C code
-- `generate_map.py` → Create procedural Tiled maps
-- (Future) `map_generator_mcp.py` → MCP version
-
-**Usage**: See `docs/ai/mcp-servers.md`
+- `level_tools_mcp.py` → Level management and validation
+- `memory_mcp.py` → Cross-session memory
+- `project_health_mcp.py` → Build status checks
+- `test_runner_mcp.py` → Test suite runner
 
 ---
 
@@ -77,9 +77,7 @@
 ---
 
 ### Implementation Patterns
-**Keywords**: how to add feature, Rust patterns, Tauri commands
-
-**Use Claude Skill**: `rust-tauri-patterns` (Claude Code only)
+**Keywords**: how to add feature, Rust patterns, backend routes
 
 **Common Patterns**:
 - Adding new game feature
@@ -107,7 +105,7 @@
 
 | Task Type | Primary Resource |
 |-----------|------------------|
-| Add new game feature | `rust-tauri-patterns` skill + `docs/architecture/` |
+| Add new game feature | `rust-backend-patterns` skill + `docs/architecture/` |
 | Create C puzzle | `c-puzzle-designer` skill + `compile_and_run_c` tool |
 | Design level | `src/assets/levels.json` + `game-metaphor-mapper` skill |
 | Fix bug | Check `docs/architecture/system.md` first |
@@ -123,7 +121,6 @@
 ```
 src/                 # Rust shared library (game + levels + compiler)
 src-api/             # Axum HTTP API server
-src-tauri/           # Tauri desktop app
 src-ui/              # Svelte frontend
 tools/               # Scripts and MCP servers
 ```
@@ -135,7 +132,7 @@ docs/architecture/   # Technical details
 docs/game_design/    # Mechanics and metaphors
 docs/curriculum/     # Educational theory
 docs/ai/             # AI agent guides
-docs/interfaces/     # Type schemas (game-state, level-schema, tauri-commands)
+docs/interfaces/     # Type schemas (game-state, level-schema)
 ```
 
 ### Assets
@@ -165,4 +162,3 @@ This documentation works for:
 Agent-specific instructions:
 - Claude: See `CLAUDE.md`
 - All agents: See `AGENTS.md`
-- Gemini: See `GEMINI.md`

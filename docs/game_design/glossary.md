@@ -15,9 +15,9 @@ This glossary defines terms, concepts, and metaphors used throughout Code Warrio
 - Svelte frontend only visualizes state, never creates or modifies it
 - Prevents security issues and state desynchronization
 
-**IPC (Inter-Process Communication)**
-- Communication bridge between Rust backend and JavaScript frontend
-- Uses Tauri's `invoke` (commands) and `emit` (events) patterns
+**HTTP / WASM Bridge**
+- Communication between Rust backend and JavaScript frontend
+- Uses HTTP requests and optional WASM bindings for local state projection
 
 **Game Loop**
 - Continuous thread running game logic at fixed tick rate (20 TPS)

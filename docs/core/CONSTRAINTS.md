@@ -79,7 +79,7 @@
 
 - **Backend**: Rust 2021, Axum (HTTP API), SQLx (Postgres), Tokio
 - **Frontend**: Svelte 5 (Runes), TailwindCSS, TypeScript
-- **Bridge**: Tauri 2.0 (Commands/Events for desktop), HTTP (for web)
+- **Bridge**: HTTP (Axum) for all web clients; WASM embeds core logic for low-latency local play
 - **Assets**: Tiled maps, procedural generation
 - **Database**: PostgreSQL (Neon for production)
 
@@ -121,8 +121,7 @@ src/                  # Rust shared library (game logic + types)
 src-api/             # Axum HTTP API server (for web frontend)
 └── src/             # API routes and handlers
 
-src-tauri/           # Tauri desktop app (IPC bridge)
-└── src/             # Tauri commands for desktop
+src-wasm/            # WASM wrapper for web
 
 src-ui/              # Svelte frontend (UI only)
 ├── src/lib/         # Shared components, backend abstraction, types
