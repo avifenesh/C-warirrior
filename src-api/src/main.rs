@@ -462,11 +462,20 @@ async fn get_available_levels(
     State(state): State<Arc<AppState>>,
     axum::Extension(device_id): axum::Extension<DeviceId>,
 ) -> Result<Json<Vec<LevelInfo>>, (StatusCode, String)> {
-    tracing::debug!("Fetching available levels for device: {}", device_id.0);
+    tracing::info!("Fetching available levels for device: {}", device_id.0);
 
     let game_state = get_or_create_session(&state, &device_id.0)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
+
+    // Debug: log progression state
+    tracing::info!(
+        "Device {} progression: total_xp={}, completed_levels={:?}, unlocked_levels={:?}",
+        device_id.0,
+        game_state.progression.total_xp,
+        game_state.progression.completed_levels,
+        game_state.progression.unlocked_levels
+    );
 
     let mut levels_info = state.levels.get_all_info();
 
