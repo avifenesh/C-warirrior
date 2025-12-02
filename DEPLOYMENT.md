@@ -145,10 +145,7 @@ open https://code-warrior.vercel.app
 ## Local Development
 
 ```bash
-# Start Tauri dev (desktop)
-cargo tauri dev
-
-# Or start just the frontend (web dev)
+# Start frontend (web dev)
 cd src-ui && npm run dev
 
 # Start API locally

@@ -1,6 +1,6 @@
 # Code Warrior: C Mastery
 
-An immersive desktop RPG that teaches C programming from zero to hero through hands-on gameplay.
+An immersive web-based RPG that teaches C programming from zero to hero through hands-on gameplay.
 
 ## Overview
 
@@ -18,9 +18,9 @@ Code Warrior transforms learning C into an interactive adventure where programmi
 
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
-| **Backend** | Rust + Tauri 2.0 | Game engine, C runtime, state management |
+| **Backend** | Rust (Axum HTTP API) | Game engine, C runtime, state management |
 | **Frontend** | Svelte 5 (Runes) | Reactive UI and visualization |
-| **Database** | SQLite + Diesel | Persistent save states |
+| **Database** | PostgreSQL + SQLx (Neon/Railway) | Persistent save states and sessions |
 | **Architecture** | Backend-Authoritative | Rust as single source of truth |
 
 ## Architecture Philosophy
@@ -28,7 +28,7 @@ Code Warrior transforms learning C into an interactive adventure where programmi
 Code Warrior follows a **backend-authoritative** model where:
 - **Rust handles**: Game logic, physics, C code execution, state management
 - **Svelte handles**: Visualization, input capture, UI rendering
-- **Communication**: Tauri IPC (commands from frontend, events from backend)
+- **Communication**: HTTP/Fetch (web) with embedded WASM for fast client-side state projection
 
 This separation ensures security, performance, and clear responsibilities for both human developers and AI coding agents.
 
@@ -42,12 +42,11 @@ This separation ensures security, performance, and clear responsibilities for bo
 - **[IMPLEMENTATION.md](docs/IMPLEMENTATION.md)** - Code examples and implementation guides
 
 ### Development Tools
-- **[SKILL.md](SKILL.md)** - AI agent configuration for development
+- **[AGENTS.md](AGENTS.md)** - AI agent guidelines
 - **[tools/](tools/)** - MCP servers and utility scripts
 
 ### Reference
 - **[docs/DECISIONS.md](docs/DECISIONS.md)** - Technical decision log
-- **[docs/GLOSSARY.md](docs/GLOSSARY.md)** - Terms and metaphor reference
 
 ## Quick Start
 
@@ -55,7 +54,7 @@ This separation ensures security, performance, and clear responsibilities for bo
 - Rust 2021+ with `cargo`
 - Node.js 18+ with `npm`
 - GCC compiler for C code execution
-- SQLite 3
+- PostgreSQL (local instance or Neon cloud)
 
 ### Installation
 
@@ -69,17 +68,21 @@ cd src-ui
 npm install
 cd ..
 
-# Run in development mode (from src-tauri directory)
-cd src-tauri
-cargo tauri dev
+# Run frontend (web dev)
+cd src-ui
+npm run dev -- --open
+
+# Run API locally
+cd ../src-api
+cargo run
 ```
 
-**Note**: The `cargo tauri dev` command will automatically start the frontend dev server based on the configuration in `src-tauri/tauri.conf.json`.
+**Note**: Run the API server and frontend dev server in separate terminals for local development.
 
 ### For AI-Assisted Development
 
 1. **Configure MCP Tools**: See [tools/README.md](tools/README.md) for MCP server setup
-2. **Load the Skill**: Copy [SKILL.md](SKILL.md) to `.cursorrules` or load into Claude Projects
+2. **Agent Rules**: Follow the guidance in [AGENTS.md](AGENTS.md)
 3. **Review Architecture**: Read [ARCHITECTURE.md](docs/ARCHITECTURE.md) to understand the system boundaries
 
 ## Project Goals
@@ -91,7 +94,7 @@ cargo tauri dev
 - Encourage experimentation in a safe, gamified environment
 
 ### Technical Objectives
-- Demonstrate modern Rust/Tauri/Svelte integration
+- Demonstrate modern Rust/Svelte integration
 - Implement secure C code sandboxing
 - Create reusable educational game engine patterns
 - Optimize for AI-assisted development workflows
@@ -115,7 +118,7 @@ Write the C challenge first, create verification tests, then implement game rewa
 We welcome contributions! Please:
 1. Read the [ARCHITECTURE.md](docs/ARCHITECTURE.md) to understand the system
 2. Check the curriculum in [CURRICULUM.md](docs/CURRICULUM.md) for content gaps
-3. Use the [SKILL.md](SKILL.md) configuration for AI-assisted development
+3. Follow the AI/agent guidelines in [AGENTS.md](AGENTS.md)
 4. Follow the testing guidelines in [IMPLEMENTATION.md](docs/IMPLEMENTATION.md)
 
 ## License

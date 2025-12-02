@@ -16,7 +16,7 @@
   - Backend authority (logic in Rust, not Svelte)
   - C code verification (mandatory with MCP tool)
   - No magic (mechanics map to C concepts)
-  - Fixed tech stack (Rust/Tauri/Svelte)
+- Fixed tech stack (Rust/Axum/Svelte+WASM)
 
 - **[`docs/core/DOMAINS.md`](docs/core/DOMAINS.md)** - Task → documentation mapping
   - Find what to read based on your task
@@ -33,16 +33,14 @@
 - **`c_compiler_mcp`**: Compile and run C code
   - Tool: `compile_and_run_c(source_code, input_data)`
   - **MANDATORY** for C puzzle validation
-  - See [`docs/ai/mcp-servers.md`](docs/ai/mcp-servers.md)
 
 - **`generate_map`** (future): Procedural map generation
   - Current: Use `tools/generate_map.py` via bash
 
 ### 3. Agent-Specific Features
 
-**Claude Code users**: See [`CLAUDE.md`](CLAUDE.md) for Claude-specific skills
-**Gemini users**: See [`GEMINI.md`](GEMINI.md) for Gemini-specific setup
-**Other agents**: Continue reading this file
+**Claude Code users**: See [`CLAUDE.md`](CLAUDE.md) for Claude-specific skills, MCP tools, and Gemini integration
+**Other agents**: Continue reading this file - includes Gemini CLI usage section
 
 ---
 
@@ -67,7 +65,7 @@
 
 1. **Backend Authority**
    - NEVER write game logic in Svelte/JS
-   - Physics, XP, inventory, state → Rust only
+   - Physics, XP, state → Rust only
    - Svelte is for rendering and UI only
 
 2. **Verify C Code**
@@ -93,7 +91,7 @@
 
 - **Backend**: Rust 2021, Axum, Diesel (SQLite), Tokio
 - **Frontend**: Svelte 5 (Runes), TailwindCSS, TypeScript
-- **Bridge**: Tauri 2.0 (Commands/Events)
+- **Bridge**: HTTP (Axum) + optional WASM projection
 - **Assets**: Tiled maps, procedural generation
 
 ---
@@ -109,18 +107,18 @@ C-warrior/
 │   │   └── WORKFLOWS.md    # Step-by-step guides
 │   ├── ai/                 # AI assistant guides
 │   │   ├── README.md       # Entry point
-│   │   ├── skills.md       # Claude Code skills (Claude only)
-│   │   └── mcp-servers.md  # MCP tools (all agents)
+│   │   └── skills.md       # Claude Code skills
 │   ├── architecture/       # Technical design
 │   ├── game_design/        # Mechanics and metaphors
 │   └── curriculum/         # Educational progression
-├── src/                    # Rust backend (game logic)
+├── src/                    # Rust shared logic
+├── src-api/                # Axum HTTP backend
 ├── src-ui/                 # Svelte frontend (UI only)
 ├── src/assets/levels.json  # Level definitions (SOURCE OF TRUTH)
-├── tools/                  # MCP servers and scripts
+├── tools/                  # MCP servers and scripts (see tools/README.md)
+├── .mcp.json               # MCP server configuration
 ├── CLAUDE.md               # Claude Code specific
-├── AGENTS.md               # This file (all agents)
-└── GEMINI.md               # Gemini specific
+└── AGENTS.md               # This file (all agents)
 ```
 
 ---
@@ -141,7 +139,7 @@ C-warrior/
 
 ## Testing Protocol (MANDATORY)
 
-**Every code change MUST be tested on both platforms:**
+**Every code change MUST be tested on web (HTTP/WASM):**
 
 ### Production URLs
 
@@ -152,30 +150,18 @@ C-warrior/
 
 ### Local Development Setup
 
-**Desktop (Tauri IPC):**
-```bash
-cd src-ui && npm run dev  # Terminal 1: Frontend dev server
-cargo tauri dev           # Terminal 2: Tauri app
-```
-
 **Web (HTTP Backend) - Local:**
 ```bash
 cd src-api && cargo run                              # Terminal 1: API server
 cd src-ui && API_URL=http://localhost:3000 npm run dev  # Terminal 2: Frontend
 ```
 
-### Dual-Platform Testing
+### Testing Scope
 
-1. **Web (HTTP Backend)** - Primary for automation
-   - Production: https://code-warrior-seven.vercel.app
-   - Local: http://localhost:1420
-   - Uses HTTP API to backend
-   - **Preferred for automated testing** - same game logic, scriptable
-
-2. **Desktop (Tauri IPC)** - Verify native integration
-   - Run via `cargo tauri dev`
-   - Uses direct Rust IPC
-   - Test after web passes to catch IPC-specific issues
+- **Web (HTTP/WASM)** - Primary and only supported path
+  - Production: https://code-warrior-seven.vercel.app
+  - Local: http://localhost:1420
+  - Uses HTTP API to backend; WASM handles local projection when available
 
 ### Testing Checklist
 
@@ -193,10 +179,8 @@ cd src-ui && API_URL=http://localhost:3000 npm run dev  # Terminal 2: Frontend
 
 **When modifying `src-ui/src/lib/backend/`:**
 
-1. **Never break Tauri IPC** - Test desktop after changes
-2. **Never break HTTP API** - Test web after changes
-3. **Keep interfaces identical** - Both implement `Backend` interface
-4. **Test both paths** - Fix for one might break the other
+1. **Keep HTTP API stable** - Test web after changes
+2. **Keep interfaces identical** - WASM and HTTP implement the same `Backend` interface
 
 ### UI/UX Testing
 
@@ -274,7 +258,7 @@ Treat these as sufficient unless there's a clear gap:
 - **Architecture questions** → `docs/architecture/system.md`
 - **Game mechanics** → `docs/game_design/mechanics.md`
 - **Levels & curriculum** → `src/assets/levels.json` (SOURCE OF TRUTH)
-- **Tools** → `tools/` directory + `docs/ai/mcp-servers.md`
+- **Tools & MCP servers** → `tools/README.md` + `.mcp.json`
 - **System constraints** → `docs/core/CONSTRAINTS.md`
 
 ---
@@ -284,8 +268,10 @@ Treat these as sufficient unless there's a clear gap:
 **When analyzing large code chunks or understanding the whole codebase**, use Gemini's massive context window:
 
 ```bash
-gemini -p "<prompt>" --model gemini-3-pro-preview
+gemini -m gemini-3-pro-preview "<prompt>"
 ```
+
+**ALWAYS use `gemini-3-pro-preview`** - this is the required model.
 
 ### When to Use Gemini CLI
 
@@ -299,21 +285,21 @@ gemini -p "<prompt>" --model gemini-3-pro-preview
 
 1. **Structure your prompt clearly** - Use sections/headers:
    ```bash
-   gemini -p "## Task
+   gemini -m gemini-3-pro-preview "## Task
    Analyze the data flow in this codebase.
 
    ## Context
-   This is a Rust/Tauri game with Svelte frontend.
+   This is a Rust (Axum) game with Svelte frontend.
 
    ## Output Format
-   Provide a numbered list of the flow steps." --model gemini-3-pro-preview
+   Provide a numbered list of the flow steps."
    ```
 
 2. **Place large context first** - Put code/files at the beginning, then ask your question:
    ```bash
-   gemini -p "$(cat src/*.rs)
+   gemini -m gemini-3-pro-preview "$(cat src/*.rs)
 
-   Based on the code above, identify all Tauri commands and their purposes." --model gemini-3-pro-preview
+   Based on the code above, identify all HTTP endpoints and their purposes."
    ```
 
 3. **Be specific about output format** - Request structured output:
@@ -323,29 +309,29 @@ gemini -p "<prompt>" --model gemini-3-pro-preview
 
 4. **Break complex analysis into steps** - Ask Gemini to plan first:
    ```bash
-   gemini -p "First, list all the modules. Then, for each module, describe its responsibility. Finally, draw the dependency graph." --model gemini-3-pro-preview
+   gemini -m gemini-3-pro-preview "First, list all the modules. Then, for each module, describe its responsibility. Finally, draw the dependency graph."
    ```
 
 5. **Use self-critique for accuracy** - Ask it to verify:
    ```bash
-   gemini -p "Analyze this code for bugs. After listing potential issues, review each one and rate your confidence (high/medium/low)." --model gemini-3-pro-preview
+   gemini -m gemini-3-pro-preview "Analyze this code for bugs. After listing potential issues, review each one and rate your confidence (high/medium/low)."
    ```
 
 ### Example Use Cases
 
 ```bash
 # Understand entire codebase structure
-gemini -p "$(find src -name '*.rs' -exec cat {} \;)
+gemini -m gemini-3-pro-preview "$(find src -name '*.rs' -exec cat {} \;)
 
 Analyze this Rust codebase and provide:
 1. High-level architecture overview
 2. Module dependency graph
-3. Key data structures and their relationships" --model gemini-3-pro-preview
+3. Key data structures and their relationships"
 
 # Trace a specific feature
-gemini -p "$(cat src/**/*.rs src-ui/src/**/*.ts)
+gemini -m gemini-3-pro-preview "$(cat src/**/*.rs src-ui/src/**/*.ts)
 
-Trace how player movement works from frontend input to backend state update. List every file and function involved." --model gemini-3-pro-preview
+Trace how player movement works from frontend input to backend state update. List every file and function involved."
 ```
 
 ---
@@ -369,10 +355,10 @@ See [`CLAUDE.md`](CLAUDE.md) for:
 - Claude-specific features
 
 ### For Gemini
-See [`GEMINI.md`](GEMINI.md) for:
-- Gemini-specific setup
-- MCP configuration
-- Best practices
+Use Gemini CLI for large-context analysis (see "Large Codebase Analysis with Gemini CLI" section above):
+- Web searches and research
+- Analyzing large codebases (1M context window)
+- Cross-file dependency analysis
 
 ### For Other Agents
 - Use MCP tools if your agent supports MCP
@@ -392,22 +378,21 @@ See [`GEMINI.md`](GEMINI.md) for:
 
 **AI Assistant Guides**:
 - [`docs/ai/README.md`](docs/ai/README.md) - Entry point
-- [`docs/ai/skills.md`](docs/ai/skills.md) - Claude Code skills (Claude only)
-- [`docs/ai/mcp-servers.md`](docs/ai/mcp-servers.md) - MCP tools (all agents)
+- [`docs/ai/skills.md`](docs/ai/skills.md) - Claude Code skills
 
 **Technical**:
 - `docs/architecture/system.md` - System design
 - `docs/game_design/mechanics.md` - Game mechanics
 - `docs/curriculum/progression.md` - Educational theory
 - `src/assets/levels.json` - Level definitions (SOURCE OF TRUTH)
+- `tools/README.md` - MCP servers and tools
 
 **Agent-Specific**:
-- `CLAUDE.md` - Claude Code
+- `CLAUDE.md` - Claude Code (includes Gemini MCP integration)
 - `AGENTS.md` - This file (all agents)
-- `GEMINI.md` - Gemini
 
 ## Anti-Mock Policy (Added per user request)
 - **NEVER** rely on mock backends for final implementation or testing.
-- **ALWAYS** test against the real backend (`src-api` or Tauri IPC).
+- **ALWAYS** test against the real backend (`src-api` HTTP).
 - Mocks are strictly for transient UI prototyping only and must be removed before completion.
 - If the real backend is broken, **FIX THE BACKEND** instead of bypassing it.

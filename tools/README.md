@@ -95,18 +95,53 @@ python tools/generate_map.py --algorithm rooms --rooms 8 > maps/dungeon_01.json
 
 ---
 
-### 3. WFC (Wave Function Collapse) Generator (Coming Soon)
+### 3. Level Tools MCP Server (`level_tools_mcp.py`)
 
-**Purpose**: Advanced procedural generation using constraint-based wave function collapse.
+**Purpose**: Level management, validation, and analysis.
 
-**Status**: Planned implementation in Rust
+**Tools**:
+- `get_level(id)` - Get full level definition
+- `list_all_levels()` - List all levels with summary
+- `validate_level(data)` - Check level schema
+- `list_concepts_coverage()` - Show C concept coverage gaps
 
-**Features**:
-- Define tile adjacency rules
-- Enforce memory allocation patterns
-- Generate semantically correct memory visualizations
+---
 
-### 4. Local E2E Only (`test-local-e2e.sh`)
+### 4. Memory MCP Server (`memory_mcp.py`)
+
+**Purpose**: Cross-session memory persistence for decisions, patterns, and gotchas.
+
+**Tools**:
+- `remember(key, value, category)` - Store information
+- `recall(key, category)` - Retrieve stored info
+- `get_known_gotchas()` - List known issues
+- `get_project_decisions()` - List architectural decisions
+
+---
+
+### 5. Project Health MCP Server (`project_health_mcp.py`)
+
+**Purpose**: One-call build status for all components.
+
+**Tools**:
+- `check_project_health()` - Full status of rust, frontend, api
+- `quick_build_check(component)` - Fast single component check
+- `get_git_status()` - Current git branch and changes
+
+---
+
+### 6. Test Runner MCP Server (`test_runner_mcp.py`)
+
+**Purpose**: Integrated testing with smart test selection.
+
+**Tools**:
+- `run_tests(scope)` - Run test suite (all, rust, frontend, api)
+- `check_for_regressions(changed_files)` - Smart test selection
+- `validate_c_solution(code, tests)` - Validate C code against test cases
+
+---
+
+### 7. Local E2E Only (`test-local-e2e.sh`)
 
 **Purpose**: Run full end-to-end tests against a local backend/frontend on `localhost` (no deploy).
 
@@ -130,7 +165,38 @@ You can override the defaults:
 LOCAL_API_URL=http://localhost:3000 LOCAL_FRONTEND_URL=http://localhost:1420 ./tools/test-local-e2e.sh
 ```
 
-### 5. Local E2E + Deploy (`test-local-and-deploy.sh`)
+### 9. Gemini MCP (`gemini-mcp-tool`)
+
+**Purpose**: Leverage Gemini's 1M token context for large file analysis and web searches.
+
+**Installation**: Auto-installed via npx (configured in `.mcp.json`)
+
+**Model**: **ALWAYS use `gemini-3-pro-preview`**
+
+**MCP Tool Usage**:
+```
+mcp__gemini__ask-gemini with model: "gemini-3-pro-preview"
+```
+
+**CLI Usage**:
+```bash
+gemini -m gemini-3-pro-preview "<prompt>"
+```
+
+**Features**:
+- Large file analysis using `@` syntax
+- Web searches and best practices research
+- Codebase understanding across many files
+- Sandbox mode for safe code testing
+
+**When to use**:
+- Analyzing files that exceed Claude's context window
+- Researching best practices for technologies
+- Understanding cross-cutting concerns across many files
+
+---
+
+### 10. Local E2E + Deploy (`test-local-and-deploy.sh`)
 
 **Purpose**: Convenience wrapper that runs local E2E (`test-local-e2e.sh`) and, if it passes, deploys to Railway/Vercel and re-runs validation against production.
 
@@ -138,6 +204,25 @@ LOCAL_API_URL=http://localhost:3000 LOCAL_FRONTEND_URL=http://localhost:1420 ./t
 ```bash
 ./tools/test-local-and-deploy.sh
 ```
+
+---
+
+## Utility Scripts
+
+### `test-all-levels.py`
+Validates all levels in `src/assets/levels.json` by testing C solutions against test cases.
+
+### `generate_assets.py`
+Generates placeholder game assets (sprites, tiles) for development.
+
+### `generate-theme-sprites.py`
+Creates themed sprite variations for different level environments.
+
+### `convert-ascii-to-worldconfig.py`
+Converts ASCII art map layouts to JSON world configurations.
+
+### `apply-worldconfigs.py`
+Applies world config templates to multiple levels in bulk.
 
 ---
 
@@ -278,4 +363,4 @@ if __name__ == "__main__":
 
 For more information, see:
 - [IMPLEMENTATION.md](../docs/IMPLEMENTATION.md) - Technical implementation details
-- [SKILL.md](../SKILL.md) - AI agent tool usage guidelines
+- [CLAUDE.md](../CLAUDE.md) - Claude Code AI guidelines

@@ -35,10 +35,6 @@ __pycache__/
 target/
 **/*.rs.bk
 
-# Tauri (native) build output
-src-tauri/target/
-src-tauri/.cargo/
-
 # Node/Svelte/Vite
 node_modules/
 dist/
