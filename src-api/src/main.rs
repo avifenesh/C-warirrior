@@ -1017,6 +1017,10 @@ async fn submit_quest_code(
         // Refresh unlocked levels after any quest completion
         game_state.update_unlocked_levels(state.levels.get_prerequisites());
 
+        // Clear active_quest_id after successful completion to prevent auto-reload
+        // Player must interact with a terminal again to start another quest
+        game_state.active_quest_id = None;
+
         // Persist state
         persist_session(&state, &device_id.0, &game_state)
             .await
