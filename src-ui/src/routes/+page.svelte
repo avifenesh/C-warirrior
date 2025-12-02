@@ -88,6 +88,9 @@
             // Auto-load quest if active_quest_id is set (multi-quest level)
             if (activeQuestId && backend && !questLoadingInProgress) {
                 loadQuestById(activeQuestId);
+            } else if (!activeQuestId && activeQuest) {
+                // Quest was completed (server cleared active_quest_id) - reset local quest state
+                activeQuest = null;
             }
         } else {
             // Terminal closed - reset quest
@@ -462,6 +465,24 @@
                     <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90">
                         <div class="quest-loading">
                             <p class="text-amber-400 font-['Press_Start_2P'] text-sm">Loading quest...</p>
+                        </div>
+                    </div>
+                {:else if isMultiQuestLevel}
+                    <!-- Multi-quest level: quest just completed, show success and close option -->
+                    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90">
+                        <div class="pixel-modal">
+                            <div class="text-center mb-4">
+                                <span class="text-4xl" style="filter: drop-shadow(2px 2px 0 #000);">✓</span>
+                            </div>
+                            <h2 class="pixel-title text-center">QUEST COMPLETE!</h2>
+                            <p class="text-sm text-slate-300 mb-4 text-center">
+                                {lastCodeResult?.feedback ?? 'Great work!'}
+                            </p>
+                            <div class="flex flex-col gap-3 mt-6">
+                                <button onclick={handleTerminalClose} class="pixel-button w-full">
+                                    CONTINUE
+                                </button>
+                            </div>
                         </div>
                     </div>
                 {:else}

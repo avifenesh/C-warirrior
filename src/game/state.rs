@@ -104,6 +104,16 @@ impl GameState {
         self.progression.update_unlocks(prerequisites);
     }
 
+    /// Recalculate unlocked levels from scratch (removes invalid unlocks)
+    pub fn recalculate_unlocked_levels(&mut self, prerequisites: &HashMap<String, LevelPrerequisites>) {
+        self.progression.recalculate_unlocks(prerequisites);
+    }
+
+    /// Backfill quest completions for old sessions that have completed levels but no quest tracking
+    pub fn backfill_quest_completions(&mut self, level_quest_counts: &HashMap<String, usize>) {
+        self.progression.backfill_quest_completions(level_quest_counts);
+    }
+
     /// Check if a level is unlocked
     pub fn is_level_unlocked(&self, level_id: &str) -> bool {
         self.progression.is_unlocked(level_id)

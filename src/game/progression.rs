@@ -107,6 +107,39 @@ impl ProgressionState {
         }
     }
 
+    /// Recalculate unlocked levels from scratch based on prerequisites
+    /// This removes levels that shouldn't be unlocked and adds those that should be
+    pub fn recalculate_unlocks(&mut self, prerequisites: &HashMap<String, LevelPrerequisites>) {
+        // Start fresh - only L01 is always unlocked
+        self.unlocked_levels.clear();
+        self.unlocked_levels.insert("L01".to_string());
+
+        // Add levels where prerequisites are met
+        for (level_id, prereqs) in prerequisites {
+            if prereqs.is_satisfied(&self.completed_levels, self.total_xp) {
+                self.unlocked_levels.insert(level_id.clone());
+            }
+        }
+    }
+
+    /// Backfill completed_quests from completed_levels for old sessions
+    /// This ensures quest progress displays correctly for levels completed before quest tracking
+    pub fn backfill_quest_completions(&mut self, level_quest_counts: &HashMap<String, usize>) {
+        for level_id in &self.completed_levels.clone() {
+            // If level is completed but has no quest tracking, assume all quests done
+            let quest_count = self.get_completed_quest_count(level_id);
+            if quest_count == 0 {
+                if let Some(&total_quests) = level_quest_counts.get(level_id) {
+                    // Backfill with synthetic quest IDs (e.g., L01_Q1, L01_Q2, L01_Q3)
+                    let quests = self.completed_quests.entry(level_id.clone()).or_default();
+                    for i in 1..=total_quests {
+                        quests.insert(format!("{}_Q{}", level_id, i));
+                    }
+                }
+            }
+        }
+    }
+
     /// Get list of levels that can be played right now
     pub fn get_available_levels(&self) -> Vec<&String> {
         self.unlocked_levels.iter().collect()

@@ -262,6 +262,9 @@ async fn get_or_create_session(app: &Arc<AppState>, device_id: &str) -> Result<G
             let mut game_state: GameState = serde_json::from_value(session.game_state)
                 .map_err(|e| format!("Failed to parse game state: {}", e))?;
 
+            // Backfill quest completions for old sessions that have completed levels but no quest tracking
+            game_state.backfill_quest_completions(&app.levels.get_quest_counts());
+
             // Recalculate unlocked levels from scratch based on current prerequisites
             // This removes levels that shouldn't be unlocked and adds those that should be
             game_state.recalculate_unlocked_levels(app.levels.get_prerequisites());

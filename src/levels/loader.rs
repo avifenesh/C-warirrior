@@ -394,4 +394,12 @@ impl LevelRegistry {
     pub fn get_level_order(&self) -> &[String] {
         &self.order
     }
+
+    /// Get quest count for each level (for backfilling old sessions)
+    pub fn get_quest_counts(&self) -> std::collections::HashMap<String, usize> {
+        self.levels
+            .iter()
+            .map(|(id, level)| (id.clone(), level.quest_count()))
+            .collect()
+    }
 }
