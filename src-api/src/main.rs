@@ -259,14 +259,23 @@ async fn get_or_create_session(app: &Arc<AppState>, device_id: &str) -> Result<G
     // Fallback: load from database or create a new session
     match db::get_session(&app.db, device_id).await {
         Ok(Some(session)) => {
-            let game_state: GameState = serde_json::from_value(session.game_state)
+            let mut game_state: GameState = serde_json::from_value(session.game_state)
                 .map_err(|e| format!("Failed to parse game state: {}", e))?;
+
+            // Refresh unlocked levels based on current prerequisites
+            // This ensures level locks are enforced even if prerequisites changed
+            game_state.update_unlocked_levels(app.levels.get_prerequisites());
+
             app.sessions
                 .insert(device_id.to_string(), game_state.clone());
             Ok(game_state)
         }
         Ok(None) => {
-            let new_state = GameState::new();
+            let mut new_state = GameState::new();
+
+            // Initialize unlocked levels based on prerequisites
+            new_state.update_unlocked_levels(app.levels.get_prerequisites());
+
             let session_json = serde_json::to_value(&new_state)
                 .map_err(|e| format!("Failed to serialize game state: {}", e))?;
 
