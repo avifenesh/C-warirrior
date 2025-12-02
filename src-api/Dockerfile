@@ -13,8 +13,9 @@ RUN RUSTFLAGS='-C target-feature=-crt-static' cargo build --release -p code-warr
 # Runtime - Alpine for small image
 FROM alpine:latest
 
-# Install GCC for C compilation and bubblewrap for sandboxing
-RUN apk add --no-cache gcc musl-dev libgcc libstdc++ ca-certificates bubblewrap
+# Install GCC for C compilation
+# Note: seccomp sandbox is built-in (uses kernel seccomp-bpf, no external deps)
+RUN apk add --no-cache gcc musl-dev libgcc libstdc++ ca-certificates
 
 COPY --from=builder /app/target/release/code-warrior-api /usr/local/bin/
 
