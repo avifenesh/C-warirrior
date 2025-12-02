@@ -19,6 +19,16 @@
     let completedCount = $derived(progress?.completed_levels?.length ?? 0);
     let totalXP = $derived(progress?.total_xp ?? 0);
 
+    // Map rendering logic for responsive aspect ratio
+    let mapAreaWidth = $state(0);
+    let mapAreaHeight = $state(0);
+    const MAP_WIDTH = 1408;
+    const MAP_HEIGHT = 768;
+    const MAP_RATIO = MAP_WIDTH / MAP_HEIGHT;
+
+    // Determine if we are constrained by width or height to maintain aspect ratio
+    let fitMode = $derived((mapAreaWidth / mapAreaHeight) > MAP_RATIO ? 'height' : 'width');
+
     function handleLevelClick(level: LevelInfo) {
         if (!level.locked) {
             onSelectLevel(level.id);
@@ -34,36 +44,48 @@
     </header>
 
     <!-- Map Area -->
-    <div class="map-area">
-        <!-- Background: try image first, fall back to CSS -->
-        {#if !imageError}
-            <img
-                src={MAP_CONFIG.backgroundImage}
-                alt="World Map"
-                class="map-background-image"
-                onerror={() => imageError = true}
-            />
-        {/if}
+    <div 
+        class="map-area"
+        bind:clientWidth={mapAreaWidth}
+        bind:clientHeight={mapAreaHeight}
+    >
+        <!-- Aspect Ratio Wrapper -->
+        <div 
+            class="map-content-wrapper"
+            style:width={fitMode === 'width' ? '100%' : 'auto'}
+            style:height={fitMode === 'height' ? '100%' : 'auto'}
+            style:aspect-ratio="{MAP_RATIO}"
+        >
+            <!-- Background: try image first, fall back to CSS -->
+            {#if !imageError}
+                <img
+                    src={MAP_CONFIG.backgroundImage}
+                    alt="World Map"
+                    class="map-background-image"
+                    onerror={() => imageError = true}
+                />
+            {/if}
 
-        <!-- CSS fallback background -->
-        <div class="map-background-css" class:visible={imageError}>
-            <div class="island-base"></div>
-            <div class="mountains"></div>
-            <div class="water-effect"></div>
-        </div>
+            <!-- CSS fallback background -->
+            <div class="map-background-css" class:visible={imageError}>
+                <div class="island-base"></div>
+                <div class="mountains"></div>
+                <div class="water-effect"></div>
+            </div>
 
-        <!-- Level Markers -->
-        <div class="markers-container">
-            {#each levels as level (level.id)}
-                {#if LEVEL_POSITIONS[level.id]}
-                    <LevelMarker
-                        {level}
-                        position={LEVEL_POSITIONS[level.id]}
-                        isCurrentLevel={progress?.current_level === level.id}
-                        onClick={() => handleLevelClick(level)}
-                    />
-                {/if}
-            {/each}
+            <!-- Level Markers -->
+            <div class="markers-container">
+                {#each levels as level (level.id)}
+                    {#if LEVEL_POSITIONS[level.id]}
+                        <LevelMarker
+                            {level}
+                            position={LEVEL_POSITIONS[level.id]}
+                            isCurrentLevel={progress?.current_level === level.id}
+                            onClick={() => handleLevelClick(level)}
+                        />
+                    {/if}
+                {/each}
+            </div>
         </div>
     </div>
 
@@ -135,6 +157,16 @@
         box-shadow: 8px 8px 0 #050510;
         overflow: hidden;
         background: #0a2540;
+        /* Center the aspect-ratio wrapper */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .map-content-wrapper {
+        position: relative;
+        max-width: 100%;
+        max-height: 100%;
     }
 
     .map-background-image {
@@ -142,7 +174,7 @@
         inset: 0;
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        /* We don't need cover anymore, the wrapper enforces ratio */
         image-rendering: pixelated;
     }
 
