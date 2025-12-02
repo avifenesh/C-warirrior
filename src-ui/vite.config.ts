@@ -15,10 +15,9 @@ export default defineConfig({
 		port: 1420,
 		strictPort: true
 	},
-	envPrefix: ['VITE_', 'TAURI_'],
+	envPrefix: ['VITE_'],
 	define: {
-		'__API_URL__': JSON.stringify(process.env.API_URL || 'http://localhost:3000'),
-		'__TAURI_BUILD__': JSON.stringify(!!process.env.TAURI_PLATFORM)
+		'__API_URL__': JSON.stringify(process.env.API_URL || 'http://localhost:3000')
 	},
 	resolve: {
 		alias: {

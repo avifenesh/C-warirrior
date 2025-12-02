@@ -108,6 +108,13 @@ export const DEFAULT_MANIFEST: AssetManifest = {
         path: '/tiles/terrain/path.png',
         dirt: '/tiles/terrain/dirt.png',
         marsh: '/tiles/terrain/marsh.png',
+        // Environmental tiles for atmospheric levels
+        tree: '/tiles/terrain/tree.png',
+        rock: '/tiles/terrain/rock.png',
+        lava: '/tiles/terrain/lava.png',
+        ice: '/tiles/terrain/ice.png',
+        bridge: '/tiles/terrain/bridge.png',
+        pit: '/tiles/terrain/pit.png',
     },
     audio: {},
 };
@@ -264,8 +271,10 @@ export interface ThemeTileset {
     wall_top: HTMLImageElement;
     decoration_1: HTMLImageElement;
     decoration_2: HTMLImageElement;
-    // Keep references to interactive tiles from default manifest
+    // Theme-specific NPC and terminal sprites
+    npc: HTMLImageElement | null;
     terminal: HTMLImageElement | null;
+    // Keep references to interactive tiles from default manifest
     door_locked: HTMLImageElement | null;
     door_open: HTMLImageElement | null;
 }
@@ -318,6 +327,8 @@ export async function loadThemeTiles(
         wall_top,
         decoration_1,
         decoration_2,
+        npc,
+        terminal,
     ] = await Promise.all([
         loadThemeImage('floor', 'floor'),
         loadThemeImage('floor_alt', 'floor'),
@@ -325,6 +336,8 @@ export async function loadThemeTiles(
         loadThemeImage('wall_top', 'wall_top'),
         loadThemeImage('decoration_1'),
         loadThemeImage('decoration_2'),
+        loadThemeImage('npc'),      // Theme-specific NPC sprite
+        loadThemeImage('terminal'), // Theme-specific terminal/pedestal sprite
     ]);
 
     // Create tileset with loaded images (use floor as fallback for missing)
@@ -335,8 +348,10 @@ export async function loadThemeTiles(
         wall_top: wall_top ?? wall ?? (await loadImage('/tiles/wall_top.png').catch(() => null) as HTMLImageElement),
         decoration_1: decoration_1 ?? floor ?? (null as unknown as HTMLImageElement),
         decoration_2: decoration_2 ?? floor ?? (null as unknown as HTMLImageElement),
+        // Theme-specific NPC and terminal (fall back to defaults if missing)
+        npc: npc ?? defaultTiles?.get('npc') ?? null,
+        terminal: terminal ?? defaultTiles?.get('terminal') ?? null,
         // Interactive tiles always use defaults
-        terminal: defaultTiles?.get('terminal') ?? null,
         door_locked: defaultTiles?.get('door_locked') ?? null,
         door_open: defaultTiles?.get('door_open') ?? null,
     };

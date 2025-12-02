@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher, onMount, tick } from 'svelte';
-    import type { Lesson, TestSuiteResult, TestCase } from '../types';
+    import type { Lesson, TestSuiteResult, TestCase, QuestTeaching } from '../types';
 
     interface Props {
         initialCode?: string;
@@ -30,6 +30,7 @@
         questTitle?: string | null;
         questDescription?: string | null;
         questXpReward?: number;
+        questTeaching?: QuestTeaching | null;
     }
 
     let {
@@ -50,6 +51,7 @@
         questTitle = null,
         questDescription = null,
         questXpReward = 0,
+        questTeaching = null,
     }: Props = $props();
 
     // Whether this is a quest within a multi-quest level
@@ -60,8 +62,18 @@
 
     const dispatcher = createEventDispatcher();
     let code = $state(initialCode);
+    let lastInitialCode = $state(initialCode); // Track previous initialCode to detect changes
     let textareaRef: HTMLTextAreaElement | null = null;
     let showMissionBriefing = $state(true); // Show mission briefing on first open
+
+    // Sync code only when initialCode prop actually changes (e.g., switching between quest terminals)
+    $effect(() => {
+        if (initialCode !== lastInitialCode) {
+            code = initialCode;
+            lastInitialCode = initialCode;
+            showMissionBriefing = true; // Reset mission briefing for new quest
+        }
+    });
 
     onMount(() => {
         // Focus textarea after mission briefing is dismissed
@@ -368,11 +380,30 @@
                                     </div>
                                 {/if}
                             {:else}
+                                <!-- Quest teaching content (progressive learning) -->
+                                {#if questTeaching}
+                                    <div class="quest-teaching">
+                                        <h3 class="quest-teaching-concept">{questTeaching.concept}</h3>
+                                        <p class="quest-teaching-explanation">{questTeaching.explanation}</p>
+                                        {#if questTeaching.tip}
+                                            <div class="quest-teaching-tip">
+                                                <span class="tip-icon">💡</span>
+                                                <span class="tip-text">{questTeaching.tip}</span>
+                                            </div>
+                                        {/if}
+                                    </div>
+                                {/if}
                                 <p class="mission-briefing-text">{challenge}</p>
                                 {#if expectedOutput}
                                     <div class="mission-expected">
                                         <span class="mission-expected-label">Target Output:</span>
                                         <code class="mission-expected-value">{expectedOutput}</code>
+                                    </div>
+                                {/if}
+                                {#if functionSignature}
+                                    <div class="function-signature-box">
+                                        <span class="function-signature-label">Your Function:</span>
+                                        <code class="function-signature-code">{functionSignature}</code>
                                     </div>
                                 {/if}
                             {/if}
@@ -868,6 +899,50 @@
         font-family: 'IBM Plex Mono', monospace;
         font-size: 16px;
         color: #4ade80;
+    }
+
+    /* Quest Teaching Styles */
+    .quest-teaching {
+        background: linear-gradient(180deg, #1e3a5f 0%, #0f3460 100%);
+        border: 2px solid #3b82f6;
+        border-radius: 2px;
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+
+    .quest-teaching-concept {
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 11px;
+        color: #67e8f9;
+        margin-bottom: 10px;
+        text-shadow: 1px 1px 0 #0a0a1e;
+    }
+
+    .quest-teaching-explanation {
+        font-size: 14px;
+        color: #e2e8f0;
+        line-height: 1.6;
+        margin-bottom: 12px;
+    }
+
+    .quest-teaching-tip {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        background: #0a0a14;
+        border: 2px solid #fbbf24;
+        padding: 10px 12px;
+        margin-top: 12px;
+    }
+
+    .tip-icon {
+        font-size: 14px;
+    }
+
+    .tip-text {
+        font-size: 12px;
+        color: #fef3c7;
+        line-height: 1.5;
     }
 
     .mission-briefing-footer {

@@ -10,6 +10,9 @@ export interface ThemeConfig {
     decoration1: string;
     decoration2: string;
     colorPalette: string;
+    // NPC and terminal descriptions for themed sprites
+    npcDesc: string;      // Quest giver character description
+    terminalDesc: string; // Quest pedestal/altar description
 }
 
 export const LEVEL_THEMES: Record<string, ThemeConfig> = {
@@ -22,7 +25,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'wooden fence with vines',
         decoration1: 'barrel',
         decoration2: 'wooden signpost',
-        colorPalette: 'warm browns, soft greens, golden wood'
+        colorPalette: 'warm browns, soft greens, golden wood',
+        npcDesc: 'friendly village elder with wooden staff',
+        terminalDesc: 'wooden notice board with quest scroll'
     },
     'L02_market': {
         id: 'L02_market',
@@ -32,7 +37,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'market stall wooden frame',
         decoration1: 'crate of goods',
         decoration2: 'hanging lantern',
-        colorPalette: 'warm reds, yellows, market colors'
+        colorPalette: 'warm reds, yellows, market colors',
+        npcDesc: 'merchant with apron and coin pouch',
+        terminalDesc: 'market stall counter with goods'
     },
     'L03_tower': {
         id: 'L03_tower',
@@ -42,7 +49,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'fortified stone wall',
         decoration1: 'weapon rack',
         decoration2: 'torch sconce',
-        colorPalette: 'cold greys, iron black, torch orange'
+        colorPalette: 'cold greys, iron black, torch orange',
+        npcDesc: 'armored tower guard with spear',
+        terminalDesc: 'stone command pedestal'
     },
 
     // === Chapter 2: Forest Region ===
@@ -54,7 +63,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'thick tree trunk',
         decoration1: 'glowing mushroom',
         decoration2: 'ancient tree stump',
-        colorPalette: 'deep greens, magical cyan glow, earth browns'
+        colorPalette: 'deep greens, magical cyan glow, earth browns',
+        npcDesc: 'forest spirit with glowing aura',
+        terminalDesc: 'mushroom altar with crystals'
     },
     'L05_darkwoods': {
         id: 'L05_darkwoods',
@@ -64,7 +75,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'gnarled dead tree',
         decoration1: 'thorny bramble',
         decoration2: 'skull on stake',
-        colorPalette: 'dark purples, dead browns, eerie green fog'
+        colorPalette: 'dark purples, dead browns, eerie green fog',
+        npcDesc: 'hooded ranger in dark cloak',
+        terminalDesc: 'corrupted tree stump altar'
     },
 
     // === Chapter 3: Water Region ===
@@ -76,7 +89,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'river reeds and rocks',
         decoration1: 'fishing net',
         decoration2: 'wooden post with rope',
-        colorPalette: 'water blues, wood browns, green reeds'
+        colorPalette: 'water blues, wood browns, green reeds',
+        npcDesc: 'fisherman with rod and hat',
+        terminalDesc: 'wooden dock post with rope'
     },
     'L07_cavern': {
         id: 'L07_cavern',
@@ -86,7 +101,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'dripping cave wall',
         decoration1: 'stalactite',
         decoration2: 'glowing crystal',
-        colorPalette: 'dark blues, wet greys, crystal cyan'
+        colorPalette: 'dark blues, wet greys, crystal cyan',
+        npcDesc: 'cave hermit with lantern',
+        terminalDesc: 'crystal formation pedestal'
     },
 
     // === Chapter 4: Mountain Region ===
@@ -98,7 +115,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'mountain boulder',
         decoration1: 'small pine tree',
         decoration2: 'snow pile',
-        colorPalette: 'stone greys, snow white, evergreen'
+        colorPalette: 'stone greys, snow white, evergreen',
+        npcDesc: 'mountain climber with pick',
+        terminalDesc: 'stone cairn marker'
     },
     'L09_ice': {
         id: 'L09_ice',
@@ -108,7 +127,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'frozen ice wall',
         decoration1: 'ice crystal formation',
         decoration2: 'frozen pillar',
-        colorPalette: 'icy blues, white, crystal reflections'
+        colorPalette: 'icy blues, white, crystal reflections',
+        npcDesc: 'frost mage in blue robes',
+        terminalDesc: 'frozen ice pedestal'
     },
     'L10_temple': {
         id: 'L10_temple',
@@ -118,7 +139,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'temple pillar',
         decoration1: 'prayer flag',
         decoration2: 'stone altar',
-        colorPalette: 'ancient gold, faded red, weathered stone'
+        colorPalette: 'ancient gold, faded red, weathered stone',
+        npcDesc: 'temple monk in saffron robes',
+        terminalDesc: 'sacred stone altar'
     },
 
     // === Chapter 5: Ruins Region ===
@@ -130,7 +153,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'collapsed bookshelf',
         decoration1: 'pile of books',
         decoration2: 'broken reading desk',
-        colorPalette: 'dusty browns, faded parchment, wood'
+        colorPalette: 'dusty browns, faded parchment, wood',
+        npcDesc: 'scholar ghost with floating book',
+        terminalDesc: 'magical lectern with tome'
     },
     'L12_crypt': {
         id: 'L12_crypt',
@@ -140,7 +165,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'stone crypt wall with niches',
         decoration1: 'cobweb',
         decoration2: 'bone pile',
-        colorPalette: 'death greys, eerie green, bone white'
+        colorPalette: 'death greys, eerie green, bone white',
+        npcDesc: 'gravekeeper with lantern',
+        terminalDesc: 'tombstone altar'
     },
     'L13_lake': {
         id: 'L13_lake',
@@ -150,7 +177,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'glowing fungus wall',
         decoration1: 'bioluminescent plant',
         decoration2: 'underground lily pad',
-        colorPalette: 'deep blues, bioluminescent cyan/purple'
+        colorPalette: 'deep blues, bioluminescent cyan/purple',
+        npcDesc: 'water spirit with glowing form',
+        terminalDesc: 'lily pad shrine'
     },
     'L14_forge': {
         id: 'L14_forge',
@@ -160,7 +189,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'volcanic rock',
         decoration1: 'anvil',
         decoration2: 'lava crack',
-        colorPalette: 'molten orange, metal grey, fire red'
+        colorPalette: 'molten orange, metal grey, fire red',
+        npcDesc: 'blacksmith with hammer',
+        terminalDesc: 'anvil workstation'
     },
     'L15_lair': {
         id: 'L15_lair',
@@ -170,7 +201,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'scorched cave wall',
         decoration1: 'treasure chest',
         decoration2: 'dragon scale',
-        colorPalette: 'gold, ruby red, burnt black'
+        colorPalette: 'gold, ruby red, burnt black',
+        npcDesc: 'treasure hunter with map',
+        terminalDesc: 'golden treasure pile'
     },
 
     // === Chapter 6: Castle Region ===
@@ -182,7 +215,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'hedge wall',
         decoration1: 'fountain',
         decoration2: 'rose bush',
-        colorPalette: 'royal purple, garden green, marble white'
+        colorPalette: 'royal purple, garden green, marble white',
+        npcDesc: 'royal gardener with shears',
+        terminalDesc: 'garden fountain pedestal'
     },
     'L17_throne': {
         id: 'L17_throne',
@@ -192,7 +227,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'ornate pillar',
         decoration1: 'royal banner',
         decoration2: 'chandelier base',
-        colorPalette: 'royal red, gold trim, marble white'
+        colorPalette: 'royal red, gold trim, marble white',
+        npcDesc: 'royal herald with scroll',
+        terminalDesc: 'golden throne pedestal'
     },
     'L18_treasury': {
         id: 'L18_treasury',
@@ -202,7 +239,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'vault wall with safe',
         decoration1: 'gold pile',
         decoration2: 'gem display',
-        colorPalette: 'gold, silver, jewel tones'
+        colorPalette: 'gold, silver, jewel tones',
+        npcDesc: 'royal treasurer with keys',
+        terminalDesc: 'locked treasure chest'
     },
     'L19_dungeon': {
         id: 'L19_dungeon',
@@ -212,7 +251,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'iron bar cell',
         decoration1: 'chain shackles',
         decoration2: 'wooden bucket',
-        colorPalette: 'dark grey, rusty iron, dim torch light'
+        colorPalette: 'dark grey, rusty iron, dim torch light',
+        npcDesc: 'dungeon guard with torch',
+        terminalDesc: 'iron cage display'
     },
     'L20_passage': {
         id: 'L20_passage',
@@ -222,7 +263,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'hidden door wall',
         decoration1: 'torch holder',
         decoration2: 'cobweb corner',
-        colorPalette: 'shadow black, stone grey, warning red'
+        colorPalette: 'shadow black, stone grey, warning red',
+        npcDesc: 'hooded spy with dagger',
+        terminalDesc: 'hidden lever mechanism'
     },
 
     // === Chapter 7: Tower Ascent ===
@@ -234,7 +277,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'curved tower wall',
         decoration1: 'wall torch',
         decoration2: 'arrow slit window',
-        colorPalette: 'cold stone, torch warm, night blue'
+        colorPalette: 'cold stone, torch warm, night blue',
+        npcDesc: 'tower watchman with horn',
+        terminalDesc: 'spiral stone marker'
     },
     'L22_alchemy': {
         id: 'L22_alchemy',
@@ -244,7 +289,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'shelf with potions',
         decoration1: 'bubbling cauldron',
         decoration2: 'potion bottle',
-        colorPalette: 'magical purple, potion green, wood brown'
+        colorPalette: 'magical purple, potion green, wood brown',
+        npcDesc: 'alchemist with bubbling flask',
+        terminalDesc: 'bubbling cauldron station'
     },
     'L23_observatory': {
         id: 'L23_observatory',
@@ -254,7 +301,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'telescope mount',
         decoration1: 'astrolabe',
         decoration2: 'floating orb',
-        colorPalette: 'night purple, star gold, cosmic blue'
+        colorPalette: 'night purple, star gold, cosmic blue',
+        npcDesc: 'stargazer with telescope',
+        terminalDesc: 'astral orrery display'
     },
     'L24_portal': {
         id: 'L24_portal',
@@ -264,7 +313,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'arcane pillar',
         decoration1: 'portal rift',
         decoration2: 'floating rock',
-        colorPalette: 'void purple, energy cyan, rune gold'
+        colorPalette: 'void purple, energy cyan, rune gold',
+        npcDesc: 'portal guardian in arcane armor',
+        terminalDesc: 'active portal frame'
     },
     'L25_sanctum': {
         id: 'L25_sanctum',
@@ -274,7 +325,9 @@ export const LEVEL_THEMES: Record<string, ThemeConfig> = {
         wallDesc: 'towering ancient pillar',
         decoration1: 'power crystal',
         decoration2: 'magic circle',
-        colorPalette: 'epic gold, power blue, divine white'
+        colorPalette: 'epic gold, power blue, divine white',
+        npcDesc: 'grand archmage with staff',
+        terminalDesc: 'nexus power crystal'
     }
 };
 

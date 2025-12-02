@@ -23,7 +23,7 @@
     const dispatcher = createEventDispatcher();
     let canvasRef = $state<HTMLCanvasElement | null>(null);
     let containerRef = $state<HTMLDivElement | null>(null);
-    let renderer: GameRenderer | null = null;
+    let renderer = $state<GameRenderer | null>(null);
     
     let assets = $state<LoadedAssets | null>(null);
     let assetsLoaded = $state(false);

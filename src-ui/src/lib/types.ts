@@ -18,22 +18,7 @@ export interface Player {
     facing: Direction;
 }
 
-export type ItemType = 'key' | 'weapon' | 'consumable' | 'quest_item';
-
-export interface Item {
-    id: string;
-    name: string;
-    item_type: ItemType;
-    description: string;
-    quantity: number;
-}
-
-export interface Inventory {
-    items: Item[];
-    max_slots: number;
-}
-
-export type TileType = 'floor' | 'wall' | 'wall_top' | 'water' | 'void' | 'door' | 'terminal' | 'decoration' | 'decoration_alt';
+export type TileType = 'floor' | 'wall' | 'wall_top' | 'water' | 'void' | 'door' | 'terminal' | 'decoration' | 'decoration_alt' | 'tree' | 'rock' | 'lava' | 'ice' | 'bridge' | 'grass' | 'path' | 'pit';
 
 export interface Tile {
     tile_type: TileType;
@@ -53,7 +38,6 @@ export type GamePhase = 'main_menu' | 'playing' | 'coding' | 'paused' | 'level_c
 export interface GameState {
     player: Player;
     world: World;
-    inventory: Inventory;
     current_level_id: string | null;
     game_phase: GamePhase;
     total_xp: number;
@@ -92,8 +76,6 @@ export type PlayerAction =
     | { type: 'move'; direction: Direction }
     | { type: 'interact' }
     | { type: 'submit_code'; code: string }
-    | { type: 'open_inventory' }
-    | { type: 'use_item'; item_id: string }
     | { type: 'pause' }
     | { type: 'resume' };
 
@@ -132,6 +114,13 @@ export interface Challenge {
 // Multi-Quest System Types
 // ============================================================================
 
+// Progressive teaching content for each quest
+export interface QuestTeaching {
+    concept: string;       // What this specific quest teaches
+    explanation: string;   // Why/how explanation
+    tip?: string;          // Pro tip for this concept
+}
+
 export interface Quest {
     id: string;
     order: number;
@@ -143,6 +132,7 @@ export interface Quest {
     test_cases: TestCase[];
     hints: string[];
     xp_reward: number;
+    teaching?: QuestTeaching; // Progressive teaching for this quest
 }
 
 export interface QuestInfo {
@@ -158,6 +148,7 @@ export interface QuestInfo {
     function_signature: FunctionSignature;
     hints: string[];
     test_cases: TestCase[];
+    teaching?: QuestTeaching; // Progressive teaching for this quest
 }
 
 export interface QuestCompleteEvent {
@@ -276,7 +267,7 @@ export interface CodeResult {
 }
 
 // ============================================================================
-// Event Types (from docs/interfaces/tauri-commands.md)
+// Event Types
 // ============================================================================
 
 export interface CodeOutput {

@@ -2,7 +2,6 @@
  * Backend Abstraction Layer
  *
  * This interface allows the frontend to work with both:
- * - Tauri (desktop): Uses invoke/listen
  * - HTTP (web): Uses fetch to Railway API
  */
 

@@ -473,6 +473,15 @@ export class GameRenderer {
             case 'void': key = 'void'; break;
             case 'terminal': key = 'terminal'; break;
             case 'door': key = tile.walkable ? 'door_open' : 'door_locked'; break;
+            // Environmental tiles
+            case 'tree': key = 'tree'; break;
+            case 'rock': key = 'rock'; break;
+            case 'lava': key = 'lava'; break;
+            case 'ice': key = 'ice'; break;
+            case 'bridge': key = 'bridge'; break;
+            case 'grass': key = 'grass'; break;
+            case 'path': key = 'path'; break;
+            case 'pit': key = 'pit'; break;
         }
         return this.assets.tiles.get(key);
     }
@@ -484,6 +493,15 @@ export class GameRenderer {
             case 'void': return '#0a0a14';
             case 'door': return '#8b5a2b';
             case 'terminal': return '#3d7a37';
+            // Environmental tiles
+            case 'tree': return '#2d5a27';
+            case 'rock': return '#6b6b6b';
+            case 'lava': return '#ff4500';
+            case 'ice': return '#a5d8ff';
+            case 'bridge': return '#8b5a2b';
+            case 'grass': return '#3d7a37';
+            case 'path': return '#c9a66b';
+            case 'pit': return '#1a1a2e';
             default: return '#3d7a37'; // grass
         }
     }

@@ -10,6 +10,8 @@
     import WorldMap from '$lib/components/WorldMap.svelte';
     import Settings from '$lib/components/Settings.svelte';
     import ErrorBoundary from '$lib/components/ErrorBoundary.svelte';
+    import LevelIntroModal from '$lib/components/LevelIntroModal.svelte';
+    import LevelPreviewModal from '$lib/components/LevelPreviewModal.svelte';
 
     // Backend + state (Runes, no svelte/store)
     type GameScreen = 'boot' | 'world_map' | 'playing';
@@ -35,6 +37,8 @@
     let codeDraft = $state('// Write your C spell here...\n#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}');
     let toastMessages = $state<ToastMessage[]>([]);
     let showSettings = $state(false); // Settings modal state
+    let showLevelIntro = $state(false); // Level intro lesson modal
+    let previewLevel = $state<LevelInfo | null>(null); // Level preview modal
 
     // Derived values
     let showMainMenu = $derived((renderState?.game_phase ?? 'main_menu') === 'main_menu' || !renderState?.current_level_id);
@@ -176,9 +180,24 @@
         }
     }
 
-    async function handleSelectLevel(levelId: string) {
+    function handleSelectLevel(levelId: string) {
+        // Find the level and show preview modal
+        const level = levels.find((l) => l.id === levelId);
+        if (level && !level.locked) {
+            previewLevel = level;
+        }
+    }
+
+    async function handleStartFromPreview() {
+        if (!previewLevel) return;
+        const levelId = previewLevel.id;
+        previewLevel = null; // Close preview
         await startLevel(levelId);
         gameScreen = 'playing';
+    }
+
+    function handleCancelPreview() {
+        previewLevel = null;
     }
 
     async function handleBackToMap() {
@@ -265,13 +284,20 @@
         try {
             await backend.loadLevel(levelId);
             currentLevelData = await backend.getLevelData();
+            console.log(`[startLevel] Level data loaded:`, currentLevelData?.id, `theme:`, currentLevelData?.theme);
             renderState = await backend.getRenderState();
             currentHintIndex = 0;
             lastCodeResult = null;
+            // Show intro lesson modal if level has lesson content
+            showLevelIntro = !!(currentLevelData?.lesson);
             uiStatus = { ...uiStatus, loading: false, status: `Level ${levelId} loaded`, error: null };
         } catch (err) {
             uiStatus = { ...uiStatus, loading: false, error: normalizeError(err) };
         }
+    }
+
+    function dismissLevelIntro() {
+        showLevelIntro = false;
     }
 
     async function getNextHint(): Promise<string | null> {
@@ -376,12 +402,25 @@
         </div>
     </div>
 {:else if gameScreen === 'world_map'}
-    <WorldMap
-        {levels}
-        progress={playerProgress}
-        onSelectLevel={handleSelectLevel}
-        onSettings={() => showSettings = true}
-    />
+    <div class="map-shell">
+        <div class="map-help">
+            <span class="dot locked"></span>
+            <span class="help-text">Locked until you finish the previous level.</span>
+        </div>
+        <WorldMap
+            {levels}
+            progress={playerProgress}
+            onSelectLevel={handleSelectLevel}
+            onSettings={() => showSettings = true}
+        />
+    </div>
+    {#if previewLevel}
+        <LevelPreviewModal
+            level={previewLevel}
+            onStart={handleStartFromPreview}
+            onCancel={handleCancelPreview}
+        />
+    {/if}
 {:else}
     <!-- gameScreen === 'playing' -->
     <GameWorld
@@ -423,17 +462,19 @@
                         questTitle={activeQuest.title}
                         questDescription={activeQuest.description}
                         questXpReward={activeQuest.xp_reward}
+                        questTeaching={activeQuest.teaching ?? null}
                         on:submit={handleCodeSubmit}
                     />
-                {:else if questLoadingInProgress}
-                    <!-- Loading quest -->
+                {:else if activeQuestId || questLoadingInProgress}
+                    <!-- Quest loading - show loading state when quest_id exists but quest not loaded yet -->
+                    <!-- This prevents race condition where legacy terminal renders before quest loads -->
                     <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90">
                         <div class="quest-loading">
                             <p class="text-amber-400 font-['Press_Start_2P'] text-sm">Loading quest...</p>
                         </div>
                     </div>
                 {:else}
-                    <!-- Single-challenge level (legacy or no quest_id on terminal) -->
+                    <!-- Single-challenge level (only when terminal has no quest_id) -->
                     <CodeTerminal
                         initialCode={codeTemplate}
                         submitting={codeSubmitting}
@@ -470,32 +511,53 @@
                             <span class="text-4xl" style="filter: drop-shadow(2px 2px 0 #000);">&#9876;</span>
                         </div>
 
-                        <h2 class="pixel-title text-center">QUEST COMPLETE!</h2>
+                        <h2 class="pixel-title text-center">LEVEL COMPLETE!</h2>
                         <p class="text-sm text-slate-300 mb-4 text-center">
                             You've conquered <span class="text-emerald-400 font-bold">{currentLevelId}</span>
                         </p>
 
-                        <!-- XP Reward Box -->
+                        <!-- Quest Progress -->
+                        {#if currentLevelData?.quests?.length}
+                            <p class="text-xs text-cyan-400 mb-4 text-center">
+                                All {currentLevelData.quests.length} quests completed!
+                            </p>
+                        {/if}
+
+                        <!-- XP Info Box -->
                         <div class="pixel-reward-box mb-6">
                             <div class="flex items-center justify-center gap-2">
                                 <span class="text-amber-400 text-lg">&#9830;</span>
-                                <span class="text-amber-300 text-lg font-bold">+{renderState?.player?.xp ?? 0} XP</span>
+                                <span class="text-amber-300 text-lg font-bold">Total: {renderState?.player?.xp ?? 0} XP</span>
                             </div>
                         </div>
 
-                        <button
-                            onclick={handleNextLevel}
-                            disabled={levelTransitioning}
-                            class="pixel-button w-full"
-                        >
-                            {levelTransitioning ? 'LOADING...' : 'RETURN TO MAP'}
-                        </button>
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col gap-3">
+                            <button
+                                onclick={handleTerminalClose}
+                                class="pixel-button-secondary w-full"
+                            >
+                                CONTINUE EXPLORING
+                            </button>
+                            <button
+                                onclick={handleNextLevel}
+                                disabled={levelTransitioning}
+                                class="pixel-button w-full"
+                            >
+                                {levelTransitioning ? 'LOADING...' : 'RETURN TO MAP'}
+                            </button>
+                        </div>
                     </div>
                 </div>
             {/if}
 
         <!-- Toast Notifications -->
         <Toast messages={toastMessages} onDismiss={dismissToast} />
+
+        <!-- Level Intro Lesson Modal -->
+        {#if showLevelIntro}
+            <LevelIntroModal level={currentLevelData} onStart={dismissLevelIntro} />
+        {/if}
 
             </GameWorld>
 {/if}
@@ -570,6 +632,33 @@
         box-shadow: none;
     }
 
+    :global(.pixel-button-secondary) {
+        background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+        border: 3px solid #64748b;
+        border-bottom-color: #334155;
+        border-right-color: #334155;
+        box-shadow: 4px 4px 0 #0a0a1e;
+        padding: 12px 24px;
+        font-family: 'Press Start 2P', 'Courier New', monospace;
+        font-size: 10px;
+        color: #e2e8f0;
+        text-shadow: 1px 1px 0 #1e293b;
+        cursor: pointer;
+        transition: transform 0.1s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    :global(.pixel-button-secondary:hover) {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 #0a0a1e;
+    }
+
+    :global(.pixel-button-secondary:active) {
+        transform: translate(4px, 4px);
+        box-shadow: none;
+    }
+
     .status-banner {
         position: fixed;
         top: 12px;
@@ -597,6 +686,38 @@
         color: #fee2e2;
         border-color: #7f1d1d;
         text-shadow: 1px 1px 0 #7f1d1d;
+    }
+
+    .map-shell {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 8px 12px;
+    }
+
+    .map-help {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(180deg, rgba(30,41,59,0.9), rgba(15,23,42,0.9));
+        border: 1px solid #334155;
+        border-radius: 10px;
+        padding: 8px 12px;
+        color: #e2e8f0;
+        font-size: 12px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+
+    .map-help .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: #f97316;
+        box-shadow: 0 0 0 2px rgba(249,115,22,0.25);
+    }
+
+    .map-help .help-text {
+        letter-spacing: 0.2px;
     }
 
     /* Quest Loading Styles */
