@@ -42,7 +42,10 @@ This separation ensures security, performance, and clear responsibilities for bo
 - **[IMPLEMENTATION.md](docs/IMPLEMENTATION.md)** - Code examples and implementation guides
 
 ### Development Tools
-- **[AGENTS.md](AGENTS.md)** - AI agent guidelines
+- **[AGENTS.md](AGENTS.md)** - AI agent guidelines (all agents)
+- **[CLAUDE.md](CLAUDE.md)** - Claude Code specific guidelines
+- **[docs/core/TESTING.md](docs/core/TESTING.md)** - Testing protocol
+- **[docs/ai/gemini-usage.md](docs/ai/gemini-usage.md)** - Gemini CLI guide
 - **[tools/](tools/)** - MCP servers and utility scripts
 
 ### Reference

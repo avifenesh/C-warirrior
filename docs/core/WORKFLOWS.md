@@ -289,33 +289,18 @@ Ensure level flows naturally from previous level.
 
 ---
 
-## Workflow 7: Running Tests
+## Workflow 7: Testing
 
-### Rust Tests
-```bash
-# All tests
-cargo test
+**See [`docs/core/TESTING.md`](docs/core/TESTING.md) for complete testing protocol.**
 
-# Specific module
-cargo test game::player
-
-# With output
-cargo test -- --nocapture
-```
-
-### C Code Tests (MCP)
-```
-Use compile_and_run_c tool with test cases
-```
-
-### Manual UI Tests
-```bash
-# Run API server
-cd src-api && cargo run
-
-# Run frontend (separate terminal)
-cd src-ui && API_URL=http://localhost:3000 npm run dev
-```
+Every code change MUST be tested on web (HTTP/WASM). The testing guide covers:
+- Production URLs
+- Local development setup
+- Testing checklist
+- Automated deployment & validation scripts
+- Unit tests (Rust and C code)
+- Backend communication guidelines
+- UI/UX testing
 
 ---
 

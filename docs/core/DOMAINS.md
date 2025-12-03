@@ -51,7 +51,7 @@
 ### Tools & Automation
 **Keywords**: compile C, generate maps, test puzzles, MCP servers
 
-**Primary Source**: `tools/` directory
+**Primary Source**: `tools/README.md`
 
 **Available Tools**:
 - `c_compiler_mcp.py` → Compile and run C code
@@ -59,6 +59,9 @@
 - `memory_mcp.py` → Cross-session memory
 - `project_health_mcp.py` → Build status checks
 - `test_runner_mcp.py` → Test suite runner
+
+**For Testing**: See `docs/core/TESTING.md` for full testing protocol
+**For Large Analysis**: See `docs/ai/gemini-usage.md` for Gemini CLI usage
 
 ---
 
