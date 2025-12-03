@@ -82,30 +82,33 @@
         loadingHint = false;
     }
 
+    // Track which quest ID we've already loaded to prevent infinite loops
+    let loadedQuestId = $state<string | null>(null);
+    // Track the last successfully completed quest to prevent re-loading after completion
+    let lastCompletedQuestId = $state<string | null>(null);
+
     // Reset hints and auto-load quest when terminal opens with active_quest_id
     $effect(() => {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/c3c2b516-d886-4db6-add6-0cd9cdc65cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'+page.svelte:87',message:'$effect triggered',data:{showTerminal,activeQuestId,hasActiveQuest:!!activeQuest,questLoadingInProgress},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
         if (showTerminal) {
             hints = [];
             lastCodeResult = null;
-            // Auto-load quest if active_quest_id is set (multi-quest level)
-            if (activeQuestId && backend && !questLoadingInProgress) {
-                // #region agent log
-                fetch('http://127.0.0.1:7242/ingest/c3c2b516-d886-4db6-add6-0cd9cdc65cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'+page.svelte:95',message:'Loading quest by ID',data:{activeQuestId},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A'})}).catch(()=>{});
-                // #endregion
+            // Auto-load quest if active_quest_id is set AND we haven't already loaded this quest
+            // AND it's not a quest we just completed (prevents race condition with game ticks)
+            const shouldLoadQuest = activeQuestId && backend && !questLoadingInProgress 
+                && loadedQuestId !== activeQuestId 
+                && lastCompletedQuestId !== activeQuestId;
+            if (shouldLoadQuest) {
                 loadQuestById(activeQuestId);
             } else if (!activeQuestId && activeQuest) {
                 // Quest was completed (server cleared active_quest_id) - reset local quest state
-                // #region agent log
-                fetch('http://127.0.0.1:7242/ingest/c3c2b516-d886-4db6-add6-0cd9cdc65cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'+page.svelte:101',message:'Clearing activeQuest (quest completed)',data:{hadActiveQuest:!!activeQuest},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A'})}).catch(()=>{});
-                // #endregion
                 activeQuest = null;
+                loadedQuestId = null; // Reset so next quest can be loaded
             }
         } else {
-            // Terminal closed - reset quest
+            // Terminal closed - reset quest state but keep lastCompletedQuestId
+            // to show the Quest Complete modal. It will be cleared when user dismisses the modal
             activeQuest = null;
+            loadedQuestId = null;
         }
     });
 
@@ -116,6 +119,11 @@
         try {
             const quest = await backend.loadQuest(questId);
             activeQuest = quest;
+            loadedQuestId = questId; // Mark this quest as loaded to prevent re-loading
+            // Clear lastCompletedQuestId if loading a different quest
+            if (lastCompletedQuestId && lastCompletedQuestId !== questId) {
+                lastCompletedQuestId = null;
+            }
             hints = [];
             lastCodeResult = null;
         } catch (e) {
@@ -220,6 +228,7 @@
     async function handleBackToMap() {
         gameScreen = 'world_map';
         await fetchProgress(); // Refresh progress to show updated completion
+        await hydrateLevels(); // Refresh levels to show updated quest counts
     }
 
     async function handleCodeSubmit(event: CustomEvent<{ code: string; testOnly?: boolean; questId?: string }>) {
@@ -238,6 +247,8 @@
     }
 
     function handleTerminalClose() {
+        // Clear lastCompletedQuestId to allow redoing the quest
+        lastCompletedQuestId = null;
         sendAction({ type: 'resume' });
     }
 
@@ -362,27 +373,19 @@
         uiStatus = { ...uiStatus, error: null };
         codeSubmitting = true;
         try {
-            // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/c3c2b516-d886-4db6-add6-0cd9cdc65cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'+page.svelte:submitQuestCode:entry',message:'submitQuestCode called',data:{questId,testOnly},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'C'})}).catch(()=>{});
-            // #endregion
             const result = await backend.submitQuestCode(code, questId, testOnly);
             lastCodeResult = result;
-            // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/c3c2b516-d886-4db6-add6-0cd9cdc65cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'+page.svelte:submitQuestCode:result',message:'submitQuestCode result',data:{success:result.success,testOnly,activeQuestIdFromState:result.render_state?.active_quest_id,showTerminalFromState:result.render_state?.show_terminal},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'C'})}).catch(()=>{});
-            // #endregion
             if (result.success) {
+                // Mark quest as completed BEFORE updating renderState
+                if (!testOnly) {
+                    lastCompletedQuestId = questId;
+                }
                 if (result.render_state) {
                     renderState = result.render_state;
                 } else {
                     renderState = await backend.getRenderState();
                 }
-                // Reload quest to update completion status
-                if (!testOnly && activeQuestId) {
-                    // #region agent log
-                    fetch('http://127.0.0.1:7242/ingest/c3c2b516-d886-4db6-add6-0cd9cdc65cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'+page.svelte:submitQuestCode:reload',message:'Reloading quest after success',data:{activeQuestId},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'C'})}).catch(()=>{});
-                    // #endregion
-                    await loadQuestById(activeQuestId);
-                }
+                // Don't reload quest after completion - let the $effect handle state cleanup
             }
         } catch (err) {
             uiStatus = { ...uiStatus, error: normalizeError(err) };
@@ -414,9 +417,10 @@
             return;
         }
 
-        // Quest Complete Modal (Multi-quest level)
-        // Shown when terminal is open, multi-quest level, but no active quest state
-        if (showTerminal && isMultiQuestLevel && !activeQuest && !activeQuestId && !questLoadingInProgress) {
+        // Quest Complete Modal - shown independently when quest is completed
+        // Match the render condition: lastCompletedQuestId && !activeQuest
+        const questCompleteCondition = lastCompletedQuestId && !activeQuest;
+        if (questCompleteCondition) {
             if (event.key === 'Enter' || event.key === 'Escape') {
                 event.preventDefault();
                 handleTerminalClose();
@@ -480,10 +484,27 @@
             <!-- HUD Overlay -->
             <GameHUD player={renderState?.player ?? null} currentLevelId={currentLevelId} onBackToMap={handleBackToMap} />
 
+            <!-- Quest Complete Modal (shown immediately after completion, even if terminal closed) -->
+            {#if lastCompletedQuestId && !activeQuest}
+                <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90">
+                    <div class="pixel-modal">
+                        <div class="text-center mb-4">
+                            <span class="text-4xl" style="filter: drop-shadow(2px 2px 0 #000);">✓</span>
+                        </div>
+                        <h2 class="pixel-title text-center">QUEST COMPLETE!</h2>
+                        <p class="text-sm text-slate-300 mb-4 text-center">
+                            {lastCodeResult?.feedback ?? 'Great work!'}
+                        </p>
+                        <div class="flex flex-col gap-3 mt-6">
+                            <button onclick={handleTerminalClose} class="pixel-button w-full">
+                                CONTINUE
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {/if}
+
             <!-- Code Terminal Modal -->
-            <!-- #region agent log -->
-            {(() => { fetch('http://127.0.0.1:7242/ingest/c3c2b516-d886-4db6-add6-0cd9cdc65cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'+page.svelte:render',message:'Render decision',data:{showTerminal,hasActiveQuest:!!activeQuest,activeQuestId,questLoadingInProgress,isMultiQuestLevel},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'E'})}).catch(()=>{}); return ''; })()}
-            <!-- #endregion -->
             {#if showTerminal}
                 {#if activeQuest}
                     <!-- Multi-quest level: CodeTerminal with auto-loaded quest -->
@@ -514,30 +535,12 @@
                         questTeaching={activeQuest.teaching ?? null}
                         on:submit={handleCodeSubmit}
                     />
-                {:else if activeQuestId || questLoadingInProgress}
+                {:else if (activeQuestId && activeQuestId !== lastCompletedQuestId) || questLoadingInProgress}
                     <!-- Quest loading - show loading state when quest_id exists but quest not loaded yet -->
-                    <!-- This prevents race condition where legacy terminal renders before quest loads -->
+                    <!-- Skip if this is a completed quest (stale game tick race condition) -->
                     <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90">
                         <div class="quest-loading">
                             <p class="text-amber-400 font-['Press_Start_2P'] text-sm">Loading quest...</p>
-                        </div>
-                    </div>
-                {:else if isMultiQuestLevel}
-                    <!-- Multi-quest level: quest just completed, show success and close option -->
-                    <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90">
-                        <div class="pixel-modal">
-                            <div class="text-center mb-4">
-                                <span class="text-4xl" style="filter: drop-shadow(2px 2px 0 #000);">✓</span>
-                            </div>
-                            <h2 class="pixel-title text-center">QUEST COMPLETE!</h2>
-                            <p class="text-sm text-slate-300 mb-4 text-center">
-                                {lastCodeResult?.feedback ?? 'Great work!'}
-                            </p>
-                            <div class="flex flex-col gap-3 mt-6">
-                                <button onclick={handleTerminalClose} class="pixel-button w-full">
-                                    CONTINUE
-                                </button>
-                            </div>
                         </div>
                     </div>
                 {:else}
