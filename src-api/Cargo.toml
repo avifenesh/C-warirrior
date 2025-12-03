@@ -17,9 +17,17 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "uuid", "json", "chrono"] }
 dotenvy = "0.15"
 jsonwebtoken = "9"
-bcrypt = "0.15"
+argon2 = "0.5"  # Password hashing (replaces bcrypt)
 chrono = { version = "0.4", features = ["serde"] }
 rand = "0.8"
+thiserror = "1.0"  # Error handling for auth module
+sha2 = "0.10"  # Token hashing
+hex = "0.4"  # Hex encoding for tokens
 anyhow = "1.0"
 futures = "0.3"
 dashmap = "5"
+
+# OAuth and HTTP client (Agent 3)
+reqwest = { version = "0.11", features = ["json"] }
+urlencoding = "2.1"
+base64 = "0.21"

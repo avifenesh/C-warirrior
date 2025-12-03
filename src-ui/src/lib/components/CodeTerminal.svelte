@@ -65,10 +65,16 @@
     let lastInitialCode = $state(initialCode); // Track previous initialCode to detect changes
     let textareaRef: HTMLTextAreaElement | null = null;
     let showMissionBriefing = $state(true); // Show mission briefing on first open
+    // #region agent log
+    $effect(() => { fetch('http://127.0.0.1:7242/ingest/c3c2b516-d886-4db6-add6-0cd9cdc65cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CodeTerminal.svelte:mount',message:'CodeTerminal mounted/updated',data:{showMissionBriefing,questId,questTitle,initialCodeLen:initialCode?.length},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'D'})}).catch(()=>{}); });
+    // #endregion
 
     // Sync code only when initialCode prop actually changes (e.g., switching between quest terminals)
     $effect(() => {
         if (initialCode !== lastInitialCode) {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/c3c2b516-d886-4db6-add6-0cd9cdc65cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CodeTerminal.svelte:$effect:initialCode',message:'initialCode changed, resetting showMissionBriefing',data:{initialCodeLen:initialCode?.length,lastInitialCodeLen:lastInitialCode?.length,questId,questTitle},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
             code = initialCode;
             lastInitialCode = initialCode;
             showMissionBriefing = true; // Reset mission briefing for new quest
@@ -93,6 +99,9 @@
 
     // Handle keyboard on mission briefing overlay (U4)
     function handleMissionBriefingKeydown(event: KeyboardEvent) {
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/c3c2b516-d886-4db6-add6-0cd9cdc65cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CodeTerminal.svelte:handleMissionBriefingKeydown',message:'Mission briefing keydown fired',data:{key:event.key,target:(event.target as HTMLElement)?.tagName},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A'})}).catch(()=>{});
+        // #endregion
         if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
             dismissMissionBriefing();
@@ -171,6 +180,9 @@
     }
 
     function handleKeydown(event: KeyboardEvent) {
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/c3c2b516-d886-4db6-add6-0cd9cdc65cf6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CodeTerminal.svelte:handleKeydown(window)',message:'Window keydown fired',data:{key:event.key,showMissionBriefing,target:(event.target as HTMLElement)?.tagName},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'B'})}).catch(()=>{});
+        // #endregion
         if (event.key === 'Escape' && onClose) {
             event.preventDefault();
             handleClose();

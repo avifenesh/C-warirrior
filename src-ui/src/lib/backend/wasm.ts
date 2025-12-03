@@ -58,15 +58,30 @@ function getOrCreateDeviceId(): string {
     return deviceId;
 }
 
+const AUTH_TOKEN_KEY = 'code-warrior-auth-token';
+
+function getAuthToken(): string | null {
+    if (typeof localStorage === 'undefined') return null;
+    return localStorage.getItem(AUTH_TOKEN_KEY);
+}
+
 async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const deviceId = getOrCreateDeviceId();
+    const authToken = getAuthToken();
+    
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'X-Device-ID': deviceId,
+        ...((options.headers as Record<string, string>) || {}),
+    };
+    
+    if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    
     const response = await fetch(`${API_URL}${endpoint}`, {
         ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Device-ID': deviceId,
-            ...options.headers,
-        },
+        headers,
     });
     if (!response.ok) {
         const errorText = await response.text();

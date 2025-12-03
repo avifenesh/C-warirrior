@@ -20,19 +20,20 @@ use std::time::Duration;
 use tower_http::cors::{Any, CorsLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-// Database persistence module (Agent 1)
 mod db;
+mod auth;
+mod auth_middleware;
+mod email;
 
-// Shared application state
 struct AppState {
     db: Pool<Postgres>,
     levels: Arc<LevelRegistry>,
     compiler: Arc<CCompiler>,
     /// In-memory session cache keyed by device ID to avoid hitting Neon on every tick/move
     sessions: DashMap<String, GameState>,
+    rate_limiter: auth_middleware::SharedRateLimiter,
 }
 
-// Request/Response types
 #[derive(Debug, Deserialize)]
 struct InitGameRequest {
     // Empty for now, could add initial settings
@@ -174,56 +175,102 @@ async fn main() {
 
     tracing::info!("Game systems initialized");
 
-    // Initialize application state
+    let rate_limiter = auth_middleware::create_rate_limiter();
+
     let state = Arc::new(AppState {
         db: pool,
         levels,
         compiler,
         sessions: DashMap::new(),
+        rate_limiter,
     });
 
-    // Configure CORS for development
     let cors = CorsLayer::new()
         .allow_origin(Any)
         .allow_methods(Any)
         .allow_headers(Any);
 
-    // Build application router
+    let api_url = std::env::var("API_URL").unwrap_or_else(|_| "http://localhost:3000".to_string());
+    let frontend_url =
+        std::env::var("FRONTEND_URL").unwrap_or_else(|_| "http://localhost:1420".to_string());
+
+    let auth_state = Arc::new(auth::handlers::AuthState {
+        db: state.db.clone(),
+        email: email::OptionalEmailService::new(),
+        google_oauth: auth::oauth::GoogleOAuth::from_env(&api_url),
+        github_oauth: auth::oauth::GitHubOAuth::from_env(&api_url),
+        frontend_url,
+    });
+
+    let auth_routes = Router::new()
+        .route("/register", post(auth::handlers::register))
+        .route("/login", post(auth::handlers::login))
+        .route("/logout", post(auth::handlers::logout))
+        .route("/me", get(auth::handlers::me))
+        .route("/verify-email", post(auth::handlers::verify_email))
+        .route("/resend-verify", post(auth::handlers::resend_verify))
+        .route("/request-reset", post(auth::handlers::request_reset))
+        .route("/reset-password", post(auth::handlers::reset_password))
+        .route(
+            "/oauth/google/start",
+            get(auth::handlers::google_oauth_start),
+        )
+        .route(
+            "/oauth/google/callback",
+            get(auth::handlers::google_oauth_callback),
+        )
+        .route(
+            "/oauth/github/start",
+            get(auth::handlers::github_oauth_start),
+        )
+        .route(
+            "/oauth/github/callback",
+            get(auth::handlers::github_oauth_callback),
+        )
+        .layer(axum::Extension(state.rate_limiter.clone()))
+        .layer(middleware::from_fn(auth_middleware::auth_rate_limit_middleware))
+        .with_state(auth_state);
+
+    let protected_routes = Router::new()
+        .route("/game/init", post(init_game))
+        .route("/game/sync", post(sync_game))
+        .route("/game/state", get(get_game_state))
+        .route("/game/render-state", get(get_render_state))
+        .route("/game/action", post(process_action))
+        .route("/levels", get(get_available_levels))
+        .route("/levels/:id/load", post(load_level))
+        .route("/code/submit", post(submit_code))
+        .route("/code/submit-quest", post(submit_quest_code))
+        .route("/levels/current", get(get_current_level))
+        .route("/levels/current/quests", get(get_level_quests))
+        .route("/levels/current/quests/:quest_id", get(get_quest))
+        .route("/code/hint/:index", get(get_hint))
+        .route("/player/progress", get(get_progress))
+        .route("/saves", get(list_saves))
+        .route("/saves/:slot", post(save_game))
+        .route("/saves/:slot", get(load_save))
+        .route("/saves/:slot", axum::routing::delete(delete_save))
+        .layer(axum::Extension(state.rate_limiter.clone()))
+        .layer(axum::Extension(state.db.clone()))
+        .layer(middleware::from_fn(auth_middleware::rate_limit_middleware))
+        .layer(middleware::from_fn(auth_middleware::jwt_auth_middleware));
+
     let app = Router::new()
         .route("/health", get(health_check))
-        .route("/api/game/init", post(init_game))
-        .route("/api/game/sync", post(sync_game))
-        .route("/api/game/state", get(get_game_state))
-        .route("/api/game/render-state", get(get_render_state))
-        .route("/api/game/action", post(process_action))
-        .route("/api/levels", get(get_available_levels))
-        .route("/api/levels/:id/load", post(load_level))
-        .route("/api/code/submit", post(submit_code))
-        .route("/api/code/submit-quest", post(submit_quest_code))
-        .route("/api/levels/current", get(get_current_level))
-        .route("/api/levels/current/quests", get(get_level_quests))
-        .route("/api/levels/current/quests/:quest_id", get(get_quest))
-        .route("/api/code/hint/:index", get(get_hint))
-        .route("/api/player/progress", get(get_progress))
-        .route("/api/saves", get(list_saves))
-        .route("/api/saves/:slot", post(save_game))
-        .route("/api/saves/:slot", get(load_save))
-        .route("/api/saves/:slot", axum::routing::delete(delete_save))
+        .nest("/api/auth", auth_routes)
+        .nest("/api", protected_routes)
         .layer(middleware::from_fn(device_id_middleware))
         .layer(cors)
         .with_state(state);
 
-    // Get port from environment or use default
     let port: u16 = std::env::var("PORT")
         .ok()
         .and_then(|p| p.parse().ok())
         .unwrap_or(3000);
 
-    // Bind to 0.0.0.0 for cloud deployment (Railway, etc.)
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
     tracing::info!("Starting Code Warrior API server on {}", addr);
 
-    // Start the server
     let listener = tokio::net::TcpListener::bind(addr)
         .await
         .expect("Failed to bind to address");
