@@ -52,16 +52,6 @@ impl EmailService {
         })
     }
 
-    /// Create a new email service from explicit config (for testing)
-    pub fn with_config(api_key: String, from_email: String, from_name: String) -> Self {
-        Self {
-            api_key,
-            from_email,
-            from_name,
-            client: reqwest::Client::new(),
-        }
-    }
-
     /// Send an email using a template
     pub async fn send(&self, to: &str, template: EmailTemplate) -> Result<String, String> {
         let from = format!("{} <{}>", self.from_name, self.from_email);
@@ -134,12 +124,6 @@ impl EmailService {
         };
         self.send(to, template).await
     }
-
-    /// Send welcome email after verification
-    pub async fn send_welcome(&self, to: &str, username: Option<String>) -> Result<String, String> {
-        let template = EmailTemplate::Welcome { username };
-        self.send(to, template).await
-    }
 }
 
 /// Wrapper for optional email service (allows running without email in dev)
@@ -148,10 +132,6 @@ pub struct OptionalEmailService(pub Option<Arc<EmailService>>);
 impl OptionalEmailService {
     pub fn new() -> Self {
         Self(EmailService::new().map(Arc::new))
-    }
-
-    pub fn is_available(&self) -> bool {
-        self.0.is_some()
     }
 
     pub async fn send_verification(
@@ -197,16 +177,6 @@ impl OptionalEmailService {
                     frontend_url,
                     token
                 );
-                Ok("email-disabled".to_string())
-            }
-        }
-    }
-
-    pub async fn send_welcome(&self, to: &str, username: Option<String>) -> Result<String, String> {
-        match &self.0 {
-            Some(service) => service.send_welcome(to, username).await,
-            None => {
-                tracing::warn!("Email service not configured. Skipping welcome email to {}", to);
                 Ok("email-disabled".to_string())
             }
         }

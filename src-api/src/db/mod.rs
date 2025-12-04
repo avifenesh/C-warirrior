@@ -6,8 +6,12 @@ pub mod models;
 pub mod operations;
 pub mod schema;
 
-pub use models::*;
-pub use operations::*;
+// Re-export only what's used by main.rs (auth handlers use operations directly)
+pub use operations::{
+    delete_save_slot_for_user, get_save_slot_by_user_id, get_session_by_user_id,
+    list_save_slots_by_user_id, update_user_session_state, upsert_save_slot_for_user,
+    upsert_session_by_user_id,
+};
 
 use sqlx::{Pool, Postgres};
 

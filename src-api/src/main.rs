@@ -1,15 +1,17 @@
 use axum::{
     extract::{Path, State},
-    http::{Request, StatusCode},
-    middleware::{self, Next},
-    response::{Json, Response},
+    http::StatusCode,
+    middleware,
+    response::Json,
     routing::{get, post},
     Router,
 };
 use code_warrior::{
     compiler::CCompiler,
     game::{GamePhase, GameState, PlayerAction, RenderState},
-    levels::{generate_harness, LevelData, LevelInfo, LevelRegistry, TestCaseResult, TestSuiteResult},
+    levels::{
+        generate_harness, LevelData, LevelInfo, LevelRegistry, TestCaseResult, TestSuiteResult,
+    },
 };
 use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
@@ -19,10 +21,11 @@ use std::sync::Arc;
 use std::time::Duration;
 use tower_http::cors::{Any, CorsLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use uuid::Uuid;
 
-mod db;
 mod auth;
 mod auth_middleware;
+mod db;
 mod email;
 
 struct AppState {
@@ -126,10 +129,6 @@ struct SaveSlotResponse {
     empty: bool,
 }
 
-// Extension for device ID
-#[derive(Clone)]
-struct DeviceId(String);
-
 #[tokio::main]
 async fn main() {
     // Load environment variables
@@ -228,7 +227,9 @@ async fn main() {
             get(auth::handlers::github_oauth_callback),
         )
         .layer(axum::Extension(state.rate_limiter.clone()))
-        .layer(middleware::from_fn(auth_middleware::auth_rate_limit_middleware))
+        .layer(middleware::from_fn(
+            auth_middleware::auth_rate_limit_middleware,
+        ))
         .with_state(auth_state);
 
     let protected_routes = Router::new()
@@ -253,13 +254,16 @@ async fn main() {
         .layer(axum::Extension(state.rate_limiter.clone()))
         .layer(axum::Extension(state.db.clone()))
         .layer(middleware::from_fn(auth_middleware::rate_limit_middleware))
+        .layer(middleware::from_fn(
+            auth_middleware::verification_check_middleware,
+        ))
+        .layer(middleware::from_fn(auth_middleware::ban_check_middleware))
         .layer(middleware::from_fn(auth_middleware::jwt_auth_middleware));
 
     let app = Router::new()
         .route("/health", get(health_check))
         .nest("/api/auth", auth_routes)
         .nest("/api", protected_routes)
-        .layer(middleware::from_fn(device_id_middleware))
         .layer(cors)
         .with_state(state);
 
@@ -280,30 +284,17 @@ async fn main() {
         .expect("Server failed to start");
 }
 
-// Middleware to extract and inject device ID
-async fn device_id_middleware(
-    mut req: Request<axum::body::Body>,
-    next: Next,
-) -> Result<Response, StatusCode> {
-    let device_id = req
-        .headers()
-        .get("X-Device-ID")
-        .and_then(|h| h.to_str().ok())
-        .unwrap_or("default")
-        .to_string();
-
-    req.extensions_mut().insert(DeviceId(device_id));
-    Ok(next.run(req).await)
-}
-
 // Helper to get or create game state for a session using an in-memory cache with DB fallback
-async fn get_or_create_session(app: &Arc<AppState>, device_id: &str) -> Result<GameState, String> {
+// All progress is user-based (account-only) - no anonymous/device tracking
+async fn get_or_create_session(app: &Arc<AppState>, user_id: Uuid) -> Result<GameState, String> {
+    let cache_key = format!("user-{}", user_id);
+
     // Fast path: in-memory session
-    if let Some(entry) = app.sessions.get(device_id) {
+    if let Some(entry) = app.sessions.get(&cache_key) {
         let gs = entry.value();
         tracing::info!(
             "DEBUG get_or_create_session: cache hit for {}, completed_quests: {:?}, total_xp: {}",
-            device_id,
+            cache_key,
             gs.progression.completed_quests,
             gs.progression.total_xp
         );
@@ -311,7 +302,9 @@ async fn get_or_create_session(app: &Arc<AppState>, device_id: &str) -> Result<G
     }
 
     // Fallback: load from database or create a new session
-    match db::get_session(&app.db, device_id).await {
+    let db_session = db::get_session_by_user_id(&app.db, user_id).await;
+
+    match db_session {
         Ok(Some(session)) => {
             let mut game_state: GameState = serde_json::from_value(session.game_state)
                 .map_err(|e| format!("Failed to parse game state: {}", e))?;
@@ -323,8 +316,7 @@ async fn get_or_create_session(app: &Arc<AppState>, device_id: &str) -> Result<G
             // This removes levels that shouldn't be unlocked and adds those that should be
             game_state.recalculate_unlocked_levels(app.levels.get_prerequisites());
 
-            app.sessions
-                .insert(device_id.to_string(), game_state.clone());
+            app.sessions.insert(cache_key, game_state.clone());
             Ok(game_state)
         }
         Ok(None) => {
@@ -336,18 +328,12 @@ async fn get_or_create_session(app: &Arc<AppState>, device_id: &str) -> Result<G
             let session_json = serde_json::to_value(&new_state)
                 .map_err(|e| format!("Failed to serialize game state: {}", e))?;
 
-            db::save_session(
-                &app.db,
-                &db::NewSession {
-                    device_id: device_id.to_string(),
-                    game_state: session_json,
-                },
-            )
-            .await
-            .map_err(|e| format!("Failed to create session: {}", e))?;
+            // Save new session for user
+            db::upsert_session_by_user_id(&app.db, user_id, &session_json)
+                .await
+                .map_err(|e| format!("Failed to create user session: {}", e))?;
 
-            app.sessions
-                .insert(device_id.to_string(), new_state.clone());
+            app.sessions.insert(cache_key, new_state.clone());
             Ok(new_state)
         }
         Err(e) => Err(format!("Database error: {}", e)),
@@ -355,37 +341,26 @@ async fn get_or_create_session(app: &Arc<AppState>, device_id: &str) -> Result<G
 }
 
 // Helper to cache session state in memory only (no DB write)
-fn cache_session(app: &Arc<AppState>, device_id: &str, state: &GameState) {
-    app.sessions.insert(device_id.to_string(), state.clone());
+fn cache_session(app: &Arc<AppState>, user_id: Uuid, state: &GameState) {
+    let cache_key = format!("user-{}", user_id);
+    app.sessions.insert(cache_key, state.clone());
 }
 
 // Helper to persist session state to DB (and update in-memory cache)
+// All progress is user-based (account-only) - no anonymous/device tracking
 async fn persist_session(
     app: &Arc<AppState>,
-    device_id: &str,
+    user_id: Uuid,
     state: &GameState,
 ) -> Result<(), String> {
-    cache_session(app, device_id, state);
+    cache_session(app, user_id, state);
 
     let state_json = serde_json::to_value(state)
         .map_err(|e| format!("Failed to serialize game state: {}", e))?;
 
-    db::update_session_state(&app.db, device_id, &state_json)
+    db::update_user_session_state(&app.db, user_id, &state_json)
         .await
-        .map_err(|e| format!("Failed to update session: {}", e))?;
-
-    let progress = db::NewProgress {
-        device_id: device_id.to_string(),
-        // Use progression fields (IS serialized) not legacy fields (serde skip)
-        completed_levels: state.progression.completed_levels.iter().cloned().collect(),
-        total_xp: state.progression.total_xp as i32,
-        current_level: state.current_level_id.clone(),
-        achievements: vec![],
-    };
-
-    db::save_progress(&app.db, &progress)
-        .await
-        .map_err(|e| format!("Failed to save progress: {}", e))?;
+        .map_err(|e| format!("Failed to update user session: {}", e))?;
 
     Ok(())
 }
@@ -411,35 +386,37 @@ async fn health_check(State(state): State<Arc<AppState>>) -> Json<HealthResponse
 
 async fn init_game(
     State(state): State<Arc<AppState>>,
-    axum::Extension(device_id): axum::Extension<DeviceId>,
+    axum::Extension(auth_user): axum::Extension<auth_middleware::AuthUser>,
     Json(_payload): Json<InitGameRequest>,
 ) -> Result<Json<InitGameResponse>, (StatusCode, String)> {
-    tracing::info!("Initializing new game session for device: {}", device_id.0);
+    let user_id = auth_user.user_id;
+    tracing::info!("Initializing new game session for user: {}", user_id);
 
     // Force create new state or reset? For now, just get/create
-    let game_state = get_or_create_session(&state, &device_id.0)
+    let game_state = get_or_create_session(&state, user_id)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
     // If we wanted to force reset, we would do it here
 
     Ok(Json(InitGameResponse {
-        device_id: device_id.0,
+        device_id: user_id.to_string(),
         game_state,
     }))
 }
 
 async fn sync_game(
     State(state): State<Arc<AppState>>,
-    axum::Extension(DeviceId(device_id)): axum::Extension<DeviceId>,
+    axum::Extension(auth_user): axum::Extension<auth_middleware::AuthUser>,
     Json(request): Json<SyncGameRequest>,
 ) -> Result<Json<serde_json::Value>, StatusCode> {
-    tracing::debug!("Syncing game state for device: {}", device_id);
+    let user_id = auth_user.user_id;
+    tracing::debug!("Syncing game state for user: {}", user_id);
 
-    persist_session(&state, &device_id, &request.game_state)
+    persist_session(&state, user_id, &request.game_state)
         .await
         .map_err(|e| {
-            tracing::error!("Sync failed for {}: {}", device_id, e);
+            tracing::error!("Sync failed for {}: {}", user_id, e);
             StatusCode::INTERNAL_SERVER_ERROR
         })?;
 
@@ -448,11 +425,12 @@ async fn sync_game(
 
 async fn get_game_state(
     State(state): State<Arc<AppState>>,
-    axum::Extension(device_id): axum::Extension<DeviceId>,
+    axum::Extension(auth_user): axum::Extension<auth_middleware::AuthUser>,
 ) -> Result<Json<GameState>, (StatusCode, String)> {
-    tracing::debug!("Fetching game state for device: {}", device_id.0);
+    let user_id = auth_user.user_id;
+    tracing::debug!("Fetching game state for user: {}", user_id);
 
-    let game_state = get_or_create_session(&state, &device_id.0)
+    let game_state = get_or_create_session(&state, user_id)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
@@ -461,11 +439,12 @@ async fn get_game_state(
 
 async fn get_render_state(
     State(state): State<Arc<AppState>>,
-    axum::Extension(device_id): axum::Extension<DeviceId>,
+    axum::Extension(auth_user): axum::Extension<auth_middleware::AuthUser>,
 ) -> Result<Json<RenderState>, (StatusCode, String)> {
-    tracing::debug!("Fetching render state for device: {}", device_id.0);
+    let user_id = auth_user.user_id;
+    tracing::debug!("Fetching render state for user: {}", user_id);
 
-    let game_state = get_or_create_session(&state, &device_id.0)
+    let game_state = get_or_create_session(&state, user_id)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
@@ -474,12 +453,13 @@ async fn get_render_state(
 
 async fn process_action(
     State(state): State<Arc<AppState>>,
-    axum::Extension(device_id): axum::Extension<DeviceId>,
+    axum::Extension(auth_user): axum::Extension<auth_middleware::AuthUser>,
     Json(action): Json<PlayerAction>,
 ) -> Result<Json<RenderState>, (StatusCode, String)> {
-    tracing::info!("Processing action for device: {}", device_id.0);
+    let user_id = auth_user.user_id;
+    tracing::info!("Processing action for user: {}", user_id);
 
-    let mut game_state = get_or_create_session(&state, &device_id.0)
+    let mut game_state = get_or_create_session(&state, user_id)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
@@ -497,7 +477,10 @@ async fn process_action(
         }
         PlayerAction::Resume => {
             // Allow resuming from Paused, Coding, or LevelComplete (to continue exploring)
-            if matches!(game_state.game_phase, GamePhase::Paused | GamePhase::Coding | GamePhase::LevelComplete) {
+            if matches!(
+                game_state.game_phase,
+                GamePhase::Paused | GamePhase::Coding | GamePhase::LevelComplete
+            ) {
                 game_state.game_phase = GamePhase::Playing;
             }
         }
@@ -510,25 +493,26 @@ async fn process_action(
     }
 
     // Cache updated session in memory; persistence happens on level load / code submit
-    cache_session(&state, &device_id.0, &game_state);
+    cache_session(&state, user_id, &game_state);
 
     Ok(Json(game_state.to_render_state()))
 }
 
 async fn get_available_levels(
     State(state): State<Arc<AppState>>,
-    axum::Extension(device_id): axum::Extension<DeviceId>,
+    axum::Extension(auth_user): axum::Extension<auth_middleware::AuthUser>,
 ) -> Result<Json<Vec<LevelInfo>>, (StatusCode, String)> {
-    tracing::info!("Fetching available levels for device: {}", device_id.0);
+    let user_id = auth_user.user_id;
+    tracing::info!("Fetching available levels for user: {}", user_id);
 
-    let game_state = get_or_create_session(&state, &device_id.0)
+    let game_state = get_or_create_session(&state, user_id)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
     // Debug: log progression state
     tracing::info!(
-        "Device {} progression: total_xp={}, completed_levels={:?}, unlocked_levels={:?}",
-        device_id.0,
+        "User {} progression: total_xp={}, completed_levels={:?}, unlocked_levels={:?}",
+        user_id,
         game_state.progression.total_xp,
         game_state.progression.completed_levels,
         game_state.progression.unlocked_levels
@@ -545,14 +529,20 @@ async fn get_available_levels(
         let completed_count = game_state.get_completed_quest_count(&level.id);
         level.completed_quests = completed_count;
         if level.total_quests > 0 {
-            level.completion_percentage = (completed_count as f32 / level.total_quests as f32) * 100.0;
+            level.completion_percentage =
+                (completed_count as f32 / level.total_quests as f32) * 100.0;
         }
 
         // Debug logging for first few levels
         if level.id == "L01" || level.id == "L02" {
             tracing::info!(
                 "DEBUG get_available_levels: {} - completed={}, locked={}, quests={}/{}, xp={}",
-                level.id, level.completed, level.locked, level.completed_quests, level.total_quests, game_state.progression.total_xp
+                level.id,
+                level.completed,
+                level.locked,
+                level.completed_quests,
+                level.total_quests,
+                game_state.progression.total_xp
             );
         }
     }
@@ -562,10 +552,11 @@ async fn get_available_levels(
 
 async fn load_level(
     State(state): State<Arc<AppState>>,
-    axum::Extension(device_id): axum::Extension<DeviceId>,
+    axum::Extension(auth_user): axum::Extension<auth_middleware::AuthUser>,
     Path(level_id): Path<String>,
 ) -> Result<Json<LoadLevelResponse>, (StatusCode, String)> {
-    tracing::info!("Loading level '{}' for device: {}", level_id, device_id.0);
+    let user_id = auth_user.user_id;
+    tracing::info!("Loading level '{}' for user: {}", level_id, user_id);
 
     // Get level data
     let level = state.levels.get_level(&level_id).ok_or_else(|| {
@@ -576,7 +567,7 @@ async fn load_level(
     })?;
 
     // Get or create game state
-    let mut game_state = get_or_create_session(&state, &device_id.0)
+    let mut game_state = get_or_create_session(&state, user_id)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
@@ -596,7 +587,7 @@ async fn load_level(
     game_state.update_unlocked_levels(state.levels.get_prerequisites());
 
     // Save updated state (persist to DB and cache)
-    persist_session(&state, &device_id.0, &game_state)
+    persist_session(&state, user_id, &game_state)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
@@ -608,13 +599,18 @@ async fn load_level(
 
 async fn submit_code(
     State(state): State<Arc<AppState>>,
-    axum::Extension(device_id): axum::Extension<DeviceId>,
+    axum::Extension(auth_user): axum::Extension<auth_middleware::AuthUser>,
     Json(payload): Json<SubmitCodeRequest>,
 ) -> Result<Json<SubmitCodeResponse>, (StatusCode, String)> {
-    tracing::info!("Submitting code for device: {}, test_only: {}", device_id.0, payload.test_only);
+    let user_id = auth_user.user_id;
+    tracing::info!(
+        "Submitting code for user: {}, test_only: {}",
+        user_id,
+        payload.test_only
+    );
 
     // Get game state
-    let mut game_state = get_or_create_session(&state, &device_id.0)
+    let mut game_state = get_or_create_session(&state, user_id)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
@@ -630,24 +626,29 @@ async fn submit_code(
         })?
         .clone();
 
-    let level = state.levels.get_level(&level_id).ok_or_else(|| {
-        (
-            StatusCode::NOT_FOUND,
-            format!("Level '{}' not found", level_id),
-        )
-    })?.clone();
+    let level = state
+        .levels
+        .get_level(&level_id)
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                format!("Level '{}' not found", level_id),
+            )
+        })?
+        .clone();
 
     // Check if this is a function-based challenge
     if level.is_function_based() {
         return run_function_based_challenge(
             &state,
-            &device_id.0,
+            user_id,
             &payload.code,
             payload.test_only,
             &level,
             &level_id,
             &mut game_state,
-        ).await;
+        )
+        .await;
     }
 
     // Legacy output-based challenge
@@ -681,21 +682,8 @@ async fn submit_code(
         "Output doesn't match expected result. Try again!".to_string()
     };
 
-    if success {
-        let xp_delta = xp_earned.unwrap_or(0);
-        let xp_i32 = (xp_delta.min(i32::MAX as u32)) as i32;
-        db::complete_level(&state.db, &device_id.0, &level_id, xp_i32)
-            .await
-            .map_err(|e| {
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    format!("Failed to record progress: {}", e),
-                )
-            })?;
-    }
-
     // Save updated state
-    persist_session(&state, &device_id.0, &game_state)
+    persist_session(&state, user_id, &game_state)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
@@ -717,7 +705,7 @@ async fn submit_code(
 /// Run a function-based challenge with test cases
 async fn run_function_based_challenge(
     state: &Arc<AppState>,
-    device_id: &str,
+    user_id: Uuid,
     code: &str,
     test_only: bool,
     level: &LevelData,
@@ -726,10 +714,12 @@ async fn run_function_based_challenge(
 ) -> Result<Json<SubmitCodeResponse>, (StatusCode, String)> {
     tracing::info!("Running function-based challenge for level: {}", level_id);
 
-    let signature = level
-        .function_signature
-        .as_ref()
-        .ok_or_else(|| (StatusCode::INTERNAL_SERVER_ERROR, "Function signature missing".to_string()))?;
+    let signature = level.function_signature.as_ref().ok_or_else(|| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "Function signature missing".to_string(),
+        )
+    })?;
 
     // Filter test cases: sample only for TEST, all for SUBMIT
     let test_cases: Vec<_> = level
@@ -739,7 +729,10 @@ async fn run_function_based_challenge(
         .collect();
 
     if test_cases.is_empty() {
-        return Err((StatusCode::BAD_REQUEST, "No test cases defined for this level".to_string()));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            "No test cases defined for this level".to_string(),
+        ));
     }
 
     let mut results: Vec<TestCaseResult> = Vec::new();
@@ -747,8 +740,12 @@ async fn run_function_based_challenge(
 
     // Run each test case
     for test_case in &test_cases {
-        let harness = generate_harness(code, signature, test_case)
-            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to generate test harness: {}", e)))?;
+        let harness = generate_harness(code, signature, test_case).map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Failed to generate test harness: {}", e),
+            )
+        })?;
 
         let execution_result = state
             .compiler
@@ -814,32 +811,34 @@ async fn run_function_based_challenge(
         xp_earned = Some(xp);
 
         game_state.update_unlocked_levels(state.levels.get_prerequisites());
-
-        let xp_i32 = (xp.min(i32::MAX as u32)) as i32;
-        db::complete_level(&state.db, device_id, level_id, xp_i32)
-            .await
-            .map_err(|e| {
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    format!("Failed to record progress: {}", e),
-                )
-            })?;
     }
 
     let feedback = if all_passed {
         if test_only {
-            format!("All {} sample tests passed! Click SUBMIT to complete.", passed_count)
+            format!(
+                "All {} sample tests passed! Click SUBMIT to complete.",
+                passed_count
+            )
         } else if let Some(xp) = xp_earned.filter(|&x| x > 0) {
-            format!("All {} tests passed! +{} XP! Doors have been unlocked!", test_suite.total, xp)
+            format!(
+                "All {} tests passed! +{} XP! Doors have been unlocked!",
+                test_suite.total, xp
+            )
         } else {
-            format!("All {} tests passed! Doors have been unlocked! (Level already completed)", test_suite.total)
+            format!(
+                "All {} tests passed! Doors have been unlocked! (Level already completed)",
+                test_suite.total
+            )
         }
     } else {
-        format!("{}/{} tests passed. Check your logic and try again!", passed_count, test_suite.total)
+        format!(
+            "{}/{} tests passed. Check your logic and try again!",
+            passed_count, test_suite.total
+        )
     };
 
     // Save updated state
-    persist_session(state, device_id, game_state)
+    persist_session(state, user_id, game_state)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
@@ -860,9 +859,10 @@ async fn run_function_based_challenge(
 
 async fn get_current_level(
     State(state): State<Arc<AppState>>,
-    axum::Extension(device_id): axum::Extension<DeviceId>,
+    axum::Extension(auth_user): axum::Extension<auth_middleware::AuthUser>,
 ) -> Result<Json<LevelData>, (StatusCode, String)> {
-    let game_state = get_or_create_session(&state, &device_id.0)
+    let user_id = auth_user.user_id;
+    let game_state = get_or_create_session(&state, user_id)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
@@ -885,9 +885,10 @@ async fn get_current_level(
 
 async fn get_level_quests(
     State(state): State<Arc<AppState>>,
-    axum::Extension(device_id): axum::Extension<DeviceId>,
+    axum::Extension(auth_user): axum::Extension<auth_middleware::AuthUser>,
 ) -> Result<Json<Vec<QuestInfoResponse>>, (StatusCode, String)> {
-    let game_state = get_or_create_session(&state, &device_id.0)
+    let user_id = auth_user.user_id;
+    let game_state = get_or_create_session(&state, user_id)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
@@ -906,33 +907,37 @@ async fn get_level_quests(
     })?;
 
     let quests = level.get_quests();
-    let response: Vec<QuestInfoResponse> = quests.iter().map(|q| {
-        let completed = game_state.is_quest_completed(level_id, &q.id);
-        QuestInfoResponse {
-            id: q.id.clone(),
-            order: q.order,
-            title: q.title.clone(),
-            description: q.description.clone(),
-            recommended: q.recommended,
-            completed,
-            xp_reward: q.xp_reward,
-            user_template: q.user_template.clone(),
-            function_signature: q.function_signature.clone(),
-            hints: q.hints.clone(),
-            test_cases: q.test_cases.clone(),
-            teaching: q.teaching.clone(),
-        }
-    }).collect();
+    let response: Vec<QuestInfoResponse> = quests
+        .iter()
+        .map(|q| {
+            let completed = game_state.is_quest_completed(level_id, &q.id);
+            QuestInfoResponse {
+                id: q.id.clone(),
+                order: q.order,
+                title: q.title.clone(),
+                description: q.description.clone(),
+                recommended: q.recommended,
+                completed,
+                xp_reward: q.xp_reward,
+                user_template: q.user_template.clone(),
+                function_signature: q.function_signature.clone(),
+                hints: q.hints.clone(),
+                test_cases: q.test_cases.clone(),
+                teaching: q.teaching.clone(),
+            }
+        })
+        .collect();
 
     Ok(Json(response))
 }
 
 async fn get_quest(
     State(state): State<Arc<AppState>>,
-    axum::Extension(device_id): axum::Extension<DeviceId>,
+    axum::Extension(auth_user): axum::Extension<auth_middleware::AuthUser>,
     Path(quest_id): Path<String>,
 ) -> Result<Json<QuestInfoResponse>, (StatusCode, String)> {
-    let game_state = get_or_create_session(&state, &device_id.0)
+    let user_id = auth_user.user_id;
+    let game_state = get_or_create_session(&state, user_id)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
@@ -978,32 +983,55 @@ async fn get_quest(
 
 async fn submit_quest_code(
     State(state): State<Arc<AppState>>,
-    axum::Extension(device_id): axum::Extension<DeviceId>,
+    axum::Extension(auth_user): axum::Extension<auth_middleware::AuthUser>,
     Json(payload): Json<SubmitQuestCodeRequest>,
 ) -> Result<Json<SubmitCodeResponse>, (StatusCode, String)> {
-    tracing::info!("Submitting quest code for device: {}, quest: {}, test_only: {}",
-        device_id.0, payload.quest_id, payload.test_only);
-    tracing::info!("DEBUG: Quest submission started for quest_id={}", payload.quest_id);
+    let user_id = auth_user.user_id;
+    tracing::info!(
+        "Submitting quest code for user: {}, quest: {}, test_only: {}",
+        user_id,
+        payload.quest_id,
+        payload.test_only
+    );
+    tracing::info!(
+        "DEBUG: Quest submission started for quest_id={}",
+        payload.quest_id
+    );
 
-    let mut game_state = get_or_create_session(&state, &device_id.0)
+    let mut game_state = get_or_create_session(&state, user_id)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
     let level_id = game_state
         .current_level_id
         .as_ref()
-        .ok_or_else(|| (StatusCode::BAD_REQUEST, "No level currently loaded".to_string()))?
+        .ok_or_else(|| {
+            (
+                StatusCode::BAD_REQUEST,
+                "No level currently loaded".to_string(),
+            )
+        })?
         .clone();
 
     let level = state.levels.get_level(&level_id).ok_or_else(|| {
-        (StatusCode::NOT_FOUND, format!("Level '{}' not found", level_id))
+        (
+            StatusCode::NOT_FOUND,
+            format!("Level '{}' not found", level_id),
+        )
     })?;
 
     let quests = level.get_quests();
     let total_quests = quests.len();
-    let quest = quests.iter().find(|q| q.id == payload.quest_id).ok_or_else(|| {
-        (StatusCode::NOT_FOUND, format!("Quest '{}' not found", payload.quest_id))
-    })?.clone();
+    let quest = quests
+        .iter()
+        .find(|q| q.id == payload.quest_id)
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                format!("Quest '{}' not found", payload.quest_id),
+            )
+        })?
+        .clone();
 
     // Filter test cases: sample only for TEST, all for SUBMIT
     let test_cases: Vec<_> = quest
@@ -1013,7 +1041,10 @@ async fn submit_quest_code(
         .collect();
 
     if test_cases.is_empty() {
-        return Err((StatusCode::BAD_REQUEST, "No test cases defined for this quest".to_string()));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            "No test cases defined for this quest".to_string(),
+        ));
     }
 
     let mut results: Vec<TestCaseResult> = Vec::new();
@@ -1021,7 +1052,12 @@ async fn submit_quest_code(
 
     for test_case in &test_cases {
         let harness = generate_harness(&payload.code, &quest.function_signature, test_case)
-            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Failed to generate test harness: {}", e)))?;
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    format!("Failed to generate test harness: {}", e),
+                )
+            })?;
 
         let execution_result = state
             .compiler
@@ -1084,13 +1120,22 @@ async fn submit_quest_code(
 
     // Only complete quest on SUBMIT (not TEST) and if all passed
     if all_passed && !payload.test_only {
-        tracing::info!("DEBUG: All tests passed, completing quest {} for level {}", payload.quest_id, level_id);
+        tracing::info!(
+            "DEBUG: All tests passed, completing quest {} for level {}",
+            payload.quest_id,
+            level_id
+        );
         let xp = game_state.complete_quest(&level_id, &payload.quest_id, quest.xp_reward);
         xp_earned = Some(xp);
         tracing::info!("DEBUG: Quest completed, XP earned: {}", xp);
 
         let completed_count = game_state.get_completed_quest_count(&level_id);
-        tracing::info!("DEBUG: Completed quest count for {}: {}/{}", level_id, completed_count, total_quests);
+        tracing::info!(
+            "DEBUG: Completed quest count for {}: {}/{}",
+            level_id,
+            completed_count,
+            total_quests
+        );
         quests_remaining = total_quests.saturating_sub(completed_count);
 
         // Check if all quests completed → level complete
@@ -1107,12 +1152,12 @@ async fn submit_quest_code(
         game_state.active_quest_id = None;
 
         // Persist state
-        persist_session(&state, &device_id.0, &game_state)
+        persist_session(&state, user_id, &game_state)
             .await
             .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
         tracing::info!(
-            "DEBUG: Session persisted for {}, completed_quests for {}: {:?}",
-            device_id.0,
+            "DEBUG: Session persisted for user {}, completed_quests for {}: {:?}",
+            user_id,
             level_id,
             game_state.progression.completed_quests.get(&level_id)
         );
@@ -1120,16 +1165,28 @@ async fn submit_quest_code(
 
     let feedback = if all_passed {
         if payload.test_only {
-            format!("All {} sample tests passed! Click SUBMIT to complete.", passed_count)
+            format!(
+                "All {} sample tests passed! Click SUBMIT to complete.",
+                passed_count
+            )
         } else if quests_remaining == 0 {
-            format!("Quest complete! +{} XP! All quests done - doors unlocked!", xp_earned.unwrap_or(0))
+            format!(
+                "Quest complete! +{} XP! All quests done - doors unlocked!",
+                xp_earned.unwrap_or(0)
+            )
         } else if let Some(xp) = xp_earned.filter(|&x| x > 0) {
-            format!("Quest complete! +{} XP! {} quest(s) remaining.", xp, quests_remaining)
+            format!(
+                "Quest complete! +{} XP! {} quest(s) remaining.",
+                xp, quests_remaining
+            )
         } else {
             "Quest already completed. Try another quest!".to_string()
         }
     } else {
-        format!("{}/{} tests passed. Check your logic and try again!", passed_count, test_suite.total)
+        format!(
+            "{}/{} tests passed. Check your logic and try again!",
+            passed_count, test_suite.total
+        )
     };
 
     Ok(Json(SubmitCodeResponse {
@@ -1139,7 +1196,11 @@ async fn submit_quest_code(
         compile_error: None,
         execution_time_ms: total_time_ms,
         feedback,
-        hint: if !all_passed { quest.hints.first().cloned() } else { None },
+        hint: if !all_passed {
+            quest.hints.first().cloned()
+        } else {
+            None
+        },
         xp_earned,
         doors_unlocked,
         render_state: game_state.to_render_state(),
@@ -1149,10 +1210,11 @@ async fn submit_quest_code(
 
 async fn get_hint(
     State(state): State<Arc<AppState>>,
-    axum::Extension(device_id): axum::Extension<DeviceId>,
+    axum::Extension(auth_user): axum::Extension<auth_middleware::AuthUser>,
     Path(index): Path<usize>,
 ) -> Result<Json<String>, (StatusCode, String)> {
-    let game_state = get_or_create_session(&state, &device_id.0)
+    let user_id = auth_user.user_id;
+    let game_state = get_or_create_session(&state, user_id)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
@@ -1170,36 +1232,50 @@ async fn get_hint(
         )
     })?;
 
-    let hint = level.hints.get(index).ok_or_else(|| {
-        (StatusCode::NOT_FOUND, "No more hints available".to_string())
-    })?;
+    let hint = level
+        .hints
+        .get(index)
+        .ok_or_else(|| (StatusCode::NOT_FOUND, "No more hints available".to_string()))?;
 
     Ok(Json(hint.clone()))
 }
 
 async fn get_progress(
     State(state): State<Arc<AppState>>,
-    axum::Extension(device_id): axum::Extension<DeviceId>,
+    axum::Extension(auth_user): axum::Extension<auth_middleware::AuthUser>,
 ) -> Result<Json<ProgressResponse>, (StatusCode, String)> {
-    let game_state = get_or_create_session(&state, &device_id.0)
+    let user_id = auth_user.user_id;
+    let game_state = get_or_create_session(&state, user_id)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
     // Use progression struct, not legacy fields (which are #[serde(skip)])
     Ok(Json(ProgressResponse {
         total_xp: game_state.progression.total_xp,
-        completed_levels: game_state.progression.completed_levels.iter().cloned().collect(),
+        completed_levels: game_state
+            .progression
+            .completed_levels
+            .iter()
+            .cloned()
+            .collect(),
         current_level: game_state.current_level_id.clone(),
     }))
 }
 
 async fn list_saves(
     State(state): State<Arc<AppState>>,
-    axum::Extension(device_id): axum::Extension<DeviceId>,
+    axum::Extension(auth_user): axum::Extension<auth_middleware::AuthUser>,
 ) -> Result<Json<Vec<SaveSlotResponse>>, (StatusCode, String)> {
-    let saves = db::list_save_slots(&state.db, &device_id.0)
+    let user_id = auth_user.user_id;
+
+    let saves = db::list_save_slots_by_user_id(&state.db, user_id)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("DB error: {}", e)))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("DB error: {}", e),
+            )
+        })?;
 
     let response: Vec<SaveSlotResponse> = saves
         .into_iter()
@@ -1225,19 +1301,25 @@ async fn list_saves(
 
 async fn save_game(
     State(state): State<Arc<AppState>>,
-    axum::Extension(device_id): axum::Extension<DeviceId>,
+    axum::Extension(auth_user): axum::Extension<auth_middleware::AuthUser>,
     Path(slot): Path<String>,
 ) -> Result<Json<SaveSlotResponse>, (StatusCode, String)> {
-    let game_state = get_or_create_session(&state, &device_id.0)
+    let user_id = auth_user.user_id;
+
+    let game_state = get_or_create_session(&state, user_id)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
-    let save_data = serde_json::to_value(&game_state)
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Serialize error: {}", e)))?;
+    let save_data = serde_json::to_value(&game_state).map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("Serialize error: {}", e),
+        )
+    })?;
 
-    let saved = db::upsert_save_slot(
+    let saved = db::upsert_save_slot_for_user(
         &state.db,
-        &device_id.0,
+        user_id,
         &slot,
         &save_data,
         game_state.progression.total_xp as i32,
@@ -1245,7 +1327,12 @@ async fn save_game(
         game_state.current_level_id.as_deref(),
     )
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("DB error: {}", e)))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("DB error: {}", e),
+        )
+    })?;
 
     let progress = format!(
         "Level {} | {} XP | {} levels",
@@ -1270,19 +1357,35 @@ struct LoadSaveResponse {
 
 async fn load_save(
     State(state): State<Arc<AppState>>,
-    axum::Extension(device_id): axum::Extension<DeviceId>,
+    axum::Extension(auth_user): axum::Extension<auth_middleware::AuthUser>,
     Path(slot): Path<String>,
 ) -> Result<Json<LoadSaveResponse>, (StatusCode, String)> {
-    let save = db::get_save_slot(&state.db, &device_id.0, &slot)
-        .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("DB error: {}", e)))?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, format!("Save slot '{}' not found", slot)))?;
+    let user_id = auth_user.user_id;
 
-    let game_state: GameState = serde_json::from_value(save.save_data)
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("Parse error: {}", e)))?;
+    let save = db::get_save_slot_by_user_id(&state.db, user_id, &slot)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("DB error: {}", e),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                format!("Save slot '{}' not found", slot),
+            )
+        })?;
+
+    let game_state: GameState = serde_json::from_value(save.save_data).map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("Parse error: {}", e),
+        )
+    })?;
 
     // Update session with loaded state
-    persist_session(&state, &device_id.0, &game_state)
+    persist_session(&state, user_id, &game_state)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e))?;
 
@@ -1293,19 +1396,26 @@ async fn load_save(
 
 async fn delete_save(
     State(state): State<Arc<AppState>>,
-    axum::Extension(device_id): axum::Extension<DeviceId>,
+    axum::Extension(auth_user): axum::Extension<auth_middleware::AuthUser>,
     Path(slot): Path<String>,
 ) -> Result<StatusCode, (StatusCode, String)> {
-    db::delete_save_slot(&state.db, &device_id.0, &slot)
+    let user_id = auth_user.user_id;
+
+    db::delete_save_slot_for_user(&state.db, user_id, &slot)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, format!("DB error: {}", e)))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("DB error: {}", e),
+            )
+        })?;
 
     Ok(StatusCode::NO_CONTENT)
 }
 
 #[cfg(test)]
 mod tests {
-    use super::db::{self, NewSession};
+    use super::db;
     use super::*;
     use sqlx::postgres::PgPoolOptions;
     use uuid::Uuid;
@@ -1321,7 +1431,8 @@ mod tests {
             }
         };
 
-        let device_id = format!("test-persist-{}", Uuid::new_v4());
+        // Create a test user ID (simulating authenticated user)
+        let user_id = Uuid::new_v4();
         let initial_state = GameState::new();
         let state_json = serde_json::to_value(&initial_state).expect("serialize game state");
 
@@ -1333,15 +1444,23 @@ mod tests {
 
         db::init_database(&pool).await.expect("run migrations");
 
-        db::save_session(
-            &pool,
-            &NewSession {
-                device_id: device_id.clone(),
-                game_state: state_json.clone(),
-            },
+        // Create a test user first
+        let test_email = format!("test-{}@example.com", user_id);
+        sqlx::query(
+            "INSERT INTO users (id, email, username, password_hash) VALUES ($1, $2, $3, $4) ON CONFLICT DO NOTHING"
         )
+        .bind(user_id)
+        .bind(&test_email)
+        .bind(format!("testuser-{}", user_id))
+        .bind("test_hash")
+        .execute(&pool)
         .await
-        .expect("save session");
+        .expect("create test user");
+
+        // Save session for authenticated user
+        db::upsert_session_by_user_id(&pool, user_id, &state_json)
+            .await
+            .expect("save session");
 
         drop(pool);
 
@@ -1351,23 +1470,23 @@ mod tests {
             .await
             .expect("connect second pool");
 
-        let stored = db::get_session(&pool, &device_id)
+        let stored = db::get_session_by_user_id(&pool, user_id)
             .await
             .expect("load session");
 
         assert!(stored.is_some());
-        assert_eq!(stored.unwrap().device_id, device_id);
 
-        sqlx::query("DELETE FROM sessions WHERE device_id = $1")
-            .bind(&device_id)
+        // Cleanup
+        sqlx::query("DELETE FROM sessions WHERE user_id = $1")
+            .bind(user_id)
             .execute(&pool)
             .await
             .expect("cleanup session");
 
-        sqlx::query("DELETE FROM player_progress WHERE device_id = $1")
-            .bind(&device_id)
+        sqlx::query("DELETE FROM users WHERE id = $1")
+            .bind(user_id)
             .execute(&pool)
             .await
-            .expect("cleanup progress");
+            .expect("cleanup user");
     }
 }

@@ -59,14 +59,6 @@ pub fn validate_password_strength(password: &str) -> Result<(), AuthError> {
     Ok(())
 }
 
-/// Generate a secure random token (for email verification, password reset)
-pub fn generate_secure_token() -> String {
-    use rand::Rng;
-    let mut rng = rand::thread_rng();
-    let bytes: [u8; 32] = rng.gen();
-    hex::encode(bytes)
-}
-
 /// Hash a token for storage (we don't store raw tokens)
 pub fn hash_token(token: &str) -> String {
     let mut hasher = Sha256::new();
@@ -111,15 +103,6 @@ mod tests {
         assert!(validate_password_strength("ValidPass123").is_ok());
     }
 
-    #[test]
-    fn test_secure_token() {
-        let token1 = generate_secure_token();
-        let token2 = generate_secure_token();
-
-        assert_eq!(token1.len(), 64); // 32 bytes = 64 hex chars
-        assert_ne!(token1, token2);
-    }
-    
     #[test]
     fn test_hash_token() {
         let token = "test_token_123";

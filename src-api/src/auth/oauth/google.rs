@@ -1,7 +1,7 @@
 //! Google OAuth 2.0 implementation
 
 use super::{OAuthConfig, OAuthState, OAuthUserInfo};
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 /// Google OAuth client
 #[derive(Clone)]
@@ -10,16 +10,10 @@ pub struct GoogleOAuth {
     client: reqwest::Client,
 }
 
-/// Google OAuth token response
+/// Google OAuth token response (only access_token is used, serde ignores other fields)
 #[derive(Deserialize)]
 struct GoogleTokenResponse {
     access_token: String,
-    #[allow(dead_code)]
-    token_type: String,
-    #[allow(dead_code)]
-    expires_in: u64,
-    #[allow(dead_code)]
-    id_token: Option<String>,
 }
 
 /// Google user info response
@@ -140,4 +134,3 @@ impl GoogleOAuth {
         self.get_user_info(&access_token).await
     }
 }
-

@@ -73,16 +73,6 @@ impl RateLimiter {
         }
     }
 
-    /// Get rate limit based on XP
-    fn get_limit_for_xp(&self, xp: u32) -> u32 {
-        match xp {
-            0..=99 => self.config.xp_0_99,
-            100..=499 => self.config.xp_100_499,
-            500..=1999 => self.config.xp_500_1999,
-            _ => self.config.xp_2000_plus,
-        }
-    }
-
     /// Check if request should be rate limited
     /// Returns Ok(remaining) if allowed, Err(retry_after_secs) if limited
     pub fn check_rate_limit(&self, identifier: &str, limit: u32) -> Result<u32, u64> {
@@ -111,14 +101,6 @@ impl RateLimiter {
         // Increment count
         entry.count += 1;
         Ok(limit - entry.count)
-    }
-
-    /// Clean up expired entries (call periodically)
-    pub fn cleanup(&self) {
-        let now = Instant::now();
-        self.entries.retain(|_, entry| {
-            now.duration_since(entry.window_start) < self.window_duration * 2
-        });
     }
 }
 
@@ -274,27 +256,15 @@ mod tests {
     #[test]
     fn test_rate_limiter_blocks_excess() {
         let limiter = RateLimiter::new(RateLimitConfig::default());
-        
+
         // Exhaust the limit
         for _ in 0..30 {
             let _ = limiter.check_rate_limit("test", 30);
         }
-        
+
         // Next request should be blocked
         let result = limiter.check_rate_limit("test", 30);
         assert!(result.is_err());
-    }
-
-    #[test]
-    fn test_xp_tiers() {
-        let limiter = RateLimiter::new(RateLimitConfig::default());
-        
-        assert_eq!(limiter.get_limit_for_xp(0), 30);
-        assert_eq!(limiter.get_limit_for_xp(50), 30);
-        assert_eq!(limiter.get_limit_for_xp(100), 60);
-        assert_eq!(limiter.get_limit_for_xp(500), 120);
-        assert_eq!(limiter.get_limit_for_xp(2000), 240);
-        assert_eq!(limiter.get_limit_for_xp(10000), 240);
     }
 }
 

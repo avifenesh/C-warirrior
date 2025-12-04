@@ -8,9 +8,9 @@ pub mod jwt;
 pub mod oauth;
 pub mod password;
 
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use chrono::{DateTime, Utc};
 
 /// Standard auth response with token and user info
 #[derive(Debug, Clone, Serialize)]
@@ -75,37 +75,34 @@ pub struct ResetPasswordRequest {
 pub enum AuthError {
     #[error("Invalid credentials")]
     InvalidCredentials,
-    
+
     #[error("Email already registered")]
     EmailExists,
-    
+
     #[error("Username already taken")]
     UsernameExists,
-    
+
     #[error("Invalid or expired token")]
     InvalidToken,
-    
-    #[error("Email not verified")]
-    EmailNotVerified,
-    
+
     #[error("User is suspended")]
     UserSuspended,
-    
+
     #[error("User is blacklisted")]
     UserBlacklisted,
-    
+
     #[error("Password too weak: {0}")]
     WeakPassword(String),
-    
+
     #[error("Invalid email format")]
     InvalidEmail,
-    
+
     #[error("User not found")]
     UserNotFound,
-    
+
     #[error("Database error: {0}")]
     Database(String),
-    
+
     #[error("Internal error: {0}")]
     Internal(String),
 }
@@ -114,10 +111,8 @@ impl AuthError {
     pub fn status_code(&self) -> axum::http::StatusCode {
         use axum::http::StatusCode;
         match self {
-            AuthError::InvalidCredentials => StatusCode::UNAUTHORIZED,
+            AuthError::InvalidCredentials | AuthError::InvalidToken => StatusCode::UNAUTHORIZED,
             AuthError::EmailExists | AuthError::UsernameExists => StatusCode::CONFLICT,
-            AuthError::InvalidToken => StatusCode::UNAUTHORIZED,
-            AuthError::EmailNotVerified => StatusCode::FORBIDDEN,
             AuthError::UserSuspended | AuthError::UserBlacklisted => StatusCode::FORBIDDEN,
             AuthError::WeakPassword(_) | AuthError::InvalidEmail => StatusCode::BAD_REQUEST,
             AuthError::UserNotFound => StatusCode::NOT_FOUND,

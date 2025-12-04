@@ -3,8 +3,7 @@
 //! Uses Resend API for transactional emails (verification, password reset).
 
 pub mod sender;
-pub mod templates;
+mod templates;
 
-pub use sender::{EmailService, OptionalEmailService};
-pub use templates::EmailTemplate;
+pub use sender::OptionalEmailService;
 

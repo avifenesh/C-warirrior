@@ -31,26 +31,6 @@ pub struct OAuthConfig {
     pub redirect_uri: String,
 }
 
-impl OAuthConfig {
-    /// Load Google OAuth config from environment
-    pub fn google_from_env(frontend_url: &str) -> Option<Self> {
-        Some(Self {
-            client_id: std::env::var("GOOGLE_CLIENT_ID").ok()?,
-            client_secret: std::env::var("GOOGLE_CLIENT_SECRET").ok()?,
-            redirect_uri: format!("{}/api/auth/oauth/google/callback", frontend_url),
-        })
-    }
-
-    /// Load GitHub OAuth config from environment
-    pub fn github_from_env(frontend_url: &str) -> Option<Self> {
-        Some(Self {
-            client_id: std::env::var("GITHUB_CLIENT_ID").ok()?,
-            client_secret: std::env::var("GITHUB_CLIENT_SECRET").ok()?,
-            redirect_uri: format!("{}/api/auth/oauth/github/callback", frontend_url),
-        })
-    }
-}
-
 /// State parameter for OAuth flow (prevents CSRF)
 #[derive(Debug, Serialize, Deserialize)]
 pub struct OAuthState {

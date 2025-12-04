@@ -10,14 +10,10 @@ pub struct GitHubOAuth {
     client: reqwest::Client,
 }
 
-/// GitHub OAuth token response
+/// GitHub OAuth token response (only access_token is used, serde ignores other fields)
 #[derive(Deserialize)]
 struct GitHubTokenResponse {
     access_token: String,
-    #[allow(dead_code)]
-    token_type: String,
-    #[allow(dead_code)]
-    scope: String,
 }
 
 /// GitHub user info response

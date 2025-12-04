@@ -267,5 +267,32 @@ pub async fn run_migrations(pool: &Pool<Postgres>) -> Result<(), sqlx::Error> {
     .execute(pool)
     .await?;
 
+    // Add user_id column to quest_progress table for user-based tracking
+    sqlx::query(
+        r#"
+        ALTER TABLE quest_progress ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES users(id)
+        "#,
+    )
+    .execute(pool)
+    .await?;
+
+    sqlx::query(
+        r#"
+        CREATE INDEX IF NOT EXISTS idx_quest_progress_user_id ON quest_progress(user_id) WHERE user_id IS NOT NULL
+        "#,
+    )
+    .execute(pool)
+    .await?;
+
+    // Add unique constraint for user-based quest progress (user_id, quest_id)
+    // This allows same quest to be tracked separately per user vs per device
+    sqlx::query(
+        r#"
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_quest_progress_user_quest ON quest_progress(user_id, quest_id) WHERE user_id IS NOT NULL
+        "#,
+    )
+    .execute(pool)
+    .await?;
+
     Ok(())
 }

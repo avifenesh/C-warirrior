@@ -108,27 +108,6 @@ pub async fn ban_check_middleware(
     Ok(next.run(req).await)
 }
 
-/// Lightweight ban check that uses cached status from JWT
-///
-/// For performance, this version doesn't hit the database on every request.
-/// It relies on the XP field in JWT - if user is banned, their XP would be 0
-/// and they wouldn't have a valid token anyway (tokens are invalidated on ban).
-///
-/// Use this for high-frequency endpoints; use ban_check_middleware for sensitive ones.
-pub async fn lightweight_ban_check_middleware(
-    req: Request<Body>,
-    next: Next,
-) -> Result<Response, StatusCode> {
-    // This is a placeholder for a more sophisticated check
-    // In production, you might:
-    // 1. Cache banned user IDs in Redis
-    // 2. Check a bloom filter
-    // 3. Use JWT revocation list
-    
-    // For now, just pass through - the full ban check happens on sensitive endpoints
-    Ok(next.run(req).await)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -26,7 +26,6 @@ pub struct JwtClaims {
 #[derive(Debug, Clone)]
 pub struct AuthUser {
     pub user_id: Uuid,
-    pub email: String,
     pub xp: u32,
 }
 
@@ -82,63 +81,12 @@ pub async fn jwt_auth_middleware(
     // Inject AuthUser into request extensions
     let auth_user = AuthUser {
         user_id: claims.sub,
-        email: claims.email,
         xp: claims.xp,
     };
     req.extensions_mut().insert(auth_user);
 
     // Continue to next middleware/handler
     Ok(next.run(req).await)
-}
-
-/// Optional JWT authentication middleware
-///
-/// Like jwt_auth_middleware, but doesn't fail if token is missing.
-/// Useful for routes that work for both authenticated and anonymous users.
-pub async fn optional_jwt_auth_middleware(
-    mut req: Request<Body>,
-    next: Next,
-) -> Response {
-    // Try to extract Authorization header
-    if let Some(auth_header) = req
-        .headers()
-        .get(AUTHORIZATION)
-        .and_then(|h| h.to_str().ok())
-    {
-        // Try to extract Bearer token
-        if let Some(token) = auth_header.strip_prefix("Bearer ") {
-            // Try to validate token
-            if let Ok(claims) = validate_token(token) {
-                let now = chrono::Utc::now().timestamp() as usize;
-                if claims.exp >= now {
-                    // Valid token - inject AuthUser
-                    let auth_user = AuthUser {
-                        user_id: claims.sub,
-                        email: claims.email,
-                        xp: claims.xp,
-                    };
-                    req.extensions_mut().insert(auth_user);
-                }
-            }
-        }
-    }
-
-    // Continue regardless of auth status
-    next.run(req).await
-}
-
-/// Extract AuthUser from request extensions
-///
-/// Use this in handlers to get the authenticated user:
-/// ```rust
-/// async fn my_handler(
-///     Extension(auth_user): Extension<AuthUser>,
-/// ) -> impl IntoResponse {
-///     // auth_user.user_id, auth_user.email, auth_user.xp
-/// }
-/// ```
-pub fn extract_auth_user(req: &Request<Body>) -> Option<&AuthUser> {
-    req.extensions().get::<AuthUser>()
 }
 
 #[cfg(test)]
