@@ -98,6 +98,6 @@ This is not a security concern, but be aware that these endpoints will be discov
 
 ### Before Going Public Checklist
 
-- [ ] Add a LICENSE file (e.g., MIT, Apache 2.0)
-- [ ] Optional: Add ATTRIBUTION.md if using third-party assets
-- [ ] Optional: Update README to remove "License information to be added"
+- [x] Add a LICENSE file (e.g., MIT, Apache 2.0)
+- [x] Optional: Add ATTRIBUTION.md if using third-party assets (N/A - all original assets)
+- [x] Optional: Update README to remove "License information to be added"
