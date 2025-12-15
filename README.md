@@ -1,6 +1,13 @@
 # Code Warrior: C Mastery
 
-An immersive web-based RPG that teaches C programming from zero to hero through hands-on gameplay.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Rust](https://img.shields.io/badge/Rust-2021-orange.svg)](https://www.rust-lang.org/)
+[![Svelte](https://img.shields.io/badge/Svelte-5-ff3e00.svg)](https://svelte.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue.svg)](https://www.typescriptlang.org/)
+
+> 🎮 An immersive web-based RPG that teaches C programming from zero to hero through hands-on gameplay.
+
+**[🚀 Play Now](https://code-warrior-seven.vercel.app)** | **[📖 Documentation](docs/)** | **[🤝 Contributing](#contributing)**
 
 ## Overview
 
@@ -126,7 +133,7 @@ We welcome contributions! Please:
 
 ## License
 
-[License information to be added]
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Support
 
